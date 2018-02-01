@@ -1,0 +1,2 @@
+module IngooddepotsHelper
+end

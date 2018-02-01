@@ -1,0 +1,176 @@
+<%= render 'layerbegin' %>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h3>编辑员工</h3>
+    </div>
+
+
+
+    <script>
+        $(document).ready(function(){
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green'
+            });
+
+
+
+
+
+
+            $('#sex').on('ifChecked', function(event){
+                $('#sexid').val(1);
+            });
+
+            $('#sex').on('ifUnchecked', function(event){
+                $('#sexid').val(0);
+            });
+
+            $("#data_1 .input-group.date").datepicker({todayBtn:"linked",keyboardNavigation:!1,forceParse:!1,calendarWeeks:!0,autoclose:!0});
+            $("#data_2 .input-group.date").datepicker({todayBtn:"linked",keyboardNavigation:!1,forceParse:!1,calendarWeeks:!0,autoclose:!0});
+
+
+
+
+
+
+            if($('#sexid').val()=='1'){
+                $('#sex').iCheck('check');
+            }else{
+                $('#sexm').iCheck('check');
+            }
+
+
+            $("#userform").validate({
+                debug:false, //调试模式，即使验证成功也不会跳转到目标页面
+                onkeyup:null, //当丢失焦点时才触发验证请求
+                rules:{     //配置验证规则，key就是被验证的dom对象，value就是调用验证的方法(也是json格式)
+                    'user[login]':{
+                        required:true
+                    },
+                    'user[password]':{
+                        required:false
+                    },
+                    'user[password_confirmation]':{
+                        required:false,
+                        equalTo:'#user_password' //表示和id="spass"的值相同
+                    }
+                },
+                messages:{
+                    'user[login]':{
+                        required:"账号不能为空"
+                    },
+                    'user[password]':{
+                        required:"请输入密码"
+                    },
+                    'user[password_confirmation]':{
+                        required:"请再次输入密码",
+                        equalTo:"两次密码必须一致" //表示和id="spass"的值相同
+                    }
+                }
+            });
+
+
+        });
+
+    </script>
+    <div class="col-md-12 ibox ibox-content">
+      <div class="ibox-content form-horizontal m-t">
+        <input type="hidden" id="teminterestid">
+        <div class="form-group">
+          <%= form_for(@user,:html => {:class=>'form-horizontal m-t',:multipart => true,:id=>'userform'}) do |f| %>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">姓名：</label>
+                <div class="col-sm-5">
+                  <%= f.text_field :name,class:"form-control" %>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">账号：</label>
+                <div class="col-sm-5">
+                  <%= f.text_field :login,class:"form-control",'readonly':true %>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">密码：</label>
+                <div class="col-sm-5">
+                  <%= f.password_field :password,class:"form-control" %>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">确认密码：</label>
+                <div class="col-sm-5">
+                  <%= f.password_field :password_confirmation,class:"form-control" %>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">身份证号码：</label>
+                <div class="col-sm-5">
+                  <%= f.text_field :idcard,class:"form-control" %>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">性别：</label>
+                <div class="col-sm-5">
+                  <% if @user.sex %>
+                      <%= f.hidden_field :sex,class:"form-control",value:@user.sex, id:'sexid'%>
+                  <% else %>
+                      <%= f.hidden_field :sex,class:"form-control",value:1,id:'sexid'%>
+                  <% end %>
+                  <div class="radio i-checks col-sm-3">
+                    <label>
+                      <input type="radio" checked=""  name="s"  id="sex"> <i></i> 男</label>
+                  </div>
+                  <div class="radio i-checks col-sm-3">
+                    <label>
+                      <input type="radio"  name="s" id="sexm"> <i></i> 女</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">电话号码：</label>
+                <div class="col-sm-5">
+                  <%= f.text_field :tel,class: "form-control" %>
+                </div>
+              </div>
+              <div class="form-group" id="data_1">
+                <label class="col-sm-3 control-label">入职时间</label>
+                <div class="col-sm-5 input-group date">
+                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                  <% if @user.entrydate %>
+                      <%= f.text_field :entrydate,class: "form-control",value:@user.entrydate.strftime('%Y-%m-%d') %>
+                  <% else %>
+                      <%= f.text_field :entrydate,class: "form-control" %>
+                  <% end %>
+                </div>
+              </div>
+              <div class="form-group" id="data_2">
+                <label class="col-sm-3 control-label">离职时间</label>
+                <div class="col-sm-5 input-group date">
+                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                  <% if @user.quitdate %>
+                      <%= f.text_field :quitdate,class: "form-control",value:@user.quitdate.strftime('%Y-%m-%d') %>
+                  <% else %>
+                      <%= f.text_field :quitdate,class: "form-control" %>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label"></label>
+                <div class="col-sm-5 text-right">
+                  <%= f.submit '确定',class: "btn btn-w-m btn-primary ",id:'smt' %>&nbsp;<%= link_to "返回",users_path,class: "btn btn-w-m btn-primary " %>
+                </div>
+              </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </div>
+</div>
+<%=render 'layerend' %>

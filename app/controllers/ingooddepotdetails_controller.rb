@@ -1,0 +1,2 @@
+class IngooddepotdetailsController < ApplicationController
+end

@@ -1,0 +1,116 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h5>原材料库存</h5>
+      <div class="ibox-tools col-sm-3" style="margin-top: -5px;">
+        <div class="input-group">
+          <input type="text" id="search"  class="input-sm form-control"> <span class="input-group-btn">
+                                        <button type="button" id="searchbtn" class="btn btn-sm btn-primary"> 搜索</button> </span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="ibox-content">
+
+
+      <div class="panel-body" style="padding: 0px;">
+        <div class="panel-heading" style="margin-bottom: 15px;">
+          <div class="col-md-4">
+            <h4>原材料名称</h4>
+          </div>
+          <div class="col-md-4">
+            <h4>数量</h4>
+          </div>
+          <div class="col-md-4">
+            <h4>合计</h4>
+          </div>
+        </div>
+        <% @newdepots.each do |newdepot| %>
+
+          <div class="panel-group" id="accordion" style="margin-bottom: -2px;">
+            <div class="panel panel-default" style="padding: 0px;">
+              <div class="panel-heading" style="height: 36px;">
+
+                  <a data-toggle="collapse" data-parent="#accordion" href=<%='#' %><%= newdepot.id %>>
+                    <div class="col-md-12">
+                      <div class="col-md-4">
+                        <%= Newraw.find(newdepot.newraw_id).name %>
+                      </div>
+                      <div class="col-md-4">
+                        <%= newdepot.newdepotdetails.sum('number') %>
+                      </div>
+                      <div class="col-md-4">
+                        <% newdepotdetails = newdepot.newdepotdetails %>
+                        <% sum =0 %>
+                        <% newdepotdetails.each do |newdepotdetail| %>
+
+                            <% sum += newdepotdetail.number * newdepotdetail.price %>
+                        <% end %>
+                        <%= sum %>
+                      </div>
+                    </div>
+                  </a>
+
+              </div>
+              <div id=<%= newdepot.id %> class="panel-collapse collapse">
+                <div class="panel-body" style="padding: 0px;">
+                  <table class="table table-hover table-bordered text-center" style="margin-bottom: 0px;">
+                    <thead>
+                    <tr>
+                      <td class="text-center">长</td>
+                      <td class="text-center">宽</td>
+                      <td class="text-center">成本</td>
+                      <td class="text-center">数量</td>
+                      <td class="text-center">合计</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% newdepotdetails = newdepot.newdepotdetails %>
+                    <% newdepotdetails.each do |newdepotdetail| %>
+                    <tr>
+                      <td>
+                    <%= newdepotdetail.width %>
+                      </td>
+                      <td>
+                        <%= newdepotdetail.height %>
+                      </td>
+                      <td>
+                        <%= newdepotdetail.price %>
+                      </td>
+                      <td>
+                        <%= newdepotdetail.number %>
+                      </td>
+                      <td>
+                        <%= newdepotdetail.price * newdepotdetail.number %>
+                      </td>
+                    </tr>
+                    <% end %>
+
+
+
+                    </tbody>
+                  </table>
+
+
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+</div>
+
+
+
+
+    </div>
+  </div>
+</div>
+
+<%=render 'layerend' %>

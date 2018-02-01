@@ -1,0 +1,2 @@
+class InworkdepotdetailsController < ApplicationController
+end

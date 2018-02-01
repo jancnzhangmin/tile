@@ -1,0 +1,2 @@
+module InrawdepotrecordsHelper
+end

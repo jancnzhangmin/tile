@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  contact: MyString
+  ctype: MyString
+  tel: MyString
+
+two:
+  contact: MyString
+  ctype: MyString
+  tel: MyString

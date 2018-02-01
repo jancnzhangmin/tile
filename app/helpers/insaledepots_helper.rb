@@ -1,0 +1,2 @@
+module InsaledepotsHelper
+end

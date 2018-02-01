@@ -1,0 +1,470 @@
+<script>
+  $(document).ready(function(){
+      $('.i-checks').iCheck({
+          checkboxClass: 'icheckbox_square-green',
+          radioClass: 'iradio_square-green'
+      });
+
+
+
+      $('#smt').click(function(){
+          var auth='';
+          if($('#company').is(':checked')){
+              auth+='company:';
+          }
+          if($('#user').is(':checked')){
+              auth+='user:';
+          }
+          if($('#rawdef').is(':checked')){
+              auth+='rawdef:';
+          }
+          if($('#prerawdef').is(':checked')){
+              auth+='prerawdef:';
+          }
+          if($('#workdef').is(':checked')){
+              auth+='workdef:';
+          }
+          if($('#company').is(':checked')){
+              auth+='supplier:';
+          }
+          if($('#customer').is(':checked')){
+              auth+='customer:';
+          }
+          if($('#inraw').is(':checked')){
+              auth+='inraw:';
+          }
+          if($('#rawdepot').is(':checked')){
+              auth+='rawdepot:';
+          }
+          if($('#preorder').is(':checked')){
+              auth+='preorder:';
+          }
+          if($('#cooper').is(':checked')){
+              auth+='cooper:';
+          }
+          if($('#work').is(':checked')){
+              auth+='work:';
+          }
+          if($('#workdepot').is(':checked')){
+              auth+='workdepot:';
+          }
+          if($('#workrecord').is(':checked')){
+              auth+='workrecord:';
+          }
+          if($('#sale').is(':checked')){
+              auth+='sale:';
+          }
+          if($('#tooldef').is(':checked')){
+              auth+='tooldef:';
+          }
+          if($('#intool').is(':checked')){
+              auth+='intool:';
+          }
+          if($('#outtool').is(':checked')){
+              auth+='outtool:';
+          }
+          if($('#borrowtool').is(':checked')){
+              auth+='borrowtool:';
+          }
+          if($('#backtool').is(':checked')){
+              auth+='backtool:';
+          }
+          $.ajax({
+              type : 'get',
+              async : false,
+              url :'saveauth',
+              data:{auth:auth
+              },
+              success : function() {
+
+              }
+          });
+      });
+
+      if($('#auth').val()!='') {
+          var auths = $('#auth').val().split(':');
+          if($.inArray('company', auths)>-1){
+              $('#company').iCheck('check');
+          }
+          if($.inArray('user', auths)>-1){
+              $('#user').iCheck('check');
+          }
+          if($.inArray('rawdef', auths)>-1){
+              $('#rawdef').iCheck('check');
+          }
+          if($.inArray('prerawdef', auths)>-1){
+              $('#prerawdef').iCheck('check');
+          }
+          if($.inArray('workdef', auths)>-1){
+              $('#workdef').iCheck('check');
+          }
+          if($.inArray('supplier', auths)>-1){
+              $('#supplier').iCheck('check');
+          }
+          if($.inArray('customer', auths)>-1){
+              $('#customer').iCheck('check');
+          }
+          if($.inArray('inraw', auths)>-1){
+              $('#inraw').iCheck('check');
+          }
+          if($.inArray('rawdepot', auths)>-1){
+              $('#rawdepot').iCheck('check');
+          }
+          if($.inArray('preorder', auths)>-1){
+              $('#preorder').iCheck('check');
+          }
+          if($.inArray('cooper', auths)>-1){
+              $('#cooper').iCheck('check');
+          }
+          if($.inArray('work', auths)>-1){
+              $('#work').iCheck('check');
+          }
+          if($.inArray('workdepot', auths)>-1){
+              $('#workdepot').iCheck('check');
+          }
+          if($.inArray('workrecord', auths)>-1){
+              $('#workrecord').iCheck('check');
+          }
+          if($.inArray('sale', auths)>-1){
+              $('#sale').iCheck('check');
+          }
+          if($.inArray('tooldef', auths)>-1){
+              $('#tooldef').iCheck('check');
+          }
+          if($.inArray('intool', auths)>-1){
+              $('#intool').iCheck('check');
+          }
+          if($.inArray('outtool', auths)>-1){
+              $('#outtool').iCheck('check');
+          }
+          if($.inArray('borrowtool', auths)>-1){
+              $('#borrowtool').iCheck('check');
+          }
+          if($.inArray('backtool', auths)>-1){
+              $('#backtool').iCheck('check');
+          }
+      }
+
+  });
+</script>
+<%= render 'layerbegin' %>
+
+<h3><%= @user.name %></h3>
+<input type="hidden" id="auth" value=<%=@user.auth %>>
+
+    <div class="ibox float-e-margins">
+      <div class="ibox-title">
+        <div class="col-md-1">&nbsp;</div><h4>基础资料</h4>
+      </div>
+
+      <div class="ibox-content" style="height: 110px;">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <table class="col-lg-12 table-no-bordered">
+            <tr>
+              <td class="col-md-3">
+                <div class="checkbox i-checks">
+                  <label>
+                    <input type="checkbox" value="" id="company"> <i></i> 公司信息</label>
+                </div>
+              </td>
+              <td class="col-md-3">
+                <div class="checkbox i-checks">
+                  <label>
+                    <input type="checkbox" value="" id="user"> <i></i> 公司员工</label>
+                </div>
+              </td>
+              <td class="col-md-3">
+                <div class="checkbox i-checks">
+                  <label>
+                    <input type="checkbox" value="" id="rawdef"> <i></i> 原材料定义</label>
+                </div>
+              </td>
+              <td class="col-md-3">
+                <div class="checkbox i-checks">
+                  <label>
+                    <input type="checkbox" value="" id="prerawdef"> <i></i> 定单材料定义</label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="col-md-3">
+                <div class="checkbox i-checks">
+                  <label>
+                    <input type="checkbox" value="" id="workdef"> <i></i> 加工属性定义</label>
+                </div>
+              </td>
+              <td class="col-md-3">
+                <div class="checkbox i-checks">
+                  <label>
+                    <input type="checkbox" value="" id="supplier"> <i></i> 供应商</label>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-lg-1"></div>
+
+        </div>
+
+      </div>
+
+<div class="ibox float-e-margins" style="margin-top: -25px;">
+  <div class="ibox-title">
+    <div class="col-md-1">&nbsp;</div><h4>客户信息</h4>
+  </div>
+
+  <div class="ibox-content" style="height: 65px;">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <table class="col-lg-12 table-no-bordered">
+        <tr>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="customer"> <i></i> 客户信息</label>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="col-lg-1"></div>
+  </div>
+
+
+
+
+</div>
+
+<div class="ibox float-e-margins" style="margin-top: -25px;">
+  <div class="ibox-title">
+    <div class="col-md-1">&nbsp;</div><h4>原材料仓库</h4>
+  </div>
+
+  <div class="ibox-content" style="height: 65px;">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <table class="col-lg-12 table-no-bordered">
+        <tr>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="inraw"> <i></i> 原材料入库</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="rawdepot"> <i></i> 原材料库存</label>
+            </div>
+          </td>
+          <td class="col-md-3"></td>
+          <td class="col-md-3"></td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="col-lg-1"></div>
+  </div>
+
+
+
+
+</div>
+
+<div class="ibox float-e-margins" style="margin-top: -25px;">
+  <div class="ibox-title">
+    <div class="col-md-1">&nbsp;</div><h4>订单</h4>
+  </div>
+
+  <div class="ibox-content" style="height: 65px;">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <table class="col-lg-12 table-no-bordered">
+        <tr>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="preorder"> <i></i> 定单</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+
+          </td>
+          <td class="col-md-3"></td>
+          <td class="col-md-3"></td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="col-lg-1"></div>
+  </div>
+
+
+
+
+</div>
+
+<div class="ibox float-e-margins" style="margin-top: -25px;">
+  <div class="ibox-title">
+    <div class="col-md-1">&nbsp;</div><h4>合作商</h4>
+  </div>
+
+  <div class="ibox-content" style="height: 65px;">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <table class="col-lg-12 table-no-bordered">
+        <tr>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="cooper"> <i></i> 合作商</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+
+          </td>
+          <td class="col-md-3"></td>
+          <td class="col-md-3"></td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="col-lg-1"></div>
+  </div>
+
+
+
+
+</div>
+
+<div class="ibox float-e-margins" style="margin-top: -25px;">
+  <div class="ibox-title">
+    <div class="col-md-1">&nbsp;</div><h4>加工单</h4>
+  </div>
+
+  <div class="ibox-content" style="height: 65px;">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <table class="col-lg-12 table-no-bordered">
+        <tr>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="work"> <i></i> 加工单</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="workdepot"> <i></i> 加工库</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="workrecord"> <i></i> 加工库记录</label>
+            </div>
+          </td>
+          <td class="col-md-3"></td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="col-lg-1"></div>
+  </div>
+
+
+
+
+</div>
+
+<div class="ibox float-e-margins" style="margin-top: -25px;">
+  <div class="ibox-title">
+    <div class="col-md-1">&nbsp;</div><h4>销售结算单</h4>
+  </div>
+
+  <div class="ibox-content" style="height: 65px;">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <table class="col-lg-12 table-no-bordered">
+        <tr>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="sale"> <i></i> 销售结算单</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+
+          </td>
+          <td class="col-md-3">
+
+          </td>
+          <td class="col-md-3"></td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="col-lg-1"></div>
+  </div>
+
+
+
+
+</div>
+
+<div class="ibox float-e-margins" style="margin-top: -25px;">
+  <div class="ibox-title">
+    <div class="col-md-1">&nbsp;</div><h4>耗材管理</h4>
+  </div>
+
+  <div class="ibox-content" style="height: 65px;">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <table class="col-lg-12 table-no-bordered">
+        <tr>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="tooldef"> <i></i> 耗材定义</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="intool"> <i></i> 耗材入库</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="outtool"> <i></i> 耗材借出</label>
+            </div>
+          </td>
+          <td class="col-md-3">
+            <div class="checkbox i-checks">
+              <label>
+                <input type="checkbox" value="" id="backtool"> <i></i> 耗材归还</label>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+    <div class="col-lg-1"></div>
+  </div>
+  <div class="col-lg-1"></div>
+
+  <div class="col-lg-10 text-right">
+
+    <%= link_to '确定',users_path, class:"btn btn-w-m btn-primary",id:'smt' %>
+  </div>
+  <div class="col-lg-1"></div>
+
+
+
+</div>
+
+<%=render 'layerend' %>

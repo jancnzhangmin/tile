@@ -1,0 +1,2 @@
+module InworkdepotsHelper
+end

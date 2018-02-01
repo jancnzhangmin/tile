@@ -1,0 +1,2 @@
+module SaleredetailsHelper
+end

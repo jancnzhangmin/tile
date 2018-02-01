@@ -1,0 +1,97 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+
+
+
+
+        $('#searchbtn').click(function(){
+            window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
+        });
+
+
+
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h5>预定单</h5>
+      <div class="ibox-tools col-sm-3" style="margin-top: -5px;">
+        <div class="input-group">
+          <input type="text" id="search"  class="input-sm form-control"> <span class="input-group-btn">
+             <button type="button" id="searchbtn" class="btn btn-sm btn-primary"> 搜索</button> </span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="ibox-content">
+
+
+      <table class="table table-hover table-bordered text-center">
+        <thead>
+        <tr>
+          <th class="text-center">订单号</th>
+          <th class="text-center">对应加工单号</th>
+          <th class="text-center">预计日期</th>
+          <th class="text-center">已付金额</th>
+          <th class="text-center">总金额</th>
+
+
+          <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @preorders.each do |preorder| %>
+            <tr>
+              <td>
+                <%= preorder.ordernumber %>
+              </td>
+              <td>
+
+                <% work = Newwork.find_by_preordernumber(preorder.id) %>
+                <% if work %>
+                <%= work.ordernumber %>
+                    <% else %>
+                无
+                <% end %>
+              </td>
+              <td>
+                <% if preorder.installdate %>
+                <%= preorder.installdate.strftime('%Y-%m-%d') %>
+                    <% end %>
+              </td>
+
+              <td>
+                <%= preorder.pay %>
+              </td>
+              <td>
+                <% sum = preorder.preorderdetails.sum('sum') %>
+                <%= sum %>
+              </td>
+<td><%= link_to '查看明细',preorder_path(preorder),class:'fa fa-eye' %>&nbsp;
+                <%= link_to '编辑',edit_preorder_path(preorder),class:'fa fa-edit' %>&nbsp;
+
+                <%= link_to ' 删除', preorder, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>
+
+
+              </td>
+
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+
+
+      <%= link_to "新增",new_preorder_path,class: "btn btn-w-m btn-primary pull-right" %>
+          <br/>
+
+
+
+
+          </div>
+          </div>
+          </div>
+
+      <%=render 'layerend' %>

@@ -1,0 +1,793 @@
+<script>
+    var way='';
+    $(document).ready(function(){
+
+        getdata();
+
+        function getdata(){
+            var tablejson;
+
+            $.ajax({
+                async : false,
+                url : "../getdata",
+                type : "GET",
+                dataType : 'json',
+                timeout : 5000,
+                data:{
+                    preorderid:$('#preorderid').val()
+
+                },
+                success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
+                    //alert(jsonstr.price);
+                    tablejson=jsonstr;
+                    $('#table').bootstrapTable({
+                        showFooter:true,
+
+                        columns: [{
+                            checkbox: true,
+                            footerFormatter: '合计'
+                        },{
+                            field: 'id',
+                            title: 'id',
+                            visible:false
+
+
+                        },{
+                            field: 'area',
+                            title: '使用位置'
+
+                        },
+                            {
+                                field: 'name',
+                                title: '型号'
+
+                            },
+                            {
+                                field: 'unit',
+                                title: '单位'
+
+                            },
+                            {
+                                field: 'price',
+                                align: 'right',
+                                title: '单价'
+
+
+                            },
+                            {
+                                field: 'number',
+                                align: 'right',
+                                title: '数量'
+
+
+                            },
+                            {
+                                field: 'sum',
+                                align: 'right',
+                                title: '合计'
+
+                            },
+                            {
+                                field: 'summary',
+                                title: '备注',
+                                footerFormatter: function (value) {
+                                    var count = 0;
+                                    for (var i in value) {
+                                        count += value[i].sum;
+                                    }
+                                    return count;
+                                }
+                            },{
+                                field: 'operate',
+                                title: '操作',
+                                align: 'center',
+                                events: operateEvents,
+                                formatter: operateFormatter
+
+                            }],
+
+                        formatLoadingMessage: function(){
+                            return "";
+                        },
+                        data: tablejson
+                    });
+
+                    $('#table').bootstrapTable('load',tablejson);
+                    var sum=0;
+                    $.each(jsonstr,function(i,item){
+                        sum+=parseFloat(item.sum);
+                    });
+                    $('#sumspan').text(sum);
+                    $('#payablespan').text(sum);
+                    $('#payable').val(sum);
+
+                },
+                error : function(xhr) {
+                }
+            });
+        }
+
+        var datalist;
+//        $.ajax({
+//            type : 'get',
+//            async : false,
+//            url :'../getsupplier',
+//            success : function(data) {
+//                datalist=data;
+//            }
+//        });
+        suggest(datalist);
+
+        function suggest(data) {
+            var testdataBsSuggest = $("#test_data").bsSuggest(
+                    {
+                        indexId: 0, indexKey: 2,
+                        data: {
+                            "value": data
+                        }
+                    }).on('onSetSelectValue', function(e, keyword, data) {
+                        $('#supplierid').val(keyword.id);
+                    });
+        }
+
+        var rawlist;
+        $.ajax({
+            type : 'get',
+            async : false,
+            url :'../getpreraw',
+            success : function(data) {
+                rawlist = data;
+            }
+        });
+        raw(rawlist);
+
+        function raw(data) {
+            var rawdataBsSuggest = $("#raw_data").bsSuggest(
+                    {
+                        effectiveFieldsAlias:{id: "ID",pinyin: "简拼", name:"材料名称",spec:"规格"},
+                        showHeader: true,
+                        indexId: 0, indexKey: 2,
+                        data: {
+                            "value": data
+                        }
+                    }).on('onSetSelectValue', function(e, keyword, data) {
+                        $('#modelid').val(keyword.id);
+//                        $.ajax({
+//                            type : 'get',
+//                            async : false,
+//                            url :'../getrawbyid?id='+keyword.id,
+//                            success : function(json) {
+//                                $('#modelid').val(keyword.id);
+//                                $('#modelspec').val(json.spec);
+//                                $('#modelunit').val(json.unit);
+//                                $('#modelprice').val(json.price);
+//                                $('#modelnumber').val(1);
+//                                $('#modelsum').val(json.price);
+//                            }
+//                        });
+                    });
+        }
+
+
+        $('#modalsubmit').click(function(){
+
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../changeinrawdetail',
+                data:{
+                    way:way,
+                    preorderid:$('#preorderid').val(),
+                    prerawid:$('#modelid').val(),
+                    area:$('#modelarea').val(),
+                    unit:$('#modelunit').val(),
+                    price:$('#modelprice').val(),
+                    number:$('#modelnumber').val(),
+                    summary:$('#modelsummary').val()
+                },
+                success : function(json) {
+                    getdata();
+                    $('#raw_data').val('');
+                    $('#modelprice').val('');
+                    $('#modelnumber').val('');
+                    $('#modelspec').val('');
+                    $('#modelunit').val('');
+                    $('#modelnumber').val('');
+                    $('#modelsum').val('');
+                    $('#modelarea').val('');
+                    $('#modelsummary').val('');
+
+                }
+            });
+
+        });
+
+        $('#modelprice').change(function(){
+            $('#modelsum').val(parseFloat($('#modelprice').val()) * parseFloat($('#modelnumber').val()));
+        });
+
+        $('#modelnumber').change(function(){
+            $('#modelsum').val(parseFloat($('#modelprice').val()) * parseFloat($('#modelnumber').val()));
+        });
+
+        $('#edits').click(function(){
+            way='edit';
+            //alert($('#table').bootstrapTable('getSelections')[0].id);
+            $('#modelid').val($('#table').bootstrapTable('getSelections')[0].id);
+            $('#raw_data').val($('#table').bootstrapTable('getSelections')[0].name);
+            $('#modelarea').val($('#table').bootstrapTable('getSelections')[0].area);
+            $('#modelunit').val($('#table').bootstrapTable('getSelections')[0].unit);
+            $('#modelnumber').val($('#table').bootstrapTable('getSelections')[0].number);
+            $('#modelprice').val($('#table').bootstrapTable('getSelections')[0].price);
+            $('#modelsum').val($('#table').bootstrapTable('getSelections')[0].sum);
+            $('#modelsummary').val($('#table').bootstrapTable('getSelections')[0].summary);
+            $("#addModal").modal();
+
+        });
+
+
+        $('#deletes').click(function(){
+            way='delete';
+            var rows = $('#table').bootstrapTable('getAllSelections');
+            var ids = new Array();
+            $.each(rows,function(i,item){
+                ids.push(item.id);
+
+            });
+
+
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../deleteinrawdetail',
+                data:{
+                    ids:ids
+                },
+                success : function(json) {
+                    getdata();
+                }
+            });
+        });
+
+        $('#adds').click(function(){
+            way='add';
+
+        });
+
+        $('#smt').click(function(){
+
+        });
+
+        //年月选择器
+        laydate.render({
+            elem: '#installdate',
+            done: function(value, date){
+                $('#installdatevalue').val(value);
+
+            }
+        });
+
+        $('#work').click(function(){
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../work',
+                data:{preorderid:$('#preorderid').val()},
+                success : function(json) {
+                    window.location.replace("../../newworks/"+json+"/edit");
+
+                }
+            });
+
+        });
+
+        $('#cooper').change(function(){
+            $('#cooperid').val(this.value);
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../getcooperuser',
+                data:{
+                    id: this.value
+                },
+                success : function(json) {
+
+                    if(json.length){
+                        $('#cooperuserdiv').removeClass('displaynone');
+                        $('#cooperuserdiv').addClass('displayshow');
+                        $('#cooperuser').empty();
+                        $("#cooperuser").append("<option value='0'>请选择客户联系人</option>");
+                        $.each(json,function(i,item){
+                            $("#cooperuser").append("<option value="+item.id+">"+item.name+"</option>");
+                        });
+
+                    }else{
+                        $('#cooperuserdiv').removeClass('displayshow');
+                        $('#cooperuserdiv').addClass('displaynone');
+                    }
+
+                },
+                error:function(json){
+                    $('#cooperuserdiv').removeClass('displayshow');
+                    $('#cooperuserdiv').addClass('displaynone');
+                }
+            });
+
+
+        });
+
+        $('#cooperuser').change(function(){
+
+           $('#cooperuserid').val(this.value);
+        });
+
+        $('#customer').change(function(){
+           $('#customerid').val(this.value);
+        });
+
+        if($('#customerid').val()!=''){
+            $('#customer').val($('#customerid').val());
+        }
+
+
+
+        if($('#cooperid').val() != 0){
+            $('#cooper').val($('#cooperid').val());
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../getcooperuser',
+                data:{
+                    id: $('#cooperid').val()
+                },
+                success : function(json) {
+
+                    if(json.length){
+                        $('#cooperuserdiv').removeClass('displaynone');
+                        $('#cooperuserdiv').addClass('displayshow');
+                        $('#cooperuser').empty();
+                        $("#cooperuser").append("<option value='0'>请选择客户联系人</option>");
+                        $.each(json,function(i,item){
+                            $("#cooperuser").append("<option value="+item.id+">"+item.name+"</option>");
+                        });
+
+                        $('#cooperuser').val($('#cooperuserid').val());
+
+                    }else{
+                        $('#cooperuserdiv').removeClass('displayshow');
+                        $('#cooperuserdiv').addClass('displaynone');
+                    }
+
+                },
+                error:function(json){
+                    $('#cooperuserdiv').removeClass('displayshow');
+                    $('#cooperuserdiv').addClass('displaynone');
+                }
+            });
+        }
+
+
+
+    });
+
+    window.operateEvents = {
+
+        'click .edit': function (e, value, row, index) {
+
+
+            way='edit';
+            //alert($('#table').bootstrapTable('getSelections')[0].id);
+            $('#modelid').val(row.id);
+            $('#raw_data').val(row.name);
+            $('#newrawid').val(row.raw_id);
+            $('#modelarea').val(row.area);
+            $('#modelunit').val(row.unit);
+            $('#modelnumber').val(row.number);
+            $('#modelprice').val(row.price);
+            $('#modelsum').val(row.sum);
+            $('#modelsummary').val(row.summary);
+            $("#addModal").modal();
+
+        },
+        'click .remove': function (e, value, row, index) {
+            var ids = new Array();
+            ids.push(row.id);
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../deleteinrawdetail',
+                data:{
+                    ids:ids
+                },
+                success : function(json) {
+                    getdata();
+                }
+            });
+
+        }
+    };
+
+    function operateFormatter(value, row, index) {
+        return [
+            '<a class="edit" href="javascript:void(0)" title="编辑">',
+            '<i class="fa fa-pencil"></i>',
+            '</a>  ',
+            '<a class="remove" href="javascript:void(0)" title="删除">',
+            '<i class="fa fa-trash"></i>',
+            '</a>'
+        ].join('');
+    }
+
+    function getdata(){
+        var tablejson;
+
+        $.ajax({
+            async : false,
+            url : "../getdata",
+            type : "GET",
+            dataType : 'json',
+            timeout : 5000,
+            data:{
+                preorderid:$('#preorderid').val()
+
+            },
+            success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
+                //alert(jsonstr.price);
+                tablejson=jsonstr;
+                $('#table').bootstrapTable({
+                    showFooter:true,
+
+                    columns: [{
+                        checkbox: true,
+                        footerFormatter: '合计'
+                    },{
+                        field: 'id',
+                        title: 'id',
+                        visible:false
+
+
+                    },{
+                        field: 'area',
+                        title: '使用位置'
+
+                    },
+                        {
+                            field: 'name',
+                            title: '型号'
+
+                        },
+                        {
+                            field: 'unit',
+                            title: '单位'
+
+                        },
+                        {
+                            field: 'price',
+                            align: 'right',
+                            title: '单价'
+
+
+                        },
+                        {
+                            field: 'number',
+                            align: 'right',
+                            title: '数量'
+
+
+                        },
+                        {
+                            field: 'sum',
+                            align: 'right',
+                            title: '合计'
+
+                        },
+                        {
+                            field: 'summary',
+                            title: '备注',
+                            footerFormatter: function (value) {
+                                var count = 0;
+                                for (var i in value) {
+                                    count += value[i].sum;
+                                }
+                                return count;
+                            }
+                        },{
+                            field: 'operate',
+                            title: '操作',
+                            align: 'center',
+                            events: operateEvents,
+                            formatter: operateFormatter
+
+                        }],
+
+                    formatLoadingMessage: function(){
+                        return "";
+                    },
+                    data: tablejson
+                });
+
+                $('#table').bootstrapTable('load',tablejson);
+                var sum=0;
+                $.each(jsonstr,function(i,item){
+                    sum+=parseFloat(item.sum);
+                });
+                $('#sumspan').text(sum);
+                $('#payablespan').text(sum);
+                $('#payable').val(sum);
+
+            },
+            error : function(xhr) {
+            }
+        });
+    }
+
+
+
+
+</script>
+<style>
+  .displaynone{
+      display:none;
+  }
+        .displayshow{
+            display:block;
+        }
+</style>
+<div class="col-md-12 ibox ibox-content">
+  <%= form_for(@preorder,:html => {:class=>'form-horizontal m-t',:multipart => true,:id=>'userform'}) do |f| %>
+      <div class="ibox-content form-horizontal m-t">
+
+
+        <div class="row">
+
+
+          <div class="col-sm-6">
+            <h4>单据编号：<span class="text-navy"><%=@preorder.ordernumber %></span></h4>
+            <input type="hidden" id="preorderid" value=<%= @preorder.id %> >
+            <input type="hidden" id="preorderdetailid">
+          </div>
+          <div>
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">预安装日期：</label>
+
+                <div class="col-sm-6">
+                  <div class="input-group" >
+                    <input id="installdate" class="form-control" value=<%= @preorder.installdate %>> <span class="input-group-btn"> <button type="button" class="btn btn-primary">日期
+                  </button> </span>
+                  </div>
+                  <%= f.hidden_field :installdate,class: "form-control",id:'installdatevalue' %>
+                </div>
+              </div>
+            </div>
+
+            <!--这里是供应商-->
+
+
+          </div>
+        </div>
+
+        <div class="row">
+          <table class="col-md-12">
+            <tr>
+              <td class="col-md-3">
+
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">合作商</label>
+                  <div class="col-sm-8">
+                    <select class="form-control m-b" id="cooper">
+                      <option value="0">请选择合作商</option>
+                      <% @coopers.each do |f| %>
+                          <option value=<%=f.id %>><%=f.name %></option>
+                      <% end %>
+                    </select>
+                    <%= f.hidden_field :cooper_id,class: "form-control",id:'cooperid' %>
+                  </div>
+                </div>
+              </td>
+              <td class="col-md-3">
+                <div class="form-group displaynone" id="cooperuserdiv">
+                  <label class="col-sm-4 control-label">联系人</label>
+                  <div class="col-sm-8">
+                    <select class="form-control m-b" id="cooperuser">
+                      <option value="0">请选择联系人</option>
+                      <% @coopers.each do |f| %>
+                          <option value=<%=f.id %>><%=f.name %></option>
+                          <% end %>
+                    </select>
+                    <%= f.hidden_field :cooperuser_id,class: "form-control",id:'cooperuserid' %>
+                  </div>
+                </div>
+              </td>
+              <td class="col-md-6">
+                <!--<div class="form-group">-->
+                  <!--<label class="col-sm-4 control-label">地址</label>-->
+                  <!--<div class="col-sm-8">-->
+                    <!--<%= f.text_field :address,class: "form-control" %>-->
+                  <!--</div>-->
+                <!--</div>-->
+              </td>
+
+
+            </tr>
+          </table>
+
+
+
+
+        </div>
+
+        <div class="row">
+          <table class="col-md-12">
+            <tr>
+              <td class="col-md-3">
+
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">客户</label>
+                  <div class="col-sm-8">
+                    <select class="form-control m-b" id="customer">
+                      <option value="0">请选择客户</option>
+                      <% @customers.each do |f| %>
+                          <option value=<%=f.id %>><%=f.name %></option>
+                      <% end %>
+                    </select>
+                    <%= f.hidden_field :customer_id,class: "form-control",id:'customerid' %>
+                  </div>
+                </div>
+              </td>
+              <td class="col-md-9"></td>
+
+              </tr>
+              </table>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        <div class="example-wrap">
+
+          <div class="example">
+            <% if params[:type].to_s =='' %>
+            <div class="btn-group hidden-xs" id="exampleToolbar" role="group">
+              <button type="button" class="btn btn-outline btn-default" data-toggle="modal" data-target="#addModal" id="adds">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-outline btn-default" id="edits">
+                <i class="fa fa-edit" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-outline btn-default" id="deletes">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+            <% end %>
+            <table id="table">
+
+            </table>
+
+
+            <table border="0" class="col-md-12">
+              <tr>
+                <td>
+
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">付款（元）：</label>
+                    <div class="col-sm-6">
+                      <%= f.text_field :pay,class: "form-control" %>
+                    </div>
+                  </div>
+
+                </td>
+
+                <td>
+
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">经手人：</label>
+
+                    <div class="col-sm-6">
+                      <%= f.text_field :user,class: "form-control" %>
+                    </div>
+                  </div>
+
+                </td>
+                <td>
+
+                </td>
+
+                <td>
+                  <% newwork = Newwork.find_by_preordernumber(@preorder.id) %>
+                  <% if !newwork && @preorder.isnew == 0 %>
+                      <button type="button" class="btn btn-primary btn-w-m" id="work">生成加工</button>
+                  <% end %>
+
+
+
+                  <% if params[:type].to_s =='' %>
+                  <%= f.submit '确定',class: "btn btn-w-m btn-primary ",id:'smt' %>
+                      <% end %>
+
+                </td>
+
+              </tr>
+            </table>
+
+
+          </div>
+        </div>
+
+
+      </div>
+  <% end %>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">原材料明细</h4>
+      </div>
+      <div class="modal-body" >
+        <div class="form-horizontal m-t">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">材料名称：</label>
+            <div class="col-sm-8">
+              <div class="input-group">
+                <input type="text" class="form-control" id="raw_data">
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                  </ul>
+                </div>
+                <!-- /btn-group -->
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="modelid">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">使用位置：</label>
+            <div class="col-sm-8">
+              <input  class="form-control" id="modelarea">
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">单位：</label>
+            <div class="col-sm-8">
+              <input class="form-control" id="modelunit">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">单价：</label>
+            <div class="col-sm-8">
+              <input class="form-control" id="modelprice">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">数量：</label>
+            <div class="col-sm-8">
+              <input class="form-control" id="modelnumber">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">备注：</label>
+            <div class="col-sm-8">
+              <input class="form-control" id="modelsummary">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="modalsubmit">确定</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

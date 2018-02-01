@@ -1,0 +1,2 @@
+class Workatt < ApplicationRecord
+end

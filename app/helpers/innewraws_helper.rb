@@ -1,0 +1,2 @@
+module InnewrawsHelper
+end

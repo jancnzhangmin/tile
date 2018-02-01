@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  idcard: MyString
+  sex: 1
+  tel: MyString
+  entrydate: 2017-12-20 12:24:48
+  quitdate: 2017-12-20 12:24:48
+
+two:
+  name: MyString
+  idcard: MyString
+  sex: 1
+  tel: MyString
+  entrydate: 2017-12-20 12:24:48
+  quitdate: 2017-12-20 12:24:48

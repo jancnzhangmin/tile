@@ -1,0 +1,56 @@
+
+<div class="col-md-12 ibox ibox-content">
+  <div class="ibox-content form-horizontal m-t">
+    <% flash.each do |message_type, message| %>
+        <div class="alert alert-<%= message_type %> alert-dismissable"><button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button><%= message %></div>
+    <% end %>
+    <input type="hidden" id="teminterestid">
+    <div class="form-group">
+      <%= form_for(@compan,:html => {:class=>'form-horizontal m-t',:multipart => true,:id=>'userform'}) do |f| %>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">公司名称：</label>
+            <div class="col-sm-5">
+              <%= f.text_field :name,class:"form-control" %>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">地址：</label>
+            <div class="col-sm-5">
+              <%= f.text_field :address,class:"form-control" %>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">电话：</label>
+            <div class="col-sm-5">
+              <%= f.text_field :tel,class: "form-control" %>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">开户行：</label>
+            <div class="col-sm-5">
+              <%= f.text_field :bankdeposit,class: "form-control" %>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">开户行名称：</label>
+            <div class="col-sm-5">
+              <%= f.text_field :bankuser,class: "form-control" %>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">银行账号：</label>
+            <div class="col-sm-5">
+              <%= f.text_field :bankaccount,class: "form-control" %>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-5 text-right">
+              <%= f.submit '确定',class: "btn btn-w-m btn-primary ",id:'smt' %>
+            </div>
+          </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  preorder_id: 1
+  newraw_id: 1
+  width: 1.5
+  height: 1.5
+  sum: 1.5
+  area: MyString
+  summary: MyString
+
+two:
+  preorder_id: 1
+  newraw_id: 1
+  width: 1.5
+  height: 1.5
+  sum: 1.5
+  area: MyString
+  summary: MyString

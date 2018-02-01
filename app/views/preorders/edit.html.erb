@@ -1,0 +1,14 @@
+<%= render 'layerbegin' %>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <% if params[:type].to_s =='' %>
+      <h3>预定单</h3>
+          <% else %>
+          <h3>结算单</h3>
+      <% end %>
+    </div>
+    <%= render 'form', preorder: @preorder %>
+  </div>
+</div>
+<%=render 'layerend' %>

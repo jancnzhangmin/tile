@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  inworkdepot_id: 1
+  raw_id: 1
+  price: 1.5
+  number: 1.5
+
+two:
+  inworkdepot_id: 1
+  raw_id: 1
+  price: 1.5
+  number: 1.5

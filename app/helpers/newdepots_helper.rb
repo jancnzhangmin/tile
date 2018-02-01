@@ -1,0 +1,2 @@
+module NewdepotsHelper
+end

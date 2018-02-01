@@ -1,0 +1,240 @@
+
+<% if session[:login] == nil || session[:login] =='' %>
+    <script>
+
+    </script>
+<% end %>
+<div id="wrapper">
+  <nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+      <ul class="nav" id="side-menu">
+        <li class="nav-header">
+          <div class="dropdown profile-element">
+            <span>
+              <%=image_tag("header.jpg",class:'img-circle') %>
+            </span>
+            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="clear">
+                               <span class="block m-t-xs"><strong class="font-bold"><%=session[:username] %></strong></span>
+                                <span class="text-muted text-xs block">我的信息<b class="caret"></b></span>
+                                </span>
+            </a>
+            <ul class="dropdown-menu animated fadeInRight m-t-xs">
+              <li>
+
+              </li>
+              <li class="divider"></li>
+              <li><a href="#">安全退出</a>
+              </li>
+            </ul>
+          </div>
+          <div class="logo-element">
+            H+
+          </div>
+        </li>
+
+<% url = request.url %>
+
+        <% if url.include?('users') || url.include?('compans') || url.include?('auths') || url.include?('raws') || url.include?('sales') || url.include?('suppliers') %>
+            <li data-turbolinks="false" class="active">
+        <% else %>
+            <li data-turbolinks="false">
+        <% end %>
+        <a href="">
+          <i class="fa fa-user"></i>
+          <span class="nav-label">基础资料</span>
+          <span class="fa arrow"></span>
+        </a>
+        <ul class="nav nav-second-level">
+
+          <li>
+            <%= link_to '公司员工',users_path,'data-no-turbolink'=>true%>
+          </li>
+          <li>
+            <%= link_to '公司信息',compans_path,'data-no-turbolink'=>true%>
+          </li>
+          <li>
+            <%= link_to '原材料定义',newraws_path,'data-no-turbolink'=>true%>
+          </li>
+          <li>
+            <%= link_to '定单材料定义',preraws_path,'data-no-turbolink'=>true%>
+          </li>
+          <li>
+            <%= link_to '加工属性定义',workatts_path,'data-no-turbolink'=>true%>
+          </li>
+          <li>
+            <%= link_to '供应商',suppliers_path,'data-no-turbolink'=>true%>
+          </li>
+
+        </ul>
+
+        </li>
+        <% if url.include?('customers') %>
+            <li data-turbolinks="false" class="active">
+        <% else %>
+            <li data-turbolinks="false">
+        <% end %>
+        <a href="">
+          <i class="fa fa-user"></i>
+          <span class="nav-label">客户信息</span>
+          <span class="fa arrow"></span>
+        </a>
+        <ul class="nav nav-second-level" id="customerul">
+
+          <li>
+            <%= link_to '客户信息管理',customers_path,'data-no-turbolink'=>true%>
+          </li>
+
+        </ul>
+        </li>
+        <% if url.include?('inrawdepots') || url.include?('inrawdepotrecords') || url.include?('rawdepots') %>
+        <li data-turbolinks="false" class="active">
+            <% else %>
+            <li data-turbolinks="false">
+          <% end %>
+          <a href="">
+            <i class="fa fa-user"></i>
+            <span class="nav-label">原材料仓库</span>
+            <span class="fa arrow"></span>
+          </a>
+          <ul class="nav nav-second-level">
+
+
+            <li>
+
+              <%= link_to '原材料仓库入库*',innewraws_path,'data-no-turbolink'=>true%>
+            </li>
+
+            <li>
+              <%= link_to '原材料仓库库存',newdepots_path,'data-no-turbolink'=>true%>
+
+            </li>
+          </ul>
+        </li>
+
+        <% if url.include?('reserves') %>
+        <li data-turbolinks="false" id="workli">
+          <% else %>
+            <li data-turbolinks="false">
+            <% end %>
+          <a href="">
+            <i class="fa fa-user"></i>
+            <span class="nav-label">订单</span>
+            <span class="fa arrow"></span>
+          </a>
+          <ul class="nav nav-second-level">
+
+            <li>
+              <%= link_to '订单',preorders_path,'data-no-turbolink'=>true%>
+            </li>
+
+          </ul>
+        </li>
+
+            <li data-turbolinks="false">
+
+        <a href="">
+          <i class="fa fa-user"></i>
+          <span class="nav-label">合作商</span>
+          <span class="fa arrow"></span>
+        </a>
+        <ul class="nav nav-second-level">
+
+          <li>
+            <%= link_to '合作商',coopers_path,'data-no-turbolink'=>true%>
+          </li>
+        </ul>
+        </li>
+
+        <li data-turbolinks="false" id="processli">
+          <a href="">
+            <i class="fa fa-user"></i>
+            <span class="nav-label">加工单</span>
+            <span class="fa arrow"></span>
+          </a>
+          <ul class="nav nav-second-level">
+
+            <li>
+              <%= link_to '加工单',newworks_path,'data-no-turbolink'=>true%>
+            </li>
+            <li>
+              <%= link_to '加工库',workdepots_path,'data-no-turbolink'=>true%>
+            </li>
+            <li>
+              <%= link_to '加工库记录',workrecords_path,'data-no-turbolink'=>true%>
+            </li>
+          </ul>
+        </li>
+
+
+        <li data-turbolinks="false" id="salesettli">
+          <a href="">
+            <i class="fa fa-user"></i>
+            <span class="nav-label">销售结算单</span>
+            <span class="fa arrow"></span>
+          </a>
+          <ul class="nav nav-second-level">
+
+            <li>
+              <%= link_to '销售结算单',sales_path,'data-no-turbolink'=>true%>
+            </li>
+          </ul>
+        </li>
+
+        <li data-turbolinks="false" id="toolli">
+          <a href="">
+            <i class="fa fa-user"></i>
+            <span class="nav-label">工具管理</span>
+            <span class="fa arrow"></span>
+          </a>
+          <ul class="nav nav-second-level">
+
+            <li>
+              <%= link_to '工具定义',goods_path,'data-no-turbolink'=>true%>
+            </li>
+            <li>
+              <%= link_to '工具入库',ingooddepots_path,'data-no-turbolink'=>true%>
+            </li>
+            <li>
+              <%= link_to '工具借出','#','data-no-turbolink'=>true%>
+            </li>
+            <li>
+              <%= link_to '工具归还','#','data-no-turbolink'=>true%>
+            </li>
+
+          </ul>
+        </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </div>
+  </nav>
+</div>
+<div id="page-wrapper" class="gray-bg dashbard-1">
+  <div class="row border-bottom">
+    <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+      <ul class="nav navbar-top-links navbar-right">
+        <li data-turbolinks="false">
+          <span class="m-r-sm text-muted welcome-message"><i class="fa fa-home"></i>地砖管理</span>
+        </li>
+        <li>
+          <a href="/#">
+            <i class="fa fa-sign-out"></i>安全退出
+          </a>
+        </li>
+      </ul>
+
+    </nav>
+  </div>

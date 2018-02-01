@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  newraw_id: 1
+  pay: 1.5
+  user: MyString
+  isnew: 1
+  ordernumber: MyString
+
+two:
+  newraw_id: 1
+  pay: 1.5
+  user: MyString
+  isnew: 1
+  ordernumber: MyString

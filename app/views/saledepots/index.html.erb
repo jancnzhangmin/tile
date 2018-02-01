@@ -1,0 +1,85 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+
+
+
+
+        $('#searchbtn').click(function(){
+            window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
+        });
+
+
+
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+
+
+
+    <div class="ibox-content">
+      <div class="ibox-title">
+        <h5>销售库存</h5>
+      </div>
+
+      <table class="table table-hover table-bordered text-center">
+        <thead>
+        <tr>
+          <th class="text-center">产品</th>
+          <th class="text-center">规格</th>
+          <th class="text-center">单位</th>
+          <th class="text-center">数量</th>
+          <th class="text-center">单价成本</th>
+          <th class="text-center">合计</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% sum = 0 %>
+        <% @saledepots.each do |saledepot| %>
+            <tr>
+              <td>
+                <%= saledepot.sale.name %>
+              </td>
+              <td>
+                <%= saledepot.sale.spec %>
+              </td>
+              <td>
+                <%= saledepot.sale.unit %>
+              </td>
+              <td>
+                <%= saledepot.number %>
+              </td>
+              <td>
+                <%= saledepot.price %>
+              </td>
+              <td>
+                <%= saledepot.price * saledepot.number %>
+              </td>
+<% sum += saledepot.price * saledepot.number %>
+
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+
+      <table class="table invoice-total">
+        <tbody>
+        <tr>
+          <td><strong>成本合计：</strong>
+          </td>
+          <td>&yen;<%= sum %></td>
+        </tr>
+        </tbody>
+      </table>
+
+          <br/>
+
+
+
+
+          </div>
+          </div>
+          </div>
+
+      <%=render 'layerend' %>

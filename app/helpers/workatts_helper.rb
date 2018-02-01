@@ -1,0 +1,2 @@
+module WorkattsHelper
+end

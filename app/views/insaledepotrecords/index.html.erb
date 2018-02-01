@@ -1,0 +1,92 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+        $.ajax( {
+            url:'users/getregionall',
+            type:'get',
+            dataType:'json',
+            data:{regionid:$('#regionid').val(),
+                userid:$('#userid').val()
+            },
+            success:function(data) {
+
+                $('#addressspan').text(data);
+            },
+            error : function() {
+
+            }
+        });
+
+
+
+        $('#searchbtn').click(function(){
+            window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
+        });
+
+
+
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+
+
+
+    <div class="ibox-content">
+      <div class="ibox-title">
+        <h5>销售入库记录</h5>
+      </div>
+
+      <table class="table table-hover table-bordered text-center">
+        <thead>
+        <tr>
+          <th class="text-center">单号</th>
+          <th class="text-center">金额</th>
+          <th class="text-center">经办人</th>
+          <th class="text-center">入库时间</th>
+          <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% sum = 0 %>
+        <% @insaledepotrecords.each do |insaledepotrecord| %>
+            <tr>
+              <td><%= insaledepotrecord.ordernumber %></td>
+
+              <td>
+
+                <% insaledepotdetails = insaledepotrecord.insaledepotdetails %>
+                <% sum = 0 %>
+                <% insaledepotdetails.each do |f| %>
+                <% sum += f.saleprice * f.salenumber %>
+                <% end %>
+                <%= sum %>
+              </td>
+              <td>
+                <%= insaledepotrecord.user %>
+              </td>
+              <td>
+                <%= insaledepotrecord.created_at.strftime('%Y-%m-%d %H:%M:%S') %>
+              </td>
+              <td>
+                <%= link_to '查看',insaledepotrecord_path(insaledepotrecord),class:'fa fa-eye' %>&nbsp;
+
+                <%= link_to ' 删除', insaledepotrecord, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>
+              </td>
+
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+
+
+          <br/>
+
+
+
+
+          </div>
+          </div>
+          </div>
+
+      <%=render 'layerend' %>

@@ -1,0 +1,452 @@
+<script>
+  var way='';
+    $(document).ready(function(){
+
+        getdata();
+
+
+
+        var datalist;
+        $.ajax({
+            type : 'get',
+            async : false,
+            url :'../getsupplier',
+            success : function(data) {
+                datalist=data;
+            }
+        });
+        suggest(datalist);
+
+        function suggest(data) {
+            var testdataBsSuggest = $("#test_data").bsSuggest(
+                    {
+                        indexId: 0, indexKey: 2,
+                        data: {
+                            "value": data
+                        }
+                    }).on('onSetSelectValue', function (e, keyword) {
+              $('#supplier').val(keyword.id);
+            });
+        }
+
+        var rawlist;
+        $.ajax({
+            type : 'get',
+            async : false,
+            url :'../getraw',
+            success : function(data) {
+                rawlist=data;
+
+            }
+        });
+        raw(rawlist);
+
+        function raw(data) {
+            var rawdataBsSuggest = $("#raw_data").bsSuggest(
+                    {
+                        effectiveFieldsAlias:{id: "ID",pinyin: "简拼", name:"材料名称",spec:"规格"},
+                        showHeader: true,
+                        indexId: 0, indexKey: 2,
+                        data: {
+                            "value": data
+                        }
+                    }).on('onSetSelectValue', function(e, keyword, data) {
+                        $.ajax({
+                            type : 'get',
+                            async : false,
+                            url :'../getrawbyid?id='+keyword.id,
+                            success : function(json) {
+
+                                $('#modelid').val(keyword.id);
+                                $('#modelspec').val(json.spec);
+                                $('#modelunit').val(json.unit);
+                                $('#modelprice').val(json.price);
+                                $('#modelnumber').val(1);
+                                $('#modelsum').val(json.price);
+                              $('#depotnumber').text('库存：'+json.depotnumber);
+                            }
+                        });
+                    });
+        }
+
+
+        $('#modalsubmit').click(function(){
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../changeinworkdetail',
+                data:{
+                    way:way,
+                    inworkdepotid:$('#inworkdepotid').val(),
+                    rawid:$('#modelid').val(),
+                    number:$('#modelnumber').val(),
+                    price:$('#modelprice').val(),
+                    sum:$('#modelsum').val()
+                },
+                success : function(json) {
+                  getdata();
+                  $('#raw_data').val('');
+                  $('#modelspec').val('');
+                  $('#modelunit').val('');
+                  $('#modelprice').val('');
+                  $('#modelnumber').val('');
+                  $('#modelsum').val('');
+                }
+            });
+
+        });
+
+      $('#modelprice').change(function(){
+        $('#modelsum').val(parseFloat($('#modelprice').val()) * parseFloat($('#modelnumber').val()));
+      });
+
+      $('#modelnumber').change(function(){
+        $('#modelsum').val(parseFloat($('#modelprice').val()) * parseFloat($('#modelnumber').val()));
+      });
+
+      $('#edits').click(function(){
+        way='edit';
+        //alert($('#table').bootstrapTable('getSelections')[0].id);
+        $('#modelid').val($('#table').bootstrapTable('getSelections')[0].id);
+        $('#raw_data').val($('#table').bootstrapTable('getSelections')[0].raw);
+        $('#modelspec').val($('#table').bootstrapTable('getSelections')[0].spec);
+        $('#modelunit').val($('#table').bootstrapTable('getSelections')[0].unit);
+        $('#modelnumber').val($('#table').bootstrapTable('getSelections')[0].number);
+        $('#modelprice').val($('#table').bootstrapTable('getSelections')[0].price);
+        $('#modelsum').val($('#table').bootstrapTable('getSelections')[0].sum);
+        $("#addModal").modal();
+
+      });
+
+      $('#deletes').click(function(){
+        way='delete';
+        var ids = new Array();
+        $.each($('#table').bootstrapTable('getSelections'),function(i,item){
+          ids.push(item.id);
+        });
+
+        $.ajax({
+          type : 'get',
+          async : false,
+          url :'../changeinworkdetail',
+          data:{
+            way:way,
+            rawid:ids
+          },
+          success : function(json) {
+            getdata();
+          }
+        });
+      });
+
+      $('#adds').click(function(){
+        way='add';
+      });
+
+      $('#smt').click(function(){
+        $('#summary').val($('#summaryinput').val());
+        $('#user').val($('#userinput').val());
+      });
+
+    });
+
+    window.operateEvents = {
+
+        'click .edit': function (e, value, row, index) {
+          way='edit';
+          //alert($('#table').bootstrapTable('getSelections')[0].id);
+
+          $('#modelid').val(row.id);
+          $('#raw_data').val(row.raw);
+          $('#modelspec').val(row.spec);
+          $('#modelunit').val(row.unit);
+          $('#modelnumber').val(row.number);
+          $('#modelprice').val(row.price);
+          $('#modelsum').val(row.sum);
+          $("#addModal").modal();
+        },
+        'click .remove': function (e, value, row, index) {
+          way='delete';
+          $.ajax({
+            type : 'get',
+            async : false,
+            url :'../changeinworkdetail',
+            data:{
+              way:way,
+              rawid:row.id
+            },
+            success : function(json) {
+              getdata();
+            }
+          });
+
+        }
+    };
+
+    function operateFormatter(value, row, index) {
+        return [
+            '<a class="edit" href="javascript:void(0)" title="编辑">',
+            '<i class="fa fa-pencil"></i>',
+            '</a>&nbsp;  ',
+            '<a class="remove" href="javascript:void(0)" title="删除">',
+            '<i class="fa fa-trash"></i>',
+            '</a>'
+        ].join('');
+    }
+
+  function getdata(){
+    var tablejson;
+    $.ajax({
+      async : false,
+      url : "../getdata",
+      type : "GET",
+      dataType : 'json',
+      timeout : 5000,
+      data:{
+        inworkdepotid:$('#inworkdepotid').val()
+      },
+      success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
+        //alert(jsonstr.price);
+        tablejson=jsonstr;
+        $('#table').bootstrapTable({
+          columns: [{
+            checkbox: true
+          },{
+            field: 'id',
+            title: 'id',
+            visible:false
+          },{
+            field: 'raw',
+            title: '原材料'
+          },
+            {
+              field: 'spec',
+              title: '规格'
+            },
+            {
+              field: 'unit',
+              title: '单位'
+            }, {
+              field: 'number',
+              align: 'right',
+              title: '数量'
+            },{
+              field: 'operate',
+              title: '操作',
+              align: 'center',
+              events: operateEvents,
+              formatter: operateFormatter
+            }],
+          formatLoadingMessage: function(){
+            return "";
+          },
+          data: tablejson
+        });
+
+        $('#table').bootstrapTable('load',tablejson);
+        var sum=0;
+        $.each(jsonstr,function(i,item){
+          sum+=parseFloat(item.sum);
+        });
+        $('#sumspan').text(sum);
+        $('#payablespan').text(sum);
+        $('#payable').val(sum);
+
+      },
+      error : function(xhr) {
+      }
+    });
+  }
+
+
+</script>
+<div class="col-md-12 ibox ibox-content">
+  <div class="ibox-content form-horizontal m-t">
+
+
+    <div class="row">
+
+
+      <div class="col-sm-12">
+        <h4>单据编号：<span class="text-navy"><%=@inworkdepot.ordernumber %></span></h4>
+        <input type="hidden" id="inworkdepotid" value=<%= @inworkdepot.id %> >
+      </div>
+      <div>
+
+
+        <div class="col-lg-6" style="display: none;">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">供应商：</label>
+            <div class="col-sm-9">
+              <div class="input-group">
+                <input type="text" class="form-control" id="test_data">
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                  </ul>
+                </div>
+                <!-- /btn-group -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-12">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">摘要：</label>
+            <div class="col-sm-9">
+              <textarea  class="form-control" id="summaryinput"></textarea>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="example-wrap">
+
+      <div class="example">
+        <div class="btn-group hidden-xs" id="exampleToolbar" role="group">
+          <button type="button" class="btn btn-outline btn-default" data-toggle="modal" data-target="#addModal" id="adds">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-outline btn-default" id="edits">
+            <i class="fa fa-edit" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="btn btn-outline btn-default" id="deletes">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+          </button>
+        </div>
+        <table id="table" data-mobile-responsive="true">
+        </table>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="full-height-scroll">
+  <div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <tbody>
+    <tr>
+      <td class="col-lg-3" style="display: none;">
+        <div class="form-group">
+          <label class="col-sm-4 control-label text-right" style="margin-top: 10px;">付款（元）：</label>
+          <div class="col-sm-8">
+            <input class="form-control text-right" value="0">
+          </div>
+        </div>
+      </td>
+      <td class="col-lg-3">
+        <div class="form-group">
+          <label class="col-sm-4 control-label text-right" style="margin-top: 10px;">经手人：</label>
+          <div class="col-sm-8">
+            <input class="form-control text-right" id="userinput">
+          </div>
+        </div>
+      </td>
+      <td class="col-lg-3">
+        <div class="form-group">
+          <label class="col-sm-3 control-label" style="margin-top: 10px;">合计：</label>
+          <div class="col-sm-7">
+            <span class="form-control" id="sumspan" ></span>
+          </div>
+        </div>
+      </td>
+      <td class="col-lg-3 text-right">
+        <%= form_for(@inworkdepot,:html => {:class=>'form-horizontal m-t',:multipart => true}) do |f| %>
+            <%= f.hidden_field :summary,class: "form-control",id:'summary' %>
+            <%= f.hidden_field :user,class: "form-control",id:'user' %>
+            <%= f.submit '确定',class: "btn btn-w-m btn-primary",id:'smt',style:'margin-top:-15px;' %>
+            <% end %>
+      </td>
+
+
+    </tr>
+    </tbody>
+  </table>
+    </div>
+    </div>
+
+
+
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">原材料明细</h4>
+      </div>
+      <div class="modal-body" >
+        <div class="form-horizontal m-t">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">材料名称：</label>
+            <div class="col-sm-8">
+              <div class="input-group">
+                <input type="text" class="form-control" id="raw_data">
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                  </ul>
+                </div>
+                <!-- /btn-group -->
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="modelid">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">规格：</label>
+            <div class="col-sm-6">
+              <input readonly="true" class="form-control" id="modelspec">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">单位：</label>
+            <div class="col-sm-6">
+              <input readonly="true" class="form-control" id="modelunit">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">单价：</label>
+            <div class="col-sm-6">
+              <input readonly="true" class="form-control" id="modelprice">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">数量：</label>
+            <div class="col-sm-6">
+              <input class="form-control" id="modelnumber">
+            </div>
+            <div style="margin-top: 8px;">
+              <span id="depotnumber">库存：</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label">合计：</label>
+            <div class="col-sm-6">
+              <input readonly="true" class="form-control" id="modelsum">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="modalsubmit">确定</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

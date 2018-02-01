@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  newwork_id: 1
+  newraw_id: 1
+  width: 1.5
+  height: 1.5
+  userheight: 1.5
+  widthtype: MyString
+  heighttype: MyString
+  number: 1.5
+
+two:
+  newwork_id: 1
+  newraw_id: 1
+  width: 1.5
+  height: 1.5
+  userheight: 1.5
+  widthtype: MyString
+  heighttype: MyString
+  number: 1.5

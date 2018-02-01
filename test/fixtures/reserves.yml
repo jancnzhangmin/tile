@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cumtomer_id: 1
+  ordernumber: MyString
+  orderdate: 2017-12-27 13:15:31
+  summary: MyString
+
+two:
+  cumtomer_id: 1
+  ordernumber: MyString
+  orderdate: 2017-12-27 13:15:31
+  summary: MyString

@@ -1,0 +1,2 @@
+class Workattch < ApplicationRecord
+end

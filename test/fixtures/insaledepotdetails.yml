@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  insaledepot_id: 1
+  raw_id: 1
+  rawprice: 1.5
+  rawnumber: 1.5
+  sale_id: 1
+  saleprice: 1.5
+  salenumber: 1.5
+  salesum: 1.5
+  rawsum: 1.5
+
+two:
+  insaledepot_id: 1
+  raw_id: 1
+  rawprice: 1.5
+  rawnumber: 1.5
+  sale_id: 1
+  saleprice: 1.5
+  salenumber: 1.5
+  salesum: 1.5
+  rawsum: 1.5

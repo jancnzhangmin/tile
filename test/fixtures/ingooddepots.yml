@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ordernumber: MyString
+  summary: MyText
+  user: MyString
+  isnew: 1
+
+two:
+  ordernumber: MyString
+  summary: MyText
+  user: MyString
+  isnew: 1

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ingooddepot_id: 1
+  good_id: 1
+  number: 1.5
+  sum: MyString
+  float: MyString
+
+two:
+  ingooddepot_id: 1
+  good_id: 1
+  number: 1.5
+  sum: MyString
+  float: MyString
