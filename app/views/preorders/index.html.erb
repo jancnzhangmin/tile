@@ -16,7 +16,7 @@
 <div class="col-lg-12">
   <div class="ibox float-e-margins">
     <div class="ibox-title">
-      <h5>预定单</h5>
+      <h5>预订单</h5>
       <div class="ibox-tools col-sm-3" style="margin-top: -5px;">
         <div class="input-group">
           <input type="text" id="search"  class="input-sm form-control"> <span class="input-group-btn">
@@ -33,8 +33,13 @@
         <thead>
         <tr>
           <th class="text-center">订单号</th>
-          <th class="text-center">对应加工单号</th>
-          <th class="text-center">预计日期</th>
+          <th class="text-center">加工单号</th>
+          <th class="text-center">客户名称</th>
+          <th class="text-center">客户电话</th>
+          <th class="text-center">客户地址</th>
+          <th class="text-center">交付时间</th>
+
+
           <th class="text-center">已付金额</th>
           <th class="text-center">总金额</th>
 
@@ -48,20 +53,51 @@
               <td>
                 <%= preorder.ordernumber %>
               </td>
-              <td>
 
+              <td>
                 <% work = Newwork.find_by_preordernumber(preorder.id) %>
                 <% if work %>
-                <%= work.ordernumber %>
-                    <% else %>
-                无
+                    <%= work.ordernumber %>
+                <% else %>
+                    无
                 <% end %>
               </td>
+
+                <td>
+                  <% if preorder.customer_id && preorder.customer_id != 0 %>
+                  <% customer = Customer.find(preorder.customer_id) %>
+                     <% if customer %>
+                      <%= customer.name %>
+                      <% end %>
+                  <% end %>
+                  </td>
+
+              <td>
+                <% if preorder.customer_id && preorder.customer_id != 0 %>
+                    <% customer = Customer.find(preorder.customer_id) %>
+                    <% if customer %>
+                        <%= customer.tel %>
+                    <% end %>
+                <% end %>
+              </td>
+
+              <td>
+                <% if preorder.customer_id && preorder.customer_id != 0 %>
+                    <% customer = Customer.find(preorder.customer_id) %>
+                    <% if customer %>
+                        <%= customer.region %>
+                    <% end %>
+                <% end %>
+              </td>
+
               <td>
                 <% if preorder.installdate %>
-                <%= preorder.installdate.strftime('%Y-%m-%d') %>
-                    <% end %>
+                    <%= preorder.installdate.strftime('%Y-%m-%d') %>
+                <% end %>
               </td>
+
+
+
 
               <td>
                 <%= preorder.pay %>
@@ -72,7 +108,10 @@
               </td>
 <td><%= link_to '查看明细',preorder_path(preorder),class:'fa fa-eye' %>&nbsp;
                 <%= link_to '编辑',edit_preorder_path(preorder),class:'fa fa-edit' %>&nbsp;
-
+  <% newwork = Newwork.find_by_preordernumber(preorder.id) %>
+  <% if !newwork || newwork.isnew == 1 %>
+  <%= link_to '生成加工单',dowork_preorder_path(preorder),class:'fa fa-edit' %>&nbsp;
+      <% end %>
                 <%= link_to ' 删除', preorder, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>
 
 

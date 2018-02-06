@@ -1,0 +1,908 @@
+<%= render 'layerbegin' %>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h3>加工单</h3>
+    </div>
+
+
+    <script>
+        var way='';
+        $(document).ready(function(){
+            $(".i-checks").iCheck({checkboxClass:"icheckbox_square-green",radioClass:"iradio_square-green"});
+            getdata();
+            function caltotal(){
+                $.ajax({
+                    type : 'get',
+                    async : false,
+                    url :'../gettotal',
+                    data:{newworkid:$('#newworkid').val()},
+                    success : function(data) {
+                        $('#worktable tbody').each(function(i,item){
+
+                            item.remove();
+                        });
+                        var tbody =  $("<tbody></tbody>");
+//                        tbody.append('<tr><td><strong>加工</strong></td><td></td></tr>');
+                        $.each(data.work,function(i,item){
+                            if(parseFloat(item.toalnumber)>0) {
+                                tbody.append('<tr><td><strong>' + item.name + '</strong></td><td>' + item.toalnumber + '片' + '</td></tr>');
+                            }
+                        });
+                        $.each(data.work,function(i,item){
+                            tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number+item.unit+'</td></tr>');
+                        });
+                        $('#worktable').append(tbody);
+
+                        $('#usertable tbody').each(function(i,item){
+
+                            item.remove();
+                        });
+                        var tbody =  $("<tbody></tbody>");
+//                        tbody.append('<tr><td><strong>用户</strong></td><td></td></tr>');
+                        $.each(data.work,function(i,item){
+                            if(parseFloat(item.toalnumber)>0) {
+                                tbody.append('<tr><td><strong>' + item.name + '</strong></td><td>' + item.toalnumber + '片' + '</td></tr>');
+                            }
+                        });
+                        $.each(data.user,function(i,item){
+                            tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number+item.unit+'</td></tr>');
+                        });
+                        $('#usertable').append(tbody);
+
+                    }
+                });
+            }
+
+            function getdata(){
+                caltotal();
+                var tablejson;
+
+                $.ajax({
+                    async : false,
+                    url : "../getdata",
+                    type : "GET",
+                    dataType : 'json',
+                    timeout : 5000,
+                    data:{
+                        newworkid:$('#newworkid').val()
+
+                    },
+                    success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
+                        //alert(jsonstr.price);
+                        tablejson=jsonstr;
+                        $('#table').bootstrapTable({
+                            showFooter:false,
+
+                            columns: [{
+                                checkbox: true,
+                                footerFormatter: '合计'
+                            },{
+                                field: 'id',
+                                title: 'id',
+                                visible:false
+
+
+                            },
+                                {
+                                    field: 'name',
+                                    title: '材料名称'
+
+                                },
+                                {
+                                    field: 'width',
+                                    title: '长'
+
+                                },
+                                {
+                                    field: 'height',
+                                    title: '宽'
+
+                                },
+                                {
+                                    field: 'userheight',
+                                    title: '用户宽'
+
+
+                                },
+                                {
+                                    field: 'number',
+                                    align: 'right',
+                                    title: '数量'
+
+
+                                },
+                                {
+                                    field: 'widthtype',
+                                    align:'center',
+                                    title: '长加工类型',
+                                    formatter: function(value,row,index){
+                                        return '<img height=20px  src=../../line/l' + value + '.png>';
+                                    }
+
+                                },
+                                {
+                                    field: 'heighttype',
+                                    align:'center',
+                                    title: '宽加工类型',
+                                    formatter: function(value,row,index){
+                                        return '<img height=20px  src=../../line/l' + value + '.png>';
+                                    }
+                                }],
+
+                            formatLoadingMessage: function(){
+                                return "";
+                            },
+                            data: tablejson
+                        });
+
+                        $('#table').bootstrapTable('load',tablejson);
+                        var sum=0;
+                        $.each(jsonstr,function(i,item){
+                            sum+=parseFloat(item.sum);
+                        });
+                        $('#sumspan').text(sum);
+                        $('#payablespan').text(sum);
+                        $('#payable').val(sum);
+
+                    },
+                    error : function(xhr) {
+                    }
+                });
+            }
+
+            var datalist;
+//        $.ajax({
+//            type : 'get',
+//            async : false,
+//            url :'../getsupplier',
+//            success : function(data) {
+//                datalist=data;
+//            }
+//        });
+            suggest(datalist);
+
+            function suggest(data) {
+                var testdataBsSuggest = $("#test_data").bsSuggest(
+                        {
+                            indexId: 0, indexKey: 2,
+                            data: {
+                                "value": data
+                            }
+                        }).on('onSetSelectValue', function(e, keyword, data) {
+                            $('#supplierid').val(keyword.id);
+                        });
+            }
+
+            var rawlist;
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../getpreraw',
+                success : function(data) {
+
+                    rawlist = data;
+                }
+            });
+            raw(rawlist);
+
+            function raw(data) {
+                var rawdataBsSuggest = $("#raw_data").bsSuggest(
+                        {
+                            effectiveFieldsAlias:{id: "ID",pinyin: "简拼", name:"材料名称"},
+                            showHeader: true,
+                            indexId: 0, indexKey: 2,
+                            data: {
+                                "value": data
+                            }
+                        }).on('onSetSelectValue', function(e, keyword, data) {
+
+                            $.ajax({
+                                type : 'get',
+                                async : false,
+                                url :'../getrawbyid?id='+keyword.id,
+                                success : function(json) {
+                                    $('#modelid').val(keyword.id);
+                                    $('#newrawid').val(keyword.id);
+                                    $('#modelwidth').val(json.width);
+                                    $('#modelheight').val(json.height);
+                                    if($('#modelnumber').val()=='') {
+                                        $('#modelnumber').val(1);
+                                    }
+                                }
+                            });
+                        });
+            }
+
+
+            $('#modalsubmit').click(function(){
+
+                $('.acheck').each(function(){
+                    if(true == $(this).is(':checked')) {
+                        $('#modelwidthtype').val($(this).val());
+                    }
+                });
+
+                $('.bcheck').each(function(){
+                    if(true == $(this).is(':checked')) {
+                        $('#modelheighttype').val($(this).val());
+                    }
+                });
+                $.ajax({
+                    type : 'get',
+                    async : false,
+                    url :'../changenewworkdetail',
+                    data:{
+                        way:way,
+                        newworkid:$('#newworkid').val(),
+                        rawdata:$('#modelid').val(),
+                        newrawid:$('#newrawid').val(),
+                        width:$('#modelwidth').val(),
+                        height:$('#modelheight').val(),
+                        userheight:$('#modeluserheight').val(),
+                        number:$('#modelnumber').val(),
+                        widthtype:$('#modelwidthtype').val(),
+                        heighttype:$('#modelheighttype').val()
+                    },
+                    success : function(json) {
+                        getdata();
+                        $('#raw_data').val('');
+                        $('#modelprice').val('');
+                        $('#modelnumber').val('');
+                        $('#modelwidth').val('');
+                        $('#modelheight').val('');
+                        $('#modeluserheight').val('');
+                        $('#a01').iCheck('check');
+                        $('#b01').iCheck('check');
+
+                    }
+                });
+
+            });
+
+            $('#modelprice').change(function(){
+                $('#modelsum').val(parseFloat($('#modelprice').val()) * parseFloat($('#modelnumber').val()));
+            });
+
+            $('#modelnumber').change(function(){
+                $('#modelsum').val(parseFloat($('#modelprice').val()) * parseFloat($('#modelnumber').val()));
+            });
+
+            $('#edits').click(function(){
+                way='edit';
+                //alert($('#table').bootstrapTable('getSelections')[0].id);
+                $('#modelid').val($('#table').bootstrapTable('getSelections')[0].id);
+                $('#raw_data').val($('#table').bootstrapTable('getSelections')[0].name);
+                $('#modelwidth').val($('#table').bootstrapTable('getSelections')[0].width);
+                $('#modelheight').val($('#table').bootstrapTable('getSelections')[0].height);
+                $('#modeluserheight').val($('#table').bootstrapTable('getSelections')[0].userheight);
+                $('#modelnumber').val($('#table').bootstrapTable('getSelections')[0].number);
+                var acheck = $('#table').bootstrapTable('getSelections')[0].widthtype;
+                if(acheck == '02'){
+                    $('#a02').iCheck('check');
+                }else             if(acheck == '03'){
+                    $('#a03').iCheck('check');
+                }else            if(acheck == '04'){
+                    $('#a04').iCheck('check');
+                }else            if(acheck == '05'){
+                    $('#a05').iCheck('check');
+                }else            if(acheck == '06'){
+                    $('#a06').iCheck('check');
+                }else{
+                    $('#a01').iCheck('check');
+                }
+
+                var bcheck = $('#table').bootstrapTable('getSelections')[0].heighttype;
+                if(bcheck == '02'){
+                    $('#b02').iCheck('check');
+                }else             if(bcheck == '03'){
+                    $('#b03').iCheck('check');
+                }else            if(bcheck == '04'){
+                    $('#b04').iCheck('check');
+                }else            if(bcheck == '05'){
+                    $('#b05').iCheck('check');
+                }else            if(bcheck == '06'){
+                    $('#b06').iCheck('check');
+                }else{
+                    $('#b01').iCheck('check');
+                }
+
+
+                $("#addModal").modal();
+
+            });
+
+
+            $('#deletes').click(function(){
+                way='delete';
+                var rows = $('#table').bootstrapTable('getAllSelections');
+                var ids = new Array();
+                $.each(rows,function(i,item){
+                    ids.push(item.id);
+
+                });
+
+
+                $.ajax({
+                    type : 'get',
+                    async : false,
+                    url :'../deleteinrawdetail',
+                    data:{
+                        ids:ids
+                    },
+                    success : function(json) {
+                        getdata();
+                    }
+                });
+            });
+
+            $('#adds').click(function(){
+                way='add';
+
+            });
+
+            $('#smt').click(function(){
+
+            });
+
+            //年月选择器
+            laydate.render({
+                elem: '#installdate',
+                done: function(value, date){
+                    $('#installdatevalue').val(value);
+
+                }
+            });
+
+            $('#work').click(function(){
+                $.ajax({
+                    type : 'get',
+                    async : false,
+                    url :'../work',
+                    data:{preorderid:$('#preorderid').val()},
+                    success : function(json) {
+                        window.location.replace("../../inworkdepots/"+json+"/edit");
+
+                    }
+                });
+                //$('#demo').wSelect();
+                //$('#demo').selectBoxIt({ defaultText: 'Testing', autoWidth: false });
+
+
+            });
+
+
+
+
+
+
+
+        });
+
+        window.operateEvents = {
+
+            'click .edit': function (e, value, row, index) {
+
+
+                way='edit';
+                //alert($('#table').bootstrapTable('getSelections')[0].id);
+                $('#modelid').val(row.id);
+                $('#raw_data').val(row.name);
+                $('#newrawid').val(row.raw_id);
+                $('#modelwidth').val(row.width);
+                $('#modelheight').val(row.height);
+                $('#modeluserheight').val(row.userheight);
+                $('#modelnumber').val(row.number);
+                var acheck = row.widthtype;
+                if(acheck == '02'){
+                    $('#a02').iCheck('check');
+                }else             if(acheck == '03'){
+                    $('#a03').iCheck('check');
+                }else            if(acheck == '04'){
+                    $('#a04').iCheck('check');
+                }else            if(acheck == '05'){
+                    $('#a05').iCheck('check');
+                }else            if(acheck == '06'){
+                    $('#a06').iCheck('check');
+                }else{
+                    $('#a01').iCheck('check');
+                }
+
+                var bcheck = row.heighttype;
+                if(bcheck == '02'){
+                    $('#b02').iCheck('check');
+                }else             if(bcheck == '03'){
+                    $('#b03').iCheck('check');
+                }else            if(bcheck == '04'){
+                    $('#b04').iCheck('check');
+                }else            if(bcheck == '05'){
+                    $('#b05').iCheck('check');
+                }else            if(bcheck == '06'){
+                    $('#b06').iCheck('check');
+                }else{
+                    $('#b01').iCheck('check');
+                }
+                $("#addModal").modal();
+            },
+            'click .remove': function (e, value, row, index) {
+                var ids = new Array();
+                ids.push(row.id);
+                $.ajax({
+                    type : 'get',
+                    async : false,
+                    url :'../deleteinrawdetail',
+                    data:{
+                        ids:ids
+                    },
+                    success : function(json) {
+                        getdata();
+                    }
+                });
+
+            }
+        };
+
+        function operateFormatter(value, row, index) {
+            return [
+                '<a class="edit" href="javascript:void(0)" title="编辑">',
+                '<i class="fa fa-pencil"></i>',
+                '</a>  ',
+                '<a class="remove" href="javascript:void(0)" title="删除">',
+                '<i class="fa fa-trash"></i>',
+                '</a>'
+            ].join('');
+        }
+
+        function getdata(){
+            var tablejson;
+
+            $.ajax({
+                async : false,
+                url : "../getdata",
+                type : "GET",
+                dataType : 'json',
+                timeout : 5000,
+                data:{
+                    newworkid:$('#newworkid').val()
+
+                },
+                success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
+                    //alert(jsonstr.price);
+                    tablejson=jsonstr;
+                    $('#table').bootstrapTable({
+                        showFooter:false,
+
+                        columns: [{
+                            checkbox: false,
+                            footerFormatter: '合计'
+                        },{
+                            field: 'id',
+                            title: 'id',
+                            visible:false
+
+
+                        },{
+                            field: 'name',
+                            title: '材料名称'
+
+                        },
+                            {
+                                field: 'width',
+                                title: '长'
+
+                            },
+                            {
+                                field: 'height',
+                                title: '宽'
+
+                            },
+                            {
+                                field: 'userheight',
+                                title: '用户宽'
+
+
+                            },
+                            {
+                                field: 'number',
+                                align: 'right',
+                                title: '数量'
+
+
+                            },
+                            {
+                                field: 'widthtype',
+                                title: '长加工类型',
+                                formatter: function(value,row,index){
+                                    return '<img height=20px  src=../../line/l' + value + '.png>';
+                                }
+
+                            },
+                            {
+                                field: 'heighttype',
+                                title: '宽加工类型',
+                                formatter: function(value,row,index){
+                                    return '<img height=20px  src=../../line/l' + value + '.png>';
+                                }
+                            },
+                            {
+                                field: 'operate',
+                                title: '操作',
+                                align: 'center',
+                                events: operateEvents,
+                                formatter: operateFormatter
+
+                            }],
+
+                        formatLoadingMessage: function(){
+                            return "";
+                        },
+                        data: tablejson
+                    });
+
+                    $('#table').bootstrapTable('load',tablejson);
+                    var sum=0;
+                    $.each(jsonstr,function(i,item){
+                        sum+=parseFloat(item.sum);
+                    });
+                    $('#sumspan').text(sum);
+                    $('#payablespan').text(sum);
+                    $('#payable').val(sum);
+
+                },
+                error : function(xhr) {
+                }
+            });
+        }
+
+
+
+
+    </script>
+    <style>
+        .displaynone{
+            display:none;
+        }
+        .displayshow{
+            display:block;
+        }
+    </style>
+    <div class="col-md-12 ibox ibox-content">
+      <%= form_for(@newwork,:html => {:class=>'form-horizontal m-t',:multipart => true,:id=>'userform'}) do |f| %>
+          <div class="ibox-content form-horizontal m-t">
+
+
+            <div class="row">
+
+
+              <div class="col-sm-6">
+                <h4>单据编号：<span class="text-navy"><%=@newwork.ordernumber %></span></h4>
+                <input type="hidden" id="newworkid" value=<%= @newwork.id %> >
+                <input type="hidden" id="newworkdetailid">
+              </div>
+              <div>
+
+
+
+                <!--这里是供应商-->
+
+
+              </div>
+            </div>
+
+            <table class="col-md-12">
+              <% preorder = Preorder.find(@newwork.preordernumber) %>
+              <% customer =nil %>
+              <% if preorder.customer_id && preorder.customer_id != 0 %>
+                  <% customer = Customer.find(preorder.customer_id) %>
+              <% end %>
+              <tr>
+                <td>
+                  客户：
+                  <%= customer.name %>
+                </td>
+                <td>
+                  客户地址：
+                  <%= customer.region %>
+                </td>
+                <td>
+                  联系方式：
+                  <%= customer.tel %>
+                </td>
+                <td class="text-right">
+                  交付时间：
+                  <% if preorder.installdate %>
+                      <%= preorder.installdate.strftime('%Y-%m-%d') %>
+                  <% end %>
+                </td>
+              </tr>
+            </table>
+
+
+
+            <div class="hr-line-dashed"></div>
+            <div class="example-wrap">
+
+              <div class="example">
+                <!--<div class="btn-group hidden-xs" id="exampleToolbar" role="group">-->
+                <!--<button type="button" class="btn btn-outline btn-default" data-toggle="modal" data-target="#addModal" id="adds">-->
+                <!--<i class="fa fa-plus" aria-hidden="true"></i>-->
+                <!--</button>-->
+                <!--<button type="button" class="btn btn-outline btn-default" id="edits">-->
+                <!--<i class="fa fa-edit" aria-hidden="true"></i>-->
+                <!--</button>-->
+                <!--<button type="button" class="btn btn-outline btn-default" id="deletes">-->
+                <!--<i class="fa fa-trash" aria-hidden="true"></i>-->
+                <!--</button>-->
+                <!--</div>-->
+                <table id="table">
+
+                </table>
+
+
+
+
+
+              </div>
+
+              <div class="col-md-6"></div>
+              <div class="col-md-6">
+              <table class="table" id="worktable">
+
+              <tr>
+              <td>
+              <strong>加工</strong>
+              </td>
+              <td></td>
+              </tr>
+              <tr>
+              <td><strong>总价：</strong>
+              </td>
+              <td>&yen;1026.00</td>
+              </tr>
+              <tr>
+              <td><strong>税：</strong>
+              </td>
+              <td>&yen;235.98</td>
+              </tr>
+              <tr>
+              <td><strong>总计</strong>
+              </td>
+              <td>&yen;1261.98</td>
+              </tr>
+
+              </table>
+              </div>
+
+              <!--<div class="col-md-6">-->
+                <!--<table class="table" id="usertable">-->
+
+                  <!--<tr>-->
+                    <!--<td>-->
+                      <!--<strong>用户</strong>-->
+                    <!--</td>-->
+                    <!--<td></td>-->
+                  <!--</tr>-->
+                  <!--<tr>-->
+                    <!--<td><strong>总价：</strong>-->
+                    <!--</td>-->
+                    <!--<td>&yen;1026.00</td>-->
+                  <!--</tr>-->
+                  <!--<tr>-->
+                    <!--<td><strong>税：</strong>-->
+                    <!--</td>-->
+                    <!--<td>&yen;235.98</td>-->
+                  <!--</tr>-->
+                  <!--<tr>-->
+                    <!--<td><strong>总计</strong>-->
+                    <!--</td>-->
+                    <!--<td>&yen;1261.98</td>-->
+                  <!--</tr>-->
+
+                <!--</table>-->
+              <!--</div>-->
+
+            </div>
+
+
+          </div>
+
+          <table border="0" class="col-md-12">
+            <tr>
+              <td class="text-right">
+                经手人：
+                <%= @newwork.user %>
+
+                <!--<div class="form-group">-->
+                <!--<label class="col-sm-2 control-label">经手人：</label>-->
+
+                <!--<div class="col-sm-4">-->
+                <!--<%= f.text_field :user,class: "form-control" %>-->
+                <!--</div>-->
+                <!--</div>-->
+
+              </td>
+              <td>
+              </td>
+              <!--<td class="text-right">-->
+
+              <!--<%= f.submit '确定',class: "btn btn-w-m btn-primary ",id:'smt' %>-->
+
+              <!--</td>-->
+            </tr>
+          </table>
+
+      <% end %>
+    </div>
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title" id="myModalLabel">原材料明细</h4>
+          </div>
+          <div class="modal-body" >
+            <div class="form-horizontal m-t">
+              <div class="form-group">
+                <label class="col-sm-3 control-label">材料：</label>
+                <div class="col-sm-9">
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="raw_data">
+                    <div class="input-group-btn">
+                      <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                      </ul>
+                    </div>
+                    <!-- /btn-group -->
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="modelid">
+              <input type="hidden" id="newrawid">
+
+
+
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label">长：</label>
+                <div class="col-sm-9">
+                  <input class="form-control" id="modelwidth" readonly="ture">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label">宽：</label>
+                <div class="col-sm-9">
+                  <input class="form-control" id="modelheight" readonly="true">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label">用户宽：</label>
+                <div class="col-sm-9">
+                  <input class="form-control" id="modeluserheight">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label">数量：</label>
+                <div class="col-sm-9">
+                  <input class="form-control" id="modelnumber">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">长加工：</label>
+                <div class="col-sm-10">
+                  <table>
+                    <tr>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" id="a01" class="acheck" checked=""  value="01" name="a"> <i></i><img src="../../../line/l01.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="acheck" id="a02" value="02" name="a"> <i></i><img src="../../../line/l02.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="acheck" id="a03" value="03" name="a"> <i></i><img src="../../../line/l03.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="acheck"  id="a04" value="04" name="a"> <i></i><img src="../../../line/l04.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="acheck" id="a05" value="05" name="a"> <i></i><img src="../../../line/l05.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="acheck" id="a06" value="06" name="a"> <i></i><img src="../../../line/l06.png" width="20px"></label>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <input type="hidden" class="form-control" id="modelwidthtype">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">宽加工：</label>
+                <div class="col-sm-10">
+                  <table>
+                    <tr>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="bcheck" id="b01" checked="true" value="01" name="b"> <i></i><img src="../../../line/l01.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="bcheck" id="b02" value="02" name="b"> <i></i><img src="../../../line/l02.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="bcheck" id="b03" value="03" name="b"> <i></i><img src="../../../line/l03.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="bcheck" id="b04" value="04" name="b"> <i></i><img src="../../../line/l04.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="bcheck" id="b05"  value="05" name="b"> <i></i><img src="../../../line/l05.png" width="20px"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="radio i-checks">
+                          <label>
+                            <input type="radio" class="bcheck" id="b06" value="06" name="b"> <i></i><img src="../../../line/l06.png" width="20px"></label>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                  <input type="hidden" class="form-control" id="modelheighttype">
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="modal-footer">
+
+            <button type="button" class="btn btn-primary" data-dismiss="modal" id="modalsubmit">确定</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+
+
+
+
+  </div>
+</div>
+<%=render 'layerend' %>

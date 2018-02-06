@@ -3,6 +3,10 @@
     $(document).ready(function(){
         $(".i-checks").iCheck({checkboxClass:"icheckbox_square-green",radioClass:"iradio_square-green"});
         getdata();
+        $('#userselect').change(function(){
+            //$('#user').val(this.text());
+            $('#user').val($('#userselect').find("option:selected").text());
+        });
         function caltotal(){
             $.ajax({
                 type : 'get',
@@ -17,6 +21,11 @@
                     var tbody =  $("<tbody></tbody>");
                     tbody.append('<tr><td><strong>加工</strong></td><td></td></tr>');
                     $.each(data.work,function(i,item){
+                        if(parseFloat(item.toalnumber)>0) {
+                            tbody.append('<tr><td><strong>' + item.name + '</strong></td><td>' + item.toalnumber + '片' + '</td></tr>');
+                        }
+                    });
+                    $.each(data.work,function(i,item){
                         tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number+item.unit+'</td></tr>');
                     });
                     $('#worktable').append(tbody);
@@ -27,6 +36,11 @@
                     });
                     var tbody =  $("<tbody></tbody>");
                     tbody.append('<tr><td><strong>用户</strong></td><td></td></tr>');
+                    $.each(data.work,function(i,item){
+                        if(parseFloat(item.toalnumber)>0) {
+                            tbody.append('<tr><td><strong>' + item.name + '</strong></td><td>' + item.toalnumber + '片' + '</td></tr>');
+                        }
+                    });
                     $.each(data.user,function(i,item){
                         tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number+item.unit+'</td></tr>');
                     });
@@ -674,7 +688,13 @@
               <label class="col-sm-2 control-label">经手人：</label>
 
               <div class="col-sm-4">
-                <%= f.text_field :user,class: "form-control" %>
+                <%= f.hidden_field :user,class: "form-control",id:'user' %>
+                <select class="form-control m-b" id="userselect">
+                  <option value="0">请选择经手人</option>
+                  <% @users.each do |f| %>
+                      <option value=<%=f.id %>><%=f.name %></option>
+                  <% end %>
+                </select>
               </div>
             </div>
 
@@ -682,9 +702,9 @@
           <td>
           </td>
           <td class="text-right">
-            <% if @newwork.isnew == 1 %>
+
             <%= f.submit '确定',class: "btn btn-w-m btn-primary ",id:'smt' %>
-                <% end %>
+
           </td>
         </tr>
       </table>

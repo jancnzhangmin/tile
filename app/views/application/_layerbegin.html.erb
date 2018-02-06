@@ -35,7 +35,7 @@
 
 <% url = request.url %>
 
-        <% if url.include?('users') || url.include?('compans') || url.include?('auths') || url.include?('raws') || url.include?('sales') || url.include?('suppliers') %>
+        <% if url.include?('users') || url.include?('compans') || url.include?('auths')  || url.include?('suppliers') || url.include?('workatts') %>
             <li data-turbolinks="false" class="active">
         <% else %>
             <li data-turbolinks="false">
@@ -60,7 +60,7 @@
             <%= link_to '定单材料定义',preraws_path,'data-no-turbolink'=>true%>
           </li>
           <li>
-            <%= link_to '加工属性定义',workatts_path,'data-no-turbolink'=>true%>
+            <%= link_to '加工方法定义',workatts_path,'data-no-turbolink'=>true%>
           </li>
           <li>
             <%= link_to '供应商',suppliers_path,'data-no-turbolink'=>true%>
@@ -87,7 +87,7 @@
 
         </ul>
         </li>
-        <% if url.include?('inrawdepots') || url.include?('inrawdepotrecords') || url.include?('rawdepots') %>
+        <% if url.include?('innewraws') || url.include?('newdepots') || url.include?('rawdepots') %>
         <li data-turbolinks="false" class="active">
             <% else %>
             <li data-turbolinks="false">
@@ -112,26 +112,30 @@
           </ul>
         </li>
 
-        <% if url.include?('reserves') %>
-        <li data-turbolinks="false" id="workli">
+        <% if url.include?('preorders') %>
+            <li data-turbolinks="false" class="active">
           <% else %>
             <li data-turbolinks="false">
             <% end %>
           <a href="">
             <i class="fa fa-user"></i>
-            <span class="nav-label">订单</span>
+            <span class="nav-label">预订单</span>
             <span class="fa arrow"></span>
           </a>
           <ul class="nav nav-second-level">
 
             <li>
-              <%= link_to '订单',preorders_path,'data-no-turbolink'=>true%>
+              <%= link_to '预订单',preorders_path,'data-no-turbolink'=>true%>
             </li>
 
           </ul>
         </li>
 
+        <% if url.include?('coopers') %>
+            <li data-turbolinks="false" class="active">
+        <% else %>
             <li data-turbolinks="false">
+        <% end %>
 
         <a href="">
           <i class="fa fa-user"></i>
@@ -146,7 +150,11 @@
         </ul>
         </li>
 
-        <li data-turbolinks="false" id="processli">
+        <% if url.include?('newworks') || url.include?('workdepots') || url.include?('workrecords') %>
+            <li data-turbolinks="false" class="active">
+        <% else %>
+            <li data-turbolinks="false">
+        <% end %>
           <a href="">
             <i class="fa fa-user"></i>
             <span class="nav-label">加工单</span>
@@ -167,7 +175,11 @@
         </li>
 
 
-        <li data-turbolinks="false" id="salesettli">
+        <% if url.include?('sales') %>
+            <li data-turbolinks="false" class="active">
+        <% else %>
+            <li data-turbolinks="false">
+        <% end %>
           <a href="">
             <i class="fa fa-user"></i>
             <span class="nav-label">销售结算单</span>
@@ -181,7 +193,11 @@
           </ul>
         </li>
 
-        <li data-turbolinks="false" id="toolli">
+        <% if url.include?('goods') || url.include?('ingooddepots') %>
+            <li data-turbolinks="false" class="active">
+        <% else %>
+            <li data-turbolinks="false">
+        <% end %>
           <a href="">
             <i class="fa fa-user"></i>
             <span class="nav-label">工具管理</span>

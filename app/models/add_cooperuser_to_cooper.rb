@@ -1,0 +1,2 @@
+class AddCooperuserToCooper < ApplicationRecord
+end

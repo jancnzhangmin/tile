@@ -8,6 +8,7 @@ class PreordersController < ApplicationController
   def edit
 @coopers = Cooper.all
 @customers = Customer.all
+    @users = User.all
   end
 
   def new
@@ -85,6 +86,10 @@ class PreordersController < ApplicationController
     attr :price,true
     attr :sum,true
     attr :summary,true
+    attr :width,true
+    attr :height,true
+    attr :userheight,true
+    attr :rawsum,true
 
   end
 
@@ -101,6 +106,10 @@ class PreordersController < ApplicationController
       preorderdetailcla.number = f.number
       preorderdetailcla.sum = f.sum
       preorderdetailcla.summary = f.summary
+      preorderdetailcla.height = f.height
+      preorderdetailcla.userheight = f.userheight
+      preorderdetailcla.width = f.width
+      preorderdetailcla.rawsum = f.width.to_f / 1000 * f.height.to_f / 1000 * f.number.to_f
       preorderdetailarr.push preorderdetailcla
     end
     render json:preorderdetailarr
@@ -153,7 +162,7 @@ class PreordersController < ApplicationController
     if params[:way] =='add'
       preorderdetails = Preorder.find(params[:preorderid]).preorderdetails
       sum = params[:price].to_f * params[:number].to_f
-      preorderdetails.create(preraw_id:params[:prerawid],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit])
+      preorderdetails.create(preraw_id:params[:prerawid],width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit])
     elsif params[:way]=='edit'
       inrawdepotdetails = Inrawdepot.find(params[:inrawdepotid]).inrawdepotdetails.where('id =?',params[:rawid]).first
       inrawdepotdetails.number = params[:number].to_f
@@ -196,6 +205,37 @@ class PreordersController < ApplicationController
 
     @newwork = Newwork.create(ordernumber:ordernumber,isnew:1,preordernumber:params[:preorderid])
     render json: @newwork.id.to_s
+  end
+
+  def dowork
+    workorder = Newwork.find_by_preordernumber(params[:id])
+    if workorder
+      redirect_to edit_newwork_path(workorder)
+    else
+      ordernumber = Time.now.strftime('%Y%m%d')
+      smnumber = Newwork.last
+      mystep ='001'
+      if smnumber
+        if smnumber.ordernumber[0..7] == ordernumber
+          mystep=smnumber.ordernumber
+          mystep.reverse!
+          mystep = mystep[0..2]
+          mystep.reverse!
+          mystep = (mystep.to_i+1).to_s
+          (3-mystep.length).times do
+            mystep = '0' + mystep
+          end
+          ordernumber += mystep
+        else
+          ordernumber += mystep
+        end
+      else
+        ordernumber += mystep
+      end
+
+      @newwork = Newwork.create(ordernumber:ordernumber,isnew:1,preordernumber:params[:id])
+      redirect_to edit_newwork_path(@newwork)
+    end
   end
 
   def getcooperuser

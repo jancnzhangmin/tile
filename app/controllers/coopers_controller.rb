@@ -17,7 +17,7 @@ class CoopersController < ApplicationController
     @cooper = Cooper.new(cooper_params)
     respond_to do |format|
       if @cooper.save
-        format.html { redirect_to cooper_path(@cooper), notice: 'User was successfully created.' }
+        format.html { redirect_to coopers_path, notice: 'User was successfully created.' }
       else
         format.html { render :new }
       end
@@ -27,7 +27,7 @@ class CoopersController < ApplicationController
   def update
     respond_to do |format|
       if @cooper.update(cooper_params)
-        format.html { redirect_to cooper_path(@cooper), notice: 'User was successfully updated.' }
+        format.html { redirect_to coopers_path, notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @cooper }
       else
         format.html { render :edit }
@@ -58,7 +58,7 @@ class CoopersController < ApplicationController
 
 # Never trust parameters from the scary internet, only allow the white list through.
   def cooper_params
-    params.require(:cooper).permit(:name, :address, :tel, :bankdeposit, :bankaccount, :bankuser)
+    params.require(:cooper).permit(:name, :address, :tel, :bankdeposit, :bankaccount, :bankuser, :cooperuser, :cooperadmin)
   end
 
 end

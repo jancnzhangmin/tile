@@ -4,6 +4,11 @@
 
         getdata();
 
+        $('#userselect').change(function(){
+           //$('#user').val(this.text());
+            $('user').val($('#userselect').find("option:selected").text());
+        });
+
         function getdata(){
             var tablejson;
 
@@ -44,12 +49,12 @@
                         },
                           {
                             field: 'width',
-                            title: '宽'
+                            title: '长（mm）'
 
                           },
                             {
                                 field: 'height',
-                                title: '高'
+                                title: '宽（mm）'
 
                             },
                           {
@@ -58,15 +63,10 @@
 
 
                           },
-                          {
-                            field: 'price',
-                            align: 'right',
-                            title: '成本'
-
-                        }, {
-                            field: 'number',
-                            align: 'right',
-                            title: '片',
+                           {
+                                field: 'number',
+                                align: 'right',
+                                title: '数量',
                                 footerFormatter: function (value) {
                                     var count = 0;
                                     for (var i in value) {
@@ -74,10 +74,22 @@
                                     }
                                     return count;
                                 }
+                            },
+                            {
+                                field: 'acreage',
+                                align: 'right',
+                                title: '面积合计'
+
+                            },
+                          {
+                            field: 'price',
+                            align: 'right',
+                            title: '单价'
+
                         },{
                             field: 'sum',
                             align: 'right',
-                            title: '合计'
+                            title: '金额合计'
 
                         },{
                             field: 'operate',
@@ -504,7 +516,13 @@
                 <label class="col-sm-4 control-label">经手人：</label>
 
                 <div class="col-sm-6">
-                  <%= f.text_field :user,class: "form-control" %>
+                  <%= f.hidden_field :user,class: "form-control",id:'user' %>
+                  <select class="form-control m-b" id="userselect">
+                    <option value="0">请选择经手人</option>
+                    <% @users.each do |f| %>
+                        <option value=<%=f.id %>><%=f.name %></option>
+                    <% end %>
+                  </select>
                 </div>
               </div>
 
@@ -559,14 +577,14 @@
           </div>
           <input type="hidden" id="modelid">
           <div class="form-group">
-            <label class="col-sm-4 control-label">宽（mm）：</label>
+            <label class="col-sm-4 control-label">长（mm）：</label>
             <div class="col-sm-8">
               <input  class="form-control" id="modelwidth">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-sm-4 control-label">高（mm）：</label>
+            <label class="col-sm-4 control-label">宽（mm）：</label>
             <div class="col-sm-8">
               <input  class="form-control" id="modelheight">
             </div>
@@ -580,7 +598,7 @@
           </div>
 
           <div class="form-group">
-            <label class="col-sm-4 control-label">片：</label>
+            <label class="col-sm-4 control-label">数量：</label>
             <div class="col-sm-8">
               <input class="form-control" id="modelnumber">
             </div>

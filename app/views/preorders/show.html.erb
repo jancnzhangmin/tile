@@ -510,7 +510,7 @@
                   <h4>单据编号：<span class="text-navy"><%=@preorder.ordernumber %></span></h4>
                 </td>
                 <td align="right">
-                  <h4>预安装日期：
+                  <h4>交付时间：
                     <% if @preorder.installdate %>
                     <%= @preorder.installdate.strftime('%Y-%m-%d') %>
                         <% end %>
@@ -575,7 +575,7 @@
                   客户&nbsp;&nbsp;&nbsp;&nbsp;
                 </td>
                 <td>
-                  <% if @preorder.customer_id %>
+                  <% if @preorder.customer_id && @preorder.customer_id != 0 %>
                       <% customer = Customer.find(@preorder.customer_id) %>
                   <% end %>
                   <% if customer %>

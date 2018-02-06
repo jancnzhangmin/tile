@@ -33,7 +33,9 @@ Rails.application.routes.draw do
       get 'deleteinrawdetail'
     end
   end
-  resources :newdepots
+  resources :newdepots do
+
+  end
   resources :preorders do
     collection do
       get 'getdata'
@@ -42,6 +44,9 @@ Rails.application.routes.draw do
       get 'deleteinrawdetail'
       get 'work'
       get 'getcooperuser'
+    end
+    member do
+      get 'dowork'
     end
   end
 
@@ -147,6 +152,9 @@ Rails.application.routes.draw do
       get 'getcooperuser'
       get 'getrawbyid'
       get 'gettotal'
+    end
+    member do
+      get 'worklian'
     end
   end
   resources :workrecords

@@ -10,7 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180201205609) do
+ActiveRecord::Schema.define(version: 20180205221413) do
+
+  create_table "add_cooperuser_to_coopers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "cooperuser"
+    t.string "cooperadmin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "add_password_to_users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "password_digest"
@@ -48,6 +55,8 @@ ActiveRecord::Schema.define(version: 20180201205609) do
     t.string "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "cooperuser"
+    t.string "cooperadmin"
   end
 
   create_table "cooperusers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -267,6 +276,7 @@ ActiveRecord::Schema.define(version: 20180201205609) do
     t.string "unit"
     t.integer "cooper_id"
     t.integer "cooperuser_id"
+    t.float "userheight", limit: 24
   end
 
   create_table "preorders", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

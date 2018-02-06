@@ -1,13 +1,13 @@
 class NewworksController < ApplicationController
 
-  before_action :set_newwork, only: [:show, :edit, :update, :destroy]
+  before_action :set_newwork, only: [:show, :edit, :update, :destroy, :worklian]
   def index
     @newworks = Newwork.where('isnew = 0')
   end
 
   def edit
     @coopers = Cooper.all
-
+@users = User.all
   end
 
   def new
@@ -64,11 +64,11 @@ class NewworksController < ApplicationController
                 workdepot.first.number = workdepot.first.number + f.number
                 workdepot.first.save
               else
-                Workdepot.create(worknumber:@newwork.ordernumber,newraw_id:f.newraw_id,price:tf.price,number:f.number,width:f.width,height:f.height,userheight:f.userheight)
+                Workdepot.create(newraw_id:f.newraw_id,price:tf.price,number:f.number,width:f.width,height:f.height,userheight:f.userheight)
               end
               tf.number = tf.number - f.number
               tf.save
-              Workrecord.create(newwork_id:@newwork.id,newraw_id:f.newraw_id,width:f.width,height:f.height,userheight:f.userheight,number:f.number,price:tf.price)
+              Workrecord.create(worknumber:@newwork.ordernumber,newwork_id:@newwork.id,newraw_id:f.newraw_id,width:f.width,height:f.height,userheight:f.userheight,number:f.number,price:tf.price)
             end
           end
         end
@@ -82,6 +82,10 @@ class NewworksController < ApplicationController
       end
     end
 
+  end
+
+  def worklian
+    @coopers = Cooper.all
   end
 
 
@@ -128,6 +132,7 @@ class NewworksController < ApplicationController
     attr :name,true
     attr :number,true
     attr :unit,true
+    attr :toalnumber,true
   end
 
   def gettotal
@@ -145,16 +150,20 @@ class NewworksController < ApplicationController
       totalcla.name = Newraw.find(raw).name
       totalcla.number = 0
       totalcla.unit = '平方'
+      totalcla.toalnumber = 0
 
       usertotalcla = Totalclass.new
       usertotalcla.name = Newraw.find(raw).name
       usertotalcla.number = 0
       usertotalcla.unit = '平方'
+      usertotalcla.toalnumber =0
 
       @newworkdetails.each do |f|
         if f.newraw_id == raw
           totalcla.number += (f.width / 1000) * (f.height / 1000) * f.number
           usertotalcla.number += (f.width / 1000) * (f.userheight.to_f / 1000) *f.number
+          totalcla.toalnumber += f.number
+          usertotalcla.toalnumber += f.number
         end
       end
       worktotalarr.push totalcla

@@ -27,7 +27,7 @@ class InnewrawsController < ApplicationController
   end
 
   def edit
-
+@users = User.all
   end
 
   def new
@@ -39,7 +39,7 @@ class InnewrawsController < ApplicationController
 
     respond_to do |format|
       if @innewraw.save
-        format.html { redirect_to inrawdepots_path, notice: 'User was successfully created.' }
+        format.html { redirect_to newdepots_path, notice: 'User was successfully created.' }
       else
         format.html { render :new }
       end
@@ -78,22 +78,7 @@ class InnewrawsController < ApplicationController
         end
 
 
-        inrawdepotdetails = Innewraw.find(params[:inrawdepotid]).innewdepotdetails
-        hasdepot = 0
-        inrawdepotdetails.each do |f|
-          if f.newraw_id.to_s == params[:rawid] && f.width == params[:width].to_f && f.height == params[:height].to_f
-            hasdepot = 1
-          end
-        end
-        if hasdepot == 1
-          localrawdepotdetail = inrawdepotdetails.where('newraw_id = ? and width = ? and height = ?',params[:rawid],params[:width],params[:height]).first
-          localrawdepotdetail.number += params[:number].to_f
-          localrawdepotdetail.price = params[:price]
-          localrawdepotdetail.sum = params[:price].to_f * localrawdepotdetail.number
-          localrawdepotdetail.save
-        else
-          inrawdepotdetails.create(newraw_id:params[:rawid],price:params[:price],width:params[:width],height:params[:height],number:params[:number],sum:params[:sum])
-        end
+
 
 
 
@@ -112,7 +97,7 @@ class InnewrawsController < ApplicationController
   def destroy
     @inrawdepot.destroy
     respond_to do |format|
-      format.html { redirect_to inrawdepots_path, notice: '删除成功' }
+      format.html { redirect_to newdepots_path, notice: '删除成功' }
       format.json { head :no_content }
     end
   end
@@ -128,6 +113,7 @@ class InnewrawsController < ApplicationController
     attr :width,true
     attr :height,true
     attr :raw_id,true
+    attr :acreage,true
   end
 
   def getdata
@@ -145,6 +131,7 @@ class InnewrawsController < ApplicationController
       inrawdepotdetailcla.price = f.price
       inrawdepotdetailcla.number = f.number
       inrawdepotdetailcla.sum = f.sum
+      inrawdepotdetailcla.acreage = (f.width / 1000 * f.height / 1000 * f.number).round(2)
       inrawdepotdetailarr.push inrawdepotdetailcla
     end
     render json:inrawdepotdetailarr

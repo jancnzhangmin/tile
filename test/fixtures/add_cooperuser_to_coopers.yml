@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cooperuser: MyString
+  cooperadmin: MyString
+
+two:
+  cooperuser: MyString
+  cooperadmin: MyString
