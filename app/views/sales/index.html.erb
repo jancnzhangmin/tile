@@ -35,6 +35,9 @@
         <thead>
         <tr>
           <th class="text-center">订单号</th>
+          <th class="text-center">客户</th>
+          <th class="text-center">联系方式</th>
+          <th class="text-center">客户地址</th>
           <th class="text-center">已付金额</th>
           <th class="text-center">总金额</th>
           <th class="text-center">未结算金额</th>
@@ -46,6 +49,25 @@
             <tr>
               <td>
                 <%= preorder.ordernumber %>
+              </td>
+              <% customer = nil %>
+              <% if preorder.customer_id & preorder.customer_id != 0 %>
+              <% customer = Customer.find(preorder.customer_id) %>
+                  <% end %>
+              <td>
+                <% if customer %>
+                <%= customer.name %>
+                <% end %>
+              </td>
+              <td>
+                <% if customer %>
+                    <%= customer.tel %>
+                <% end %>
+              </td>
+              <td>
+                <% if customer %>
+                    <%= customer.region %>
+                <% end %>
               </td>
               <td>
                 <%= preorder.pay %>
@@ -62,7 +84,7 @@
                 <%= sum - pay %>
               </td>
               <td>
-                <%= link_to '查看',edit_preorder_path(preorder,type:'sale'),class:'fa fa-edit' %>&nbsp;
+                <%= link_to '查看',preorder_path(preorder,type:'sale'),class:'fa fa-edit' %>&nbsp;
               </td>
             </tr>
         <% end %>
