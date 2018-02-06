@@ -44,6 +44,7 @@ Rails.application.routes.draw do
       get 'deleteinrawdetail'
       get 'work'
       get 'getcooperuser'
+      get 'getcumtomerbyid'
     end
     member do
       get 'dowork'
@@ -152,12 +153,15 @@ Rails.application.routes.draw do
       get 'getcooperuser'
       get 'getrawbyid'
       get 'gettotal'
+      get 'getcumtomerbyid'
     end
     member do
       get 'worklian'
     end
   end
   resources :workrecords
+  resources :designers
+  resources :fiters
 
 
 end

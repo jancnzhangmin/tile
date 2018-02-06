@@ -60,19 +60,11 @@ class InnewrawsController < ApplicationController
         innewdepotdetails.each do |f|
           newdepot = Newdepot.where('newraw_id = ?',f.newraw_id).first
           if newdepot
-            #firstrawdepot.price = (f.price * f.number + firstrawdepot.price * firstrawdepot.number) / (f.number + firstrawdepot.number)
-            newdepotdetails = newdepot.newdepotdetails.where('width = ? and height = ?',f.width,f.height)
-            newdepotdetail = newdepot.newdepotdetails.where('width = ? and height = ?',f.width,f.height).first
-            if newdepotdetail
-              newdepotdetail.price = (newdepotdetail.price * newdepotdetail.number + f.price * f.number) / (newdepotdetail.number + f.number)
-              newdepotdetail.number += f.number
-              newdepotdetail.save
+            newdepot.price = (newdepot.price * newdepot.number + f.price * f.number) / (newdepot.number + f.number)
+            newdepot.number += f.number
+            newdepot.save
             else
-              newdepotdetails.create(width:f.width,height:f.height,price:f.price,number:f.number)
-            end
-          else
-            newdepot = Newdepot.create(newraw_id:f.newraw_id)
-            newdepotdetails = newdepot.newdepotdetails.create(width:f.width,height:f.height,price:f.price,number:f.number)
+              Newdepot.create(newraw_id:f.newraw_id,price:f.price,number:f.number)
           end
 
         end
@@ -114,6 +106,7 @@ class InnewrawsController < ApplicationController
     attr :height,true
     attr :raw_id,true
     attr :acreage,true
+    attr :summary,true
   end
 
   def getdata
@@ -125,13 +118,14 @@ class InnewrawsController < ApplicationController
       inrawdepotdetailcla.id = f.id
       inrawdepotdetailcla.raw_id = f.newraw_id
       inrawdepotdetailcla.raw = newraw.name
-      inrawdepotdetailcla.width = f.width
-      inrawdepotdetailcla.height = f.height
+      #inrawdepotdetailcla.width = f.width
+      #inrawdepotdetailcla.height = f.height
       inrawdepotdetailcla.unit = newraw.unit
       inrawdepotdetailcla.price = f.price
       inrawdepotdetailcla.number = f.number
       inrawdepotdetailcla.sum = f.sum
-      inrawdepotdetailcla.acreage = (f.width / 1000 * f.height / 1000 * f.number).round(2)
+      inrawdepotdetailcla.summary = f.summary
+      #inrawdepotdetailcla.acreage = (f.width / 1000 * f.height / 1000 * f.number).round(2)
       inrawdepotdetailarr.push inrawdepotdetailcla
     end
     render json:inrawdepotdetailarr
@@ -185,29 +179,16 @@ class InnewrawsController < ApplicationController
     if params[:way] =='add'
       inrawdepotdetails = Innewraw.find(params[:inrawdepotid]).innewdepotdetails
 
-      hasdepot = 0
-      inrawdepotdetails.each do |f|
+        inrawdepotdetails.create(newraw_id:params[:rawid],price:params[:price],number:params[:number],sum:params[:sum],summary:params[:summary])
 
-        if f.newraw_id.to_s == params[:rawid] && f.width == params[:width].to_f && f.height == params[:height].to_f
-          hasdepot = 1
-        end
-      end
-      if hasdepot == 1
-        localrawdepotdetail = inrawdepotdetails.where('newraw_id = ? and width = ? and height = ?',params[:rawid],params[:width],params[:height]).first
-        localrawdepotdetail.number += params[:number].to_f
-        localrawdepotdetail.price = params[:price]
-        localrawdepotdetail.sum = params[:price].to_f * localrawdepotdetail.number
-        localrawdepotdetail.save
-      else
-        inrawdepotdetails.create(newraw_id:params[:rawid],price:params[:price],width:params[:width],height:params[:height],number:params[:number],sum:params[:sum])
-      end
     elsif params[:way]=='edit'
       inrawdepotdetails = Innewdepotdetail.where('id =?',params[:rawid]).first
-      inrawdepotdetails.width = params[:width]
-      inrawdepotdetails.height = params[:height]
+      #inrawdepotdetails.width = params[:width]
+      #inrawdepotdetails.height = params[:height]
       inrawdepotdetails.number = params[:number].to_f
       inrawdepotdetails.price = params[:price]
       inrawdepotdetails.sum = params[:price].to_f * params[:number].to_f
+      inrawdepotdetails.summary = params[:summary]
       inrawdepotdetails.save
     end
     render json: '{"status":"200"}'

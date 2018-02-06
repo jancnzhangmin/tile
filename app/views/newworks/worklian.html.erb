@@ -598,15 +598,21 @@
               <tr>
                 <td>
                   客户：
-                  <%= customer.name %>
+                  <% if customer %>
+                      <%= customer.name %>
+                  <% end %>
                 </td>
                 <td>
                   客户地址：
-                  <%= customer.region %>
+                  <% if customer %>
+                      <%= customer.region %>
+                  <% end %>
                 </td>
                 <td>
                   联系方式：
-                  <%= customer.tel %>
+                  <% if customer %>
+                      <%= customer.tel %>
+                  <% end %>
                 </td>
                 <td class="text-right">
                   交付时间：

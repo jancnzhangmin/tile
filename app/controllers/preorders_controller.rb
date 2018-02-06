@@ -9,6 +9,8 @@ class PreordersController < ApplicationController
 @coopers = Cooper.all
 @customers = Customer.all
     @users = User.all
+    @designers = Designer.all
+    @fiters = Fiter.all
   end
 
   def new
@@ -138,16 +140,27 @@ class PreordersController < ApplicationController
     attr :id,true
     attr :pinyin,true
     attr :name,true
+    attr :ctype,true
   end
 
   def getpreraw
+    newraws = Newraw.all
     preraws = Preraw.all
     prerawarr = Array.new
+    newraws.each do |f|
+      prerawcla = Prerawclass.new
+      prerawcla.id = f.id
+      prerawcla.pinyin = f.pinyin
+      prerawcla.name = f.name
+      prerawcla.ctype = '原材料'
+      prerawarr.push prerawcla
+    end
     preraws.each do |f|
       prerawcla = Prerawclass.new
       prerawcla.id = f.id
       prerawcla.pinyin = f.pinyin
       prerawcla.name = f.name
+      prerawcla.ctype = '加工方式'
       prerawarr.push prerawcla
     end
     render json:prerawarr
@@ -162,7 +175,11 @@ class PreordersController < ApplicationController
     if params[:way] =='add'
       preorderdetails = Preorder.find(params[:preorderid]).preorderdetails
       sum = params[:price].to_f * params[:number].to_f
-      preorderdetails.create(preraw_id:params[:prerawid],width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit])
+      if params[:rawtype] == '加工方式'
+      preorderdetails.create(preraw_id:params[:prerawid],width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'加工方式')
+      else
+        preorderdetails.create(newraw_id:params[:prerawid],width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'加工方式')
+        end
     elsif params[:way]=='edit'
       inrawdepotdetails = Inrawdepot.find(params[:inrawdepotid]).inrawdepotdetails.where('id =?',params[:rawid]).first
       inrawdepotdetails.number = params[:number].to_f
@@ -243,6 +260,11 @@ class PreordersController < ApplicationController
     render json: cooperusers.to_json
   end
 
+  def getcumtomerbyid
+    customer = Customer.find(params[:id])
+    render json: customer.to_json
+  end
+
 
   private
 # Use callbacks to share common setup or constraints between actions.
@@ -252,7 +274,7 @@ class PreordersController < ApplicationController
 
 # Never trust parameters from the scary internet, only allow the white list through.
   def preorder_params
-    params.require(:preorder).permit(:newraw_id, :pay, :user, :isnew, :ordernumber, :installdate, :cooper_id, :cooperuser_id, :address, :customer_id)
+    params.require(:preorder).permit(:newraw_id, :pay, :user, :isnew, :ordernumber, :installdate, :cooper_id, :cooperuser_id, :address, :customer_id, :designer_id, :fiter_id)
   end
 
 end

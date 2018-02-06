@@ -29,11 +29,6 @@
           <th class="text-center">原材料</th>
           <th class="text-center">单位</th>
           <th class="text-center">数量</th>
-          <th class="text-center">长</th>
-          <th class="text-center">宽</th>
-          <th class="text-center">用户宽</th>
-          <th class="text-center">原材料成本（平方米）</th>
-          <th class="text-center">用户成本（平方米）</th>
         </tr>
         </thead>
         <tbody>
@@ -60,49 +55,12 @@
               <td>
                 <%= workdepot.number %>
               </td>
-              <td>
-                <%= workdepot.width %>
-              </td>
-              <td>
-                <%= workdepot.height %>
-              </td>
-              <td>
-                <%= workdepot.userheight %>
-              </td>
-              <td>
-                <%= workdepot.price * workdepot.width / 1000 * workdepot.height / 1000  %>
-              </td>
-              <td>
-                <%= workdepot.price * workdepot.width / 1000 * workdepot.userheight / 1000  %>
-              </td>
             </tr>
         <% end %>
         </tbody>
       </table>
 
-      <div class="col-md-6">
-      <table class="table invoice-total">
-        <tbody>
-        <tr>
-          <td><strong>材料成本合计：</strong>
-          </td>
-          <td><%= @width %></td>
-        </tr>
-        </tbody>
-      </table>
-      </div>
 
-      <div class="col-md-6">
-        <table class="table invoice-total">
-          <tbody>
-          <tr>
-            <td><strong>用户成本合计：</strong>
-            </td>
-            <td><%= @userheight %></td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
 
           <br/>
 

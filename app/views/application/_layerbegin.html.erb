@@ -57,10 +57,10 @@
             <%= link_to '原材料定义',newraws_path,'data-no-turbolink'=>true%>
           </li>
           <li>
-            <%= link_to '定单材料定义',preraws_path,'data-no-turbolink'=>true%>
+            <%= link_to '加工方式定义',preraws_path,'data-no-turbolink'=>true%>
           </li>
           <li>
-            <%= link_to '加工方法定义',workatts_path,'data-no-turbolink'=>true%>
+            <%= link_to '加工进度定义',workatts_path,'data-no-turbolink'=>true%>
           </li>
           <li>
             <%= link_to '供应商',suppliers_path,'data-no-turbolink'=>true%>
@@ -131,7 +131,7 @@
           </ul>
         </li>
 
-        <% if url.include?('coopers') %>
+        <% if url.include?('coopers') || url.include?('designers') || url.include?('fiters') %>
             <li data-turbolinks="false" class="active">
         <% else %>
             <li data-turbolinks="false">
@@ -145,7 +145,13 @@
         <ul class="nav nav-second-level">
 
           <li>
-            <%= link_to '合作商',coopers_path,'data-no-turbolink'=>true%>
+            <%= link_to '装修公司',coopers_path,'data-no-turbolink'=>true%>
+          </li>
+          <li>
+            <%= link_to '设计师',designers_path,'data-no-turbolink'=>true%>
+          </li>
+          <li>
+            <%= link_to '施工队长',fiters_path,'data-no-turbolink'=>true%>
           </li>
         </ul>
         </li>

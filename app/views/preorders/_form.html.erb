@@ -45,29 +45,10 @@
                                 title: '材料名称'
 
                             },
-                            {
-                                field: 'width',
-                                title: '长'
 
-                            },
-                            {
-                                field: 'height',
-                                title: '加工宽'
-
-                            },
-                            {
-                                field: 'userheight',
-                                title: '结算宽'
-
-                            },
                             {
                                 field: 'unit',
                                 title: '单位'
-
-                            },
-                            {
-                                field: 'rawsum',
-                                title: '材料合计'
 
                             },
                             {
@@ -77,19 +58,7 @@
 
 
                             },
-                            {
-                                field: 'number',
-                                align: 'right',
-                                title: '数量'
 
-
-                            },
-                            {
-                                field: 'sum',
-                                align: 'right',
-                                title: '金额合计'
-
-                            },
                             {
                                 field: 'summary',
                                 title: '备注',
@@ -167,7 +136,7 @@
         function raw(data) {
             var rawdataBsSuggest = $("#raw_data").bsSuggest(
                     {
-                        effectiveFieldsAlias:{id: "ID",pinyin: "简拼", name:"材料名称",spec:"规格"},
+                        effectiveFieldsAlias:{id: "ID",pinyin: "简拼", name:"材料名称",ctype:"类型"},
                         showHeader: true,
                         indexId: 0, indexKey: 2,
                         data: {
@@ -175,6 +144,7 @@
                         }
                     }).on('onSetSelectValue', function(e, keyword, data) {
                         $('#modelid').val(keyword.id);
+                        $('#modelrawtype').val(keyword.ctype);
 //                        $.ajax({
 //                            type : 'get',
 //                            async : false,
@@ -209,7 +179,8 @@
                     summary:$('#modelsummary').val(),
                     width:$('#modelwidth').val(),
                     height:$('#modelheight').val(),
-                    userheight:$('#modeluserheight').val()
+                    userheight:$('#modeluserheight').val(),
+                    rawtype:$('#modelrawtype').val()
                 },
                 success : function(json) {
                     getdata();
@@ -370,10 +341,53 @@
 
         $('#customer').change(function(){
            $('#customerid').val(this.value);
+            if(this.value==0){
+                $('#customerspan').html('');
+            }
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../getcumtomerbyid',
+                data:{
+                    id:this.value
+                },
+                success : function(json) {
+
+                    $('#customerspan').html('电话：'+json.tel +'&nbsp;&nbsp;&nbsp;&nbsp; 地址：'+json.region);
+                }
+            });
         });
 
         if($('#customerid').val()!=''){
             $('#customer').val($('#customerid').val());
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../getcumtomerbyid',
+                data:{
+                    id:$('#customerid').val()
+                },
+                success : function(json) {
+
+                    $('#customerspan').html('电话：'+json.tel +'&nbsp;&nbsp;&nbsp;&nbsp; 地址：'+json.region);
+                }
+            });
+        }
+
+        $('#designer').change(function(){
+            $('#designerid').val(this.value);
+        });
+
+        if($('#designerid').val()!=''){
+            $('#designer').val($('#designerid').val());
+        }
+
+        $('#fiter').change(function(){
+            $('#fiterid').val(this.value);
+        });
+
+        if($('#fiterid').val()!=''){
+            $('#fiter').val($('#fiterid').val());
         }
 
 
@@ -621,7 +635,7 @@
         <div class="row">
           <table class="col-md-12">
             <tr>
-              <td class="col-md-6">
+              <td class="col-md-4">
 
                 <div class="form-group">
                   <label class="col-sm-4 control-label">装修公司</label>
@@ -629,7 +643,7 @@
                     <select class="form-control m-b" id="cooper">
                       <option value="0">请选择装修公司</option>
                       <% @coopers.each do |f| %>
-                          <option value=<%=f.id %>><%=f.name %>|<%=f.cooperuser %>|<%=f.cooperadmin %></option>
+                          <option value=<%=f.id %>><%=f.name %></option>
                       <% end %>
                     </select>
                     <%= f.hidden_field :cooper_id,class: "form-control",id:'cooperid' %>
@@ -650,13 +664,39 @@
                   <!--</div>-->
                 <!--</div>-->
               <!--</td>-->
-              <td class="col-md-6">
+              <td class="col-md-4">
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">设计师</label>
+                  <div class="col-sm-8">
+                    <select class="form-control m-b" id="designer">
+                      <option value="0">请选择设计师</option>
+                      <% @designers.each do |f| %>
+                          <option value=<%=f.id %>><%=f.name %></option>
+                      <% end %>
+                    </select>
+                    <%= f.hidden_field :designer_id,class: "form-control",id:'designerid' %>
+                  </div>
+                </div>
                 <!--<div class="form-group">-->
                   <!--<label class="col-sm-4 control-label">地址</label>-->
                   <!--<div class="col-sm-8">-->
                     <!--<%= f.text_field :address,class: "form-control" %>-->
                   <!--</div>-->
                 <!--</div>-->
+              </td>
+              <td class="col-md-4">
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">施工队长</label>
+                  <div class="col-sm-8">
+                    <select class="form-control m-b" id="fiter">
+                      <option value="0">请选择施工队长</option>
+                      <% @fiters.each do |f| %>
+                          <option value=<%=f.id %>><%=f.name %></option>
+                      <% end %>
+                    </select>
+                    <%= f.hidden_field :fiter_id,class: "form-control",id:'fiterid' %>
+                  </div>
+                </div>
               </td>
 
 
@@ -671,7 +711,7 @@
         <div class="row">
           <table class="col-md-12">
             <tr>
-              <td class="col-md-6">
+              <td class="col-md-4">
 
                 <div class="form-group">
                   <label class="col-sm-4 control-label">客户</label>
@@ -686,8 +726,17 @@
                   </div>
                 </div>
               </td>
-              <td class="col-md-6"></td>
+              <td class="col-md-8">
+                <div class="form-group" style="margin-top: -10px;">
+                  <label class="control-label"></label>
+                  <div class="col-sm-11">
+                    <span  id="customerspan"></span>
+                  </div>
+                </div>
 
+
+
+              </td>
               </tr>
               </table>
         </div>
@@ -719,7 +768,7 @@
                 <td>
 
                   <div class="form-group">
-                    <label class="col-sm-4 control-label">付款（元）：</label>
+                    <label class="col-sm-4 control-label">订金（元）：</label>
                     <div class="col-sm-6">
                       <%= f.text_field :pay,class: "form-control" %>
                     </div>
@@ -799,6 +848,7 @@
             </div>
           </div>
           <input type="hidden" id="modelid">
+          <input  id="modelrawtype">
           <div class="form-group">
             <label class="col-sm-4 control-label">使用位置：</label>
             <div class="col-sm-8">
@@ -814,26 +864,26 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-4 control-label">长：</label>
-            <div class="col-sm-8">
-              <input class="form-control" id="modelwidth">
-            </div>
-          </div>
+          <!--<div class="form-group">-->
+            <!--<label class="col-sm-4 control-label">长：</label>-->
+            <!--<div class="col-sm-8">-->
+              <!--<input class="form-control" id="modelwidth">-->
+            <!--</div>-->
+          <!--</div>-->
 
-          <div class="form-group">
-            <label class="col-sm-4 control-label">加工宽：</label>
-            <div class="col-sm-8">
-              <input class="form-control" id="modelheight">
-            </div>
-          </div>
+          <!--<div class="form-group">-->
+            <!--<label class="col-sm-4 control-label">加工宽：</label>-->
+            <!--<div class="col-sm-8">-->
+              <!--<input class="form-control" id="modelheight">-->
+            <!--</div>-->
+          <!--</div>-->
 
-          <div class="form-group">
-            <label class="col-sm-4 control-label">结算宽：</label>
-            <div class="col-sm-8">
-              <input class="form-control" id="modeluserheight">
-            </div>
-          </div>
+          <!--<div class="form-group">-->
+            <!--<label class="col-sm-4 control-label">结算宽：</label>-->
+            <!--<div class="col-sm-8">-->
+              <!--<input class="form-control" id="modeluserheight">-->
+            <!--</div>-->
+          <!--</div>-->
 
           <div class="form-group">
             <label class="col-sm-4 control-label">数量：</label>
@@ -842,12 +892,12 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-4 control-label">材料合计：</label>
-            <div class="col-sm-8">
-              <input class="form-control" id="modelrawsum">
-            </div>
-          </div>
+          <!--<div class="form-group">-->
+            <!--<label class="col-sm-4 control-label">材料合计：</label>-->
+            <!--<div class="col-sm-8">-->
+              <!--<input class="form-control" id="modelrawsum">-->
+            <!--</div>-->
+          <!--</div>-->
 
           <div class="form-group">
             <label class="col-sm-4 control-label">单价：</label>
@@ -856,12 +906,12 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-4 control-label">金额合计：</label>
-            <div class="col-sm-8">
-              <input class="form-control" id="modelsum">
-            </div>
-          </div>
+          <!--<div class="form-group">-->
+            <!--<label class="col-sm-4 control-label">金额合计：</label>-->
+            <!--<div class="col-sm-8">-->
+              <!--<input class="form-control" id="modelsum">-->
+            <!--</div>-->
+          <!--</div>-->
 
           <div class="form-group">
             <label class="col-sm-4 control-label">备注：</label>

@@ -47,39 +47,10 @@
                             title: '原材料'
 
                         },
-                          {
-                            field: 'width',
-                            title: '长（mm）'
-
-                          },
-                            {
-                                field: 'height',
-                                title: '宽（mm）'
-
-                            },
-                          {
-                            field: 'unit',
-                            title: '单位'
-
-
-                          },
                            {
                                 field: 'number',
                                 align: 'right',
-                                title: '数量',
-                                footerFormatter: function (value) {
-                                    var count = 0;
-                                    for (var i in value) {
-                                        count += value[i].sum;
-                                    }
-                                    return count;
-                                }
-                            },
-                            {
-                                field: 'acreage',
-                                align: 'right',
-                                title: '面积合计'
-
+                                title: '数量'
                             },
                           {
                             field: 'price',
@@ -91,7 +62,14 @@
                             align: 'right',
                             title: '金额合计'
 
-                        },{
+                        },
+                            {
+                                field: 'summary',
+                                align: 'right',
+                                title: '备注'
+
+                            },
+                            {
                             field: 'operate',
                             title: '操作',
                             align: 'center',
@@ -198,7 +176,8 @@
                     number:$('#modelnumber').val(),
                     price:$('#modelprice').val(),
                     sum:$('#modelsum').val(),
-                    newrawid:$('#newrawid').val()
+                    newrawid:$('#newrawid').val(),
+                    summary:$('#modelsummary').val()
                 },
                 success : function(json) {
                   getdata();
@@ -210,6 +189,7 @@
                   $('#modelsum').val('');
                     $('#modelwidth').val('');
                     $('#modelheight').val('');
+                    $('#modelsummary').val('');
                 }
             });
 
@@ -576,17 +556,11 @@
             </div>
           </div>
           <input type="hidden" id="modelid">
-          <div class="form-group">
-            <label class="col-sm-4 control-label">长（mm）：</label>
-            <div class="col-sm-8">
-              <input  class="form-control" id="modelwidth">
-            </div>
-          </div>
 
           <div class="form-group">
-            <label class="col-sm-4 control-label">宽（mm）：</label>
+            <label class="col-sm-4 control-label">平方：</label>
             <div class="col-sm-8">
-              <input  class="form-control" id="modelheight">
+              <input class="form-control" id="modelnumber">
             </div>
           </div>
 
@@ -597,10 +571,12 @@
             </div>
           </div>
 
+
+
           <div class="form-group">
-            <label class="col-sm-4 control-label">数量：</label>
+            <label class="col-sm-4 control-label">备注：</label>
             <div class="col-sm-8">
-              <input class="form-control" id="modelnumber">
+              <input class="form-control" id="modelsummary">
             </div>
           </div>
 

@@ -7,6 +7,23 @@
             //$('#user').val(this.text());
             $('#user').val($('#userselect').find("option:selected").text());
         });
+
+        if($('#customerid').val() != ''){
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../getcumtomerbyid',
+                data:{
+                    id:$('#customerid').val()
+                },
+                success : function(json) {
+
+                    $('#customerspan').html('&nbsp;&nbsp;&nbsp;&nbsp;客户名称：'+json.name+'&nbsp;&nbsp;&nbsp;&nbsp;电话：'+json.tel +'&nbsp;&nbsp;&nbsp;&nbsp; 地址：'+json.region);
+                }
+            });
+        }
+
+
         function caltotal(){
             $.ajax({
                 type : 'get',
@@ -195,7 +212,7 @@
                     {
                         effectiveFieldsAlias:{id: "ID",pinyin: "简拼", name:"材料名称"},
                         showHeader: true,
-                        indexId: 0, indexKey: 2,
+                        indexId: 0, indexKey: 1,
                         data: {
                             "value": data
                         }
@@ -206,10 +223,10 @@
                             async : false,
                             url :'../getrawbyid?id='+keyword.id,
                             success : function(json) {
-                                $('#modelid').val(keyword.id);
+                                //$('#modelid').val(keyword.id);
                                 $('#newrawid').val(keyword.id);
-                                $('#modelwidth').val(json.width);
-                                $('#modelheight').val(json.height);
+                                //$('#modelwidth').val(json.width);
+                                //$('#modelheight').val(json.height);
                                 if($('#modelnumber').val()=='') {
                                     $('#modelnumber').val(1);
                                 }
@@ -592,6 +609,15 @@
 
           </div>
         </div>
+        <div class="row">
+          <span id="customerspan"></span>
+          <% preorder=Preorder.find(@newwork.preordernumber) %>
+          <% customer = nil %>
+          <% if preorder.customer_id && preorder.customer_id != 0 %>
+          <% customer = Customer.find(preorder.customer_id) %>
+              <% end %>
+          <input type="hidden" id="customerid" value=<%= customer.id %> >
+        </div>
 
 
 
@@ -747,14 +773,14 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">长：</label>
             <div class="col-sm-9">
-              <input class="form-control" id="modelwidth" readonly="ture">
+              <input class="form-control" id="modelwidth">
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-sm-3 control-label">宽：</label>
             <div class="col-sm-9">
-              <input class="form-control" id="modelheight" readonly="true">
+              <input class="form-control" id="modelheight">
             </div>
           </div>
 

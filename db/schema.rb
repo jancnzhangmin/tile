@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180205221413) do
+ActiveRecord::Schema.define(version: 20180206082400) do
 
   create_table "add_cooperuser_to_coopers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "cooperuser"
@@ -76,6 +76,20 @@ ActiveRecord::Schema.define(version: 20180205221413) do
     t.string "region"
   end
 
+  create_table "designers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "name"
+    t.string "tel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "fiters", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "name"
+    t.string "tel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "gooddepots", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "good_id"
     t.float "number", limit: 24
@@ -122,6 +136,7 @@ ActiveRecord::Schema.define(version: 20180205221413) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "innewraw_id"
+    t.string "summary"
   end
 
   create_table "innewraws", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -214,6 +229,8 @@ ActiveRecord::Schema.define(version: 20180205221413) do
     t.integer "newraw_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "price", limit: 24
+    t.float "number", limit: 24
   end
 
   create_table "newraws", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -277,6 +294,7 @@ ActiveRecord::Schema.define(version: 20180205221413) do
     t.integer "cooper_id"
     t.integer "cooperuser_id"
     t.float "userheight", limit: 24
+    t.string "rawtype"
   end
 
   create_table "preorders", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -292,6 +310,8 @@ ActiveRecord::Schema.define(version: 20180205221413) do
     t.integer "cooperuser_id"
     t.string "address"
     t.integer "customer_id"
+    t.integer "designer_id"
+    t.integer "fiter_id"
   end
 
   create_table "preraws", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

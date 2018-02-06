@@ -55,22 +55,19 @@ class NewworksController < ApplicationController
         @newworkdetails = @newwork.newworkdetails
         @newworkdetails.each do |f|
           newdepot = Newdepot.where('newraw_id = ?',f.newraw_id).first
-          newdepotdetails = newdepot.newdepotdetails
-          newdepotdetails.each do |tf|
-            if tf.width == f.width && tf.height == tf.height
-              workdepot = Workdepot.where('newraw_id = ? and width =? and height = ?',f.newraw_id,tf.width,tf.height)
-              if workdepot.count > 0
-                workdepot.first.price = (workdepot.first.price * workdepot.first.number + tf.price * f.number) / (workdepot.first.number + f.number)
-                workdepot.first.number = workdepot.first.number + f.number
-                workdepot.first.save
-              else
-                Workdepot.create(newraw_id:f.newraw_id,price:tf.price,number:f.number,width:f.width,height:f.height,userheight:f.userheight)
-              end
-              tf.number = tf.number - f.number
-              tf.save
-              Workrecord.create(worknumber:@newwork.ordernumber,newwork_id:@newwork.id,newraw_id:f.newraw_id,width:f.width,height:f.height,userheight:f.userheight,number:f.number,price:tf.price)
-            end
+
+          if newdepot
+            newdepot.number -= f.width / 1000 * f.height / 1000 * f.number
+            newdepot.save
           end
+          workdepot = Workdepot.where('newraw_id = ?',f.newraw_id).first
+          if workdepot
+            workdepot.number +=f.width / 1000 * f.height / 1000 * f.number
+            workdepot.save
+          else
+            Workdepot.create(number:f.width / 1000 * f.height / 1000 * f.number,newraw_id:f.newraw_id)
+          end
+          Workrecord.create(worknumber:@newwork.ordernumber,newwork_id:@newwork.id,newraw_id:f.newraw_id,number:f.width / 1000 * f.height / 1000 * f.number)
         end
 
 
@@ -286,16 +283,15 @@ class NewworksController < ApplicationController
     prerawarr = Array.new
     preraws.each do |f|
 
-      newrawdetails = f.newdepotdetails
+      #newrawdetails = f.newdepotdetails
 
-      newrawdetails.each do |newrawdetail|
         prerawcla = Prerawclass.new
-        prerawcla.id = newrawdetail.id
-        prerawcla.pinyin = Newraw.find(f.newraw_id).pinyin
+        prerawcla.id = f.id
+        #prerawcla.pinyin = Newraw.find(f.newraw_id).pinyin
 
-        prerawcla.name = Newraw.find(f.newraw_id).name+'|'+newrawdetail.width.to_s+'*'+newrawdetail.height.to_s
+        prerawcla.name = Newraw.find(f.newraw_id).name
         prerawarr.push prerawcla
-      end
+
     end
     render json:prerawarr
   end
@@ -311,19 +307,25 @@ class NewworksController < ApplicationController
   def changenewworkdetail
     if params[:way] =='add'
       newworkdetails = Newwork.find(params[:newworkid]).newworkdetails
-      newrawid = Newdepotdetail.find(params[:newrawid]).newdepot.newraw_id
+      #newrawid = Newdepotdetail.find(params[:newrawid]).newdepot.newraw_id
+      newrawid = Newraw.find(Newdepot.find(params[:newrawid]).newraw_id).id
       newworkdetails.create!(newraw_id:newrawid,width:params[:width],height:params[:height],userheight:params[:userheight],widthtype:params[:widthtype],heighttype:params[:heighttype],number:params[:number])
     elsif params[:way]=='edit'
       #inrawdepotdetails = Inrawdepot.find(params[:inrawdepotid]).inrawdepotdetails.where('id =?',params[:rawid]).first
       newworkdetails = Newwork.find(params[:newworkid]).newworkdetails.where('id =?',params[:rawdata]).first
-      newworkdetails.newraw_id = params[:newrawid]
+      #debugger
+      if params[:newrawid].to_s != ''
+        rawid = Newraw.find(Newdepot.find(params[:newrawid]).newraw_id).id
+        #debugger
+        newworkdetails.newraw_id = rawid
+      end
       newworkdetails.width = params[:width]
       newworkdetails.height = params[:height]
       newworkdetails.userheight = params[:userheight]
       newworkdetails.number = params[:number]
       newworkdetails.widthtype = params[:widthtype]
       newworkdetails.heighttype = params[:heighttype]
-      newworkdetails.save
+      newworkdetails.save!
     end
     render json: '{"status":"200"}'
   end
@@ -365,6 +367,11 @@ class NewworksController < ApplicationController
   def getcooperuser
     cooperusers = Cooper.find(params[:id]).cooperusers
     render json: cooperusers.to_json
+  end
+
+  def getcumtomerbyid
+    customer = Customer.find(params[:id])
+    render json: customer.to_json
   end
 
 

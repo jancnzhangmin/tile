@@ -1,21 +1,7 @@
 <%= render 'layerbegin' %>
 <script>
     $(document).ready(function(){
-        $.ajax( {
-            url:'users/getregionall',
-            type:'get',
-            dataType:'json',
-            data:{regionid:$('#regionid').val(),
-                userid:$('#userid').val()
-            },
-            success:function(data) {
 
-                $('#addressspan').text(data);
-            },
-            error : function() {
-
-            }
-        });
 
 
 

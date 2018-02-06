@@ -1,0 +1,2 @@
+class Fiter < ApplicationRecord
+end

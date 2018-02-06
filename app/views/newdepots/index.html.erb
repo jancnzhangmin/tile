@@ -33,37 +33,34 @@
         <thead>
         <tr>
           <th class="text-center">原材料名称</th>
-          <th class="text-center">长（mm）</th>
-          <th class="text-center">宽（mm）</th>
-          <th class="text-center">数量</th>
-          <th class="text-center">面积合计</th>
+          <th class="text-center">面积</th>
           <th class="text-center">单价</th>
-          <th class="text-center">金额合计</th>
+          <th class="text-center">合计</th>
+          <th class="text-center">备注</th>
         </tr>
         </thead>
         <tbody>
         <% @newdepots.each do |newdepot| %>
-            <% newdepot.newdepotdetails.each do |newdepotdetail| %>
-                <tr>
-                  <td><%= Newraw.find(newdepot.newraw_id).name %></td>
-                  <td>
-                    <%= newdepotdetail.width %>
-                  </td>
-                  <td><%= newdepotdetail.height %></td>
-                  <td>
-                    <%= newdepotdetail.number %>
-                  </td>
-                  <td>
-                    <%= newdepotdetail.width / 1000 * newdepotdetail.height / 1000 * newdepotdetail.number  %>
-                  </td>
-                  <td>
-                    <%= newdepotdetail.price %>
-                  </td>
-                  <td>
-                    <%= newdepotdetail.price * newdepotdetail.number %>
-                  </td>
-                </tr>
-            <% end %>
+<tr>
+  <td>
+    <%= Newraw.find(newdepot.newraw_id).name %>
+  </td>
+  <td>
+    <%= newdepot.number %>
+  </td>
+  <td>
+    <%= newdepot.price.round(2) %>
+  </td>
+  <td>
+    <%= (newdepot.price * newdepot.number).round(2) %>
+  </td>
+  <td>
+    <% innewdepotdetail = Innewdepotdetail.where('newraw_id = ?',newdepot.newraw_id).last %>
+    <% if innewdepotdetail %>
+    <%= innewdepotdetail.summary %>
+        <% end %>
+  </td>
+</tr>
         <% end %>
         </tbody>
       </table>

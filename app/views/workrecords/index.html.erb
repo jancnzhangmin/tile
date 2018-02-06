@@ -27,13 +27,8 @@
         <thead>
         <tr>
           <th class="text-center">加工单号</th>
-
+          <th class="text-center">材料名称</th>
           <th class="text-center">数量</th>
-          <th class="text-center">长</th>
-          <th class="text-center">宽</th>
-          <th class="text-center">用户宽</th>
-          <th class="text-center">原材料成本（平方米）</th>
-          <th class="text-center">用户成本（平方米）</th>
         </tr>
         </thead>
         <tbody>
@@ -44,23 +39,12 @@
                 <%= workrecord.worknumber %>
               </td>
               <td>
+                <%= Newraw.find(workrecord.newraw_id).name %>
+              </td>
+              <td>
                 <%= workrecord.number %>
               </td>
-              <td>
-                <%= workrecord.width %>
-              </td>
-              <td>
-                <%= workrecord.height %>
-              </td>
-              <td>
-                <%= workrecord.userheight %>
-              </td>
-              <td>
-                <%= workrecord.price * workrecord.width / 1000 * workrecord.height / 1000 * workrecord.number %>
-              </td>
-              <td>
-                <%= workrecord.price * workrecord.width / 1000 * workrecord.userheight / 1000 * workrecord.number %>
-              </td>
+
             </tr>
         <% end %>
         </tbody>

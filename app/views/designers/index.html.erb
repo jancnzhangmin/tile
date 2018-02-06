@@ -1,0 +1,50 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h5>设计师管理</h5>
+      <div class="ibox-tools col-sm-3" style="margin-top: -5px;">
+        <div class="input-group">
+          <input type="text" id="search" class="input-sm form-control"> <span class="input-group-btn">
+          <button type="button" id="searchbtn" class="btn btn-sm btn-primary"> 搜索</button> </span>
+        </div>
+      </div>
+    </div>
+    <div class="ibox-content">
+      <table class="table table-hover table-bordered text-center">
+        <thead>
+        <tr>
+          <th class="text-center">姓名</th>
+          <th class="text-center">电话</th>
+          <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @designers.each do |designer| %>
+            <tr>
+              <td>
+                <%= designer.name %>
+              </td>
+              <td>
+                <%= designer.tel %>
+              </td>
+              <td>
+                <%= link_to '编辑',edit_designer_path(designer),class:'fa fa-edit' %>&nbsp;
+                <%= link_to ' 删除', designer, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>
+              </td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+      <%= link_to "新增",new_designer_path,class: "btn btn-w-m btn-primary pull-right" %>
+      <br/>
+    </div>
+  </div>
+</div>
+
+<%=render 'layerend' %>
