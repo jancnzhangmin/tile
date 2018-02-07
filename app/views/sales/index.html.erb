@@ -1,19 +1,7 @@
 <%= render 'layerbegin' %>
 <script>
     $(document).ready(function(){
-        $.ajax( {
-            url:'users/getregionall',
-            type:'get',
-            dataType:'json',
-            data:{regionid:$('#regionid').val(),
-                userid:$('#userid').val()
-            },
-            success:function(data) {
-                $('#addressspan').text(data);
-            },
-            error : function() {
-            }
-        });
+
         $('#searchbtn').click(function(){
             window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
         });
@@ -51,7 +39,7 @@
                 <%= preorder.ordernumber %>
               </td>
               <% customer = nil %>
-              <% if preorder.customer_id & preorder.customer_id != 0 %>
+              <% if preorder.customer_id && preorder.customer_id != 0 %>
               <% customer = Customer.find(preorder.customer_id) %>
                   <% end %>
               <td>

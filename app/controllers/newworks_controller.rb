@@ -78,7 +78,6 @@ class NewworksController < ApplicationController
         format.json { render json: @newwork.errors, status: :unprocessable_entity }
       end
     end
-
   end
 
   def worklian
@@ -104,6 +103,7 @@ class NewworksController < ApplicationController
     attr :number,true
     attr :widthtype,true
     attr :heighttype,true
+    attr :lossarea,true
 
   end
 
@@ -120,6 +120,7 @@ class NewworksController < ApplicationController
       newworkdetailcla.number = f.number
       newworkdetailcla.widthtype = f.widthtype
       newworkdetailcla.heighttype = f.heighttype
+      newworkdetailcla.lossarea = f.lossarea
       newworkdetailarr.push newworkdetailcla
     end
     render json:newworkdetailarr
@@ -158,7 +159,7 @@ class NewworksController < ApplicationController
       @newworkdetails.each do |f|
         if f.newraw_id == raw
           totalcla.number += (f.width / 1000) * (f.height / 1000) * f.number
-          usertotalcla.number += (f.width / 1000) * (f.userheight.to_f / 1000) *f.number
+          usertotalcla.number += (f.width / 1000) * (f.userheight.to_f / 1000) *f.number + f.lossarea.to_f
           totalcla.toalnumber += f.number
           usertotalcla.toalnumber += f.number
         end
@@ -203,7 +204,7 @@ class NewworksController < ApplicationController
       end
       if f.heighttype == '02' || f.heighttype == '06'
         lomacla.number += f.height / 1000 * f.number
-        userlomacla.number += f.userheight.to_f / 1000 * f.number
+        userlomacla.number += f.height.to_f / 1000 * f.number
       end
       if f.widthtype == '03'
         lomacla.number += (f.width / 1000) * 2 * f.number
@@ -211,7 +212,7 @@ class NewworksController < ApplicationController
       end
       if f.heighttype == '03'
         lomacla.number += (f.height / 1000) * 2 * f.number
-        userlomacla.number += (f.userheight.to_f / 1000) * 2 * f.number
+        userlomacla.number += (f.height.to_f / 1000) * 2 * f.number
       end
 
       if f.widthtype == '04' || f.widthtype == '06'
@@ -220,7 +221,7 @@ class NewworksController < ApplicationController
       end
       if f.heighttype == '04' || f.heighttype == '06'
         xiaoyuancla.number += f.height / 1000 * f.number
-        userxiaoyuancla.number += f.userheight.to_f / 1000 * f.number
+        userxiaoyuancla.number += f.height.to_f / 1000 * f.number
       end
       if f.widthtype == '05'
         xiaoyuancla.number += (f.width / 1000) * 2 * f.number
@@ -228,7 +229,7 @@ class NewworksController < ApplicationController
       end
       if f.heighttype == '05'
         xiaoyuancla.number += (f.height / 1000) * 2 * f.number
-        userxiaoyuancla.number += (f.userheight.to_f / 1000) * 2 * f.number
+        userxiaoyuancla.number += (f.height.to_f / 1000) * 2 * f.number
       end
 
     end
@@ -309,7 +310,7 @@ class NewworksController < ApplicationController
       newworkdetails = Newwork.find(params[:newworkid]).newworkdetails
       #newrawid = Newdepotdetail.find(params[:newrawid]).newdepot.newraw_id
       newrawid = Newraw.find(Newdepot.find(params[:newrawid]).newraw_id).id
-      newworkdetails.create!(newraw_id:newrawid,width:params[:width],height:params[:height],userheight:params[:userheight],widthtype:params[:widthtype],heighttype:params[:heighttype],number:params[:number])
+      newworkdetails.create!(newraw_id:newrawid,width:params[:width],height:params[:height],userheight:params[:userheight],widthtype:params[:widthtype],heighttype:params[:heighttype],number:params[:number],lossarea:params[:lossarea])
     elsif params[:way]=='edit'
       #inrawdepotdetails = Inrawdepot.find(params[:inrawdepotid]).inrawdepotdetails.where('id =?',params[:rawid]).first
       newworkdetails = Newwork.find(params[:newworkid]).newworkdetails.where('id =?',params[:rawdata]).first
@@ -325,6 +326,7 @@ class NewworksController < ApplicationController
       newworkdetails.number = params[:number]
       newworkdetails.widthtype = params[:widthtype]
       newworkdetails.heighttype = params[:heighttype]
+      newworkdetails.lossarea = params[:lossarea]
       newworkdetails.save!
     end
     render json: '{"status":"200"}'

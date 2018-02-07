@@ -1,6 +1,23 @@
 <script>
     $(document).ready(function(){
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green'
+        });
 
+        $('#sex').on('ifChecked', function(event){
+            $('#sexid').val(1);
+        });
+
+        $('#sex').on('ifUnchecked', function(event){
+            $('#sexid').val(0);
+        });
+
+        if($('#sexid').val()=='1'){
+            $('#sex').iCheck('check');
+        }else{
+            $('#sexm').iCheck('check');
+        }
 
     });
 
@@ -16,6 +33,26 @@
               <%= f.text_field :name,class:"form-control" %>
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">性别：</label>
+            <div class="col-sm-5">
+              <% if @customer.sex %>
+                  <%= f.hidden_field :sex,class:"form-control",value:@customer.sex, id:'sexid'%>
+              <% else %>
+                  <%= f.hidden_field :sex,class:"form-control",value:1,id:'sexid'%>
+              <% end %>
+              <div class="radio i-checks col-sm-3">
+                <label>
+                  <input type="radio" checked=""  name="s"  id="sex"> <i></i> 男</label>
+              </div>
+              <div class="radio i-checks col-sm-3">
+                <label>
+                  <input type="radio"  name="s" id="sexm"> <i></i> 女</label>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group">
             <label class="col-sm-3 control-label">电话：</label>
             <div class="col-sm-5">

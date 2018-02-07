@@ -119,6 +119,12 @@
 
                             },
                             {
+                                field: 'lossarea',
+                                title: '损耗面积'
+
+
+                            },
+                            {
                                 field: 'number',
                                 align: 'right',
                                 title: '数量'
@@ -263,7 +269,8 @@
                     userheight:$('#modeluserheight').val(),
                     number:$('#modelnumber').val(),
                     widthtype:$('#modelwidthtype').val(),
-                    heighttype:$('#modelheighttype').val()
+                    heighttype:$('#modelheighttype').val(),
+                    lossarea:$('#modellossarea').val()
                 },
                 success : function(json) {
                     getdata();
@@ -273,6 +280,7 @@
                     $('#modelwidth').val('');
                     $('#modelheight').val('');
                     $('#modeluserheight').val('');
+                    $('#modellossarea').val('');
                     $('#a01').iCheck('check');
                     $('#b01').iCheck('check');
 
@@ -298,6 +306,7 @@
             $('#modelheight').val($('#table').bootstrapTable('getSelections')[0].height);
             $('#modeluserheight').val($('#table').bootstrapTable('getSelections')[0].userheight);
             $('#modelnumber').val($('#table').bootstrapTable('getSelections')[0].number);
+            $('#modellossarea').val($('#table').bootstrapTable('getSelections')[0].lossarea);
             var acheck = $('#table').bootstrapTable('getSelections')[0].widthtype;
             if(acheck == '02'){
                 $('#a02').iCheck('check');
@@ -414,6 +423,7 @@
             $('#modelheight').val(row.height);
             $('#modeluserheight').val(row.userheight);
             $('#modelnumber').val(row.number);
+            $('#modellossarea').val(row.lossarea);
             var acheck = row.widthtype;
             if(acheck == '02'){
                 $('#a02').iCheck('check');
@@ -612,11 +622,11 @@
         <div class="row">
           <span id="customerspan"></span>
           <% preorder=Preorder.find(@newwork.preordernumber) %>
-          <% customer = nil %>
+          <% customer = 0 %>
           <% if preorder.customer_id && preorder.customer_id != 0 %>
-          <% customer = Customer.find(preorder.customer_id) %>
+          <% customer = Customer.find(preorder.customer_id).id %>
               <% end %>
-          <input type="hidden" id="customerid" value=<%= customer.id %> >
+          <input type="hidden" id="customerid" value=<%= customer %> >
         </div>
 
 
@@ -788,6 +798,13 @@
             <label class="col-sm-3 control-label">用户宽：</label>
             <div class="col-sm-9">
               <input class="form-control" id="modeluserheight">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">损耗面积：</label>
+            <div class="col-sm-9">
+              <input class="form-control" id="modellossarea">
             </div>
           </div>
 

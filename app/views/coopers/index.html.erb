@@ -32,6 +32,8 @@
           <th class="text-center">名称</th>
           <th class="text-center">地址</th>
           <th class="text-center">电话</th>
+          <th class="text-center">联系人</th>
+          <th class="text-center">联系人电话</th>
           <th class="text-center">操作</th>
         </tr>
         </thead>
@@ -43,6 +45,8 @@
               </td>
               <td><%= cooper.address %></td>
               <td><%= cooper.tel %></td>
+              <td><%= cooper.contact %></td>
+              <td><%= cooper.contacttel %></td>
               <td>
                 <%= link_to '编辑',edit_cooper_path(cooper),class:'fa fa-edit' %>&nbsp;
                     <%= link_to ' 删除', cooper, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>

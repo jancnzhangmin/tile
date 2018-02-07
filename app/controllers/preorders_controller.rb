@@ -101,7 +101,11 @@ class PreordersController < ApplicationController
     @preorderdetails.each do |f|
       preorderdetailcla = Preorderdetailclass.new
       preorderdetailcla.id = f.id
-      preorderdetailcla.name = f.preraw.name
+      if f.rawtype == 'r'
+        preorderdetailcla.name = Newraw.find(f.newraw_id).name
+      else
+        preorderdetailcla.name = Preraw.find(f.preraw_id).name
+      end
       preorderdetailcla.area = f.area
       preorderdetailcla.unit = f.unit
       preorderdetailcla.price = f.price
@@ -149,7 +153,7 @@ class PreordersController < ApplicationController
     prerawarr = Array.new
     newraws.each do |f|
       prerawcla = Prerawclass.new
-      prerawcla.id = f.id
+      prerawcla.id = 'r' + f.id.to_s
       prerawcla.pinyin = f.pinyin
       prerawcla.name = f.name
       prerawcla.ctype = '原材料'
@@ -157,7 +161,7 @@ class PreordersController < ApplicationController
     end
     preraws.each do |f|
       prerawcla = Prerawclass.new
-      prerawcla.id = f.id
+      prerawcla.id = 'w' + f.id.to_s
       prerawcla.pinyin = f.pinyin
       prerawcla.name = f.name
       prerawcla.ctype = '加工方式'
@@ -175,13 +179,24 @@ class PreordersController < ApplicationController
     if params[:way] =='add'
       preorderdetails = Preorder.find(params[:preorderid]).preorderdetails
       sum = params[:price].to_f * params[:number].to_f
-      if params[:rawtype] == '加工方式'
-      preorderdetails.create(preraw_id:params[:prerawid],width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'加工方式')
+      if params[:prerawid][0] == 'r'
+        temprerawid = (params[:prerawid].delete 'r').to_i
+      preorderdetails.create!(newraw_id:temprerawid,width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'r')
       else
-        preorderdetails.create(newraw_id:params[:prerawid],width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'加工方式')
+        temprerawid = params[:prerawid].delete 'w'
+        preorderdetails.create(preraw_id:temprerawid,width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'w')
         end
     elsif params[:way]=='edit'
       inrawdepotdetails = Inrawdepot.find(params[:inrawdepotid]).inrawdepotdetails.where('id =?',params[:rawid]).first
+      if params[:prerawid][0] == 'r'
+        inrawdepotdetails.newraw_id = (params[:prerawid].delete 'r').to_i
+        inrawdepotdetails.preraw_id = nil
+        inrawdepotdetails.rawtype = 'r'
+      else
+        inrawdepotdetails.preraw_id = (params[:prerawid].delete 'w').to_i
+        inrawdepotdetails.newraw_id = nil
+        inrawdepotdetails.rawtype = 'w'
+      end
       inrawdepotdetails.number = params[:number].to_f
       inrawdepotdetails.price = params[:price]
       inrawdepotdetails.sum = params[:price].to_f * params[:number].to_f
@@ -251,6 +266,12 @@ class PreordersController < ApplicationController
       end
 
       @newwork = Newwork.create(ordernumber:ordernumber,isnew:1,preordernumber:params[:id])
+      preorderdetails = Preorder.find(params[:id]).preorderdetails
+      preorderdetails.each do |f|
+        if f.newraw_id
+          @newwork.newworkdetails.create(newraw_id:f.newraw_id,width:0,height:0,userheight:0,widthtype:'01',heighttype:'01',number:0,lossarea:0)
+        end
+      end
       redirect_to edit_newwork_path(@newwork)
     end
   end

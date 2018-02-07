@@ -58,7 +58,7 @@ class CoopersController < ApplicationController
 
 # Never trust parameters from the scary internet, only allow the white list through.
   def cooper_params
-    params.require(:cooper).permit(:name, :address, :tel, :bankdeposit, :bankaccount, :bankuser, :cooperuser, :cooperadmin)
+    params.require(:cooper).permit(:name, :address, :tel, :bankdeposit, :bankaccount, :bankuser, :cooperuser, :cooperadmin, :contact, :contacttel)
   end
 
 end

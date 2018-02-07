@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180206082400) do
+ActiveRecord::Schema.define(version: 20180207064744) do
 
   create_table "add_cooperuser_to_coopers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "cooperuser"
@@ -57,6 +57,8 @@ ActiveRecord::Schema.define(version: 20180206082400) do
     t.datetime "updated_at", null: false
     t.string "cooperuser"
     t.string "cooperadmin"
+    t.string "contact"
+    t.string "contacttel"
   end
 
   create_table "cooperusers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -74,6 +76,7 @@ ActiveRecord::Schema.define(version: 20180206082400) do
     t.string "name"
     t.string "tel"
     t.string "region"
+    t.integer "sex"
   end
 
   create_table "designers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -265,6 +268,7 @@ ActiveRecord::Schema.define(version: 20180206082400) do
     t.float "number", limit: 24
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "lossarea", limit: 24
   end
 
   create_table "newworks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
