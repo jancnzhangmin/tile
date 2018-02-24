@@ -2,7 +2,13 @@ class NewdepotsController < ApplicationController
 
   before_action :set_newdepot, only: [:show, :edit, :update, :destroy]
   def index
-    @newdepots = Newdepot.all
+    @newdepots = Newdepot.all.paginate(:page => params[:page], :per_page => 20)
+    if params[:search]
+      newraw = Newraw.where('name like ?',"%#{params[:search]}%")
+      if newraw.count > 0
+        @newdepots = Newdepot.where('newraw_id in (?)',newraw.ids).paginate(:page => params[:page], :per_page => 20)
+      end
+    end
   end
 
   def edit

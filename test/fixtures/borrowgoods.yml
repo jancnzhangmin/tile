@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ordernumber: MyString
+  borrowuser_id: 1
+  user_id: 1
+  summary: MyString
+
+two:
+  ordernumber: MyString
+  borrowuser_id: 1
+  user_id: 1
+  summary: MyString

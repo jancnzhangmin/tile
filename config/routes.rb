@@ -157,11 +157,27 @@ Rails.application.routes.draw do
     end
     member do
       get 'worklian'
+      get 'sett'
     end
   end
   resources :workrecords
   resources :designers
   resources :fiters
-
+  resources :borrowgoods do
+    collection do
+      get 'getdata'
+      get 'getgood'
+      get 'getgoodbyid'
+      get 'changeingooddetail'
+    end
+  end
+  resources :returngoods do
+    collection do
+      get 'getdata'
+      get 'getgood'
+      get 'getgoodbyid'
+      get 'changeingooddetail'
+    end
+  end
 
 end

@@ -1,8 +1,13 @@
 class NewworksController < ApplicationController
 
-  before_action :set_newwork, only: [:show, :edit, :update, :destroy, :worklian]
+  before_action :set_newwork, only: [:show, :edit, :update, :destroy, :worklian, :sett]
   def index
-    @newworks = Newwork.where('isnew = 0')
+    @newworks = Newwork.where('isnew = 0').paginate(:page => params[:page], :per_page => 20)
+    if params[:search]
+      customer = Customer.where('name like ?',"%#{params[:search]}%")
+      preorder = Preorder.where('customer_id in (?)',customer.ids)
+      @newworks = Newwork.where('(ordernumber like ? or preordernumber in (?)) and isnew = 0',"%#{params[:search]}%",preorder.ids).paginate(:page => params[:page], :per_page => 20)
+    end
   end
 
   def edit
@@ -84,6 +89,10 @@ class NewworksController < ApplicationController
     @coopers = Cooper.all
   end
 
+  def sett
+    @coopers = Cooper.all
+  end
+
 
   def destroy
     @newwork.destroy
@@ -104,6 +113,8 @@ class NewworksController < ApplicationController
     attr :widthtype,true
     attr :heighttype,true
     attr :lossarea,true
+    attr :price,true
+    attr :sum,true
 
   end
 
@@ -114,10 +125,12 @@ class NewworksController < ApplicationController
       newworkdetailcla = Newworkdetailclass.new
       newworkdetailcla.id = f.id
       newworkdetailcla.name = f.newraw.name
+      newworkdetailcla.price = f.newraw.price
       newworkdetailcla.width = f.width
       newworkdetailcla.height = f.height
       newworkdetailcla.userheight = f.userheight
       newworkdetailcla.number = f.number
+      newworkdetailcla.sum = (f.newraw.price).to_f * f.number
       newworkdetailcla.widthtype = f.widthtype
       newworkdetailcla.heighttype = f.heighttype
       newworkdetailcla.lossarea = f.lossarea

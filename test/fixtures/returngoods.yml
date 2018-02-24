@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ordernumber: MyString
+  returnuser_id: 1
+  user_id: 1
+  isnew: 1
+
+two:
+  ordernumber: MyString
+  returnuser_id: 1
+  user_id: 1
+  isnew: 1

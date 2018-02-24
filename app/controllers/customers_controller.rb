@@ -2,7 +2,10 @@ class CustomersController < ApplicationController
 
   before_action :set_customer, only: [:show, :edit, :update, :destroy]
   def index
-    @customers = Customer.all
+    @customers = Customer.all.paginate(:page => params[:page], :per_page => 20).order("id desc")
+    if params[:search]
+      @customers = Customer.where('name like ? or tel like ?',"%#{params[:search]}%","%#{params[:search]}%").paginate(:page => params[:page], :per_page => 20).order("id desc")
+    end
   end
 
   def edit

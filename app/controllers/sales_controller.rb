@@ -3,7 +3,11 @@ class SalesController < ApplicationController
   before_action :set_sale, only: [:show, :edit, :update, :destroy]
   def index
     @sales = Sale.all
-    @preorders = Preorder.where('isnew = 0')
+    @preorders = Preorder.where('isnew = 0').paginate(:page => params[:page], :per_page => 20)
+    if params[:search]
+      customer = Customer.where('name like ?',"%#{params[:search]}%")
+      @preorders = Preorder.where('(ordernumber like ? or customer_id in (?)) and isnew = 0',"%#{params[:search]}%",customer.ids).paginate(:page => params[:page], :per_page => 20)
+    end
   end
 
   def edit

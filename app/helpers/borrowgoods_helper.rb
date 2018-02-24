@@ -1,0 +1,2 @@
+module BorrowgoodsHelper
+end

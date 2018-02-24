@@ -1,7 +1,17 @@
 <%= render 'layerbegin' %>
 <script>
     $(document).ready(function(){
+        $('#searchbtn').click(function(){
+            window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
+        });
 
+        $('#search').val(getUrlParam('search'));
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg); //匹配目标参数
+            if (r != null) return decodeURI (r[2]); return null; //返回参数值
+        }
     });
 </script>
 <div class="col-lg-12">
@@ -10,7 +20,7 @@
       <h5>原材料库存</h5>
       <div class="ibox-tools col-sm-3" style="margin-top: -5px;">
         <div class="input-group">
-          <input type="text" id="search"  class="input-sm form-control"> <span class="input-group-btn">
+          <input type="text" id="search" placeholder="原材料名称" class="input-sm form-control"> <span class="input-group-btn">
                                         <button type="button" id="searchbtn" class="btn btn-sm btn-primary"> 搜索</button> </span>
         </div>
       </div>
@@ -41,32 +51,38 @@
         </thead>
         <tbody>
         <% @newdepots.each do |newdepot| %>
-<tr>
-  <td>
-    <%= Newraw.find(newdepot.newraw_id).name %>
-  </td>
-  <td>
-    <%= newdepot.number %>
-  </td>
-  <td>
-    <%= newdepot.price.round(2) %>
-  </td>
-  <td>
-    <%= (newdepot.price * newdepot.number).round(2) %>
-  </td>
-  <td>
-    <% innewdepotdetail = Innewdepotdetail.where('newraw_id = ?',newdepot.newraw_id).last %>
-    <% if innewdepotdetail %>
-    <%= innewdepotdetail.summary %>
-        <% end %>
-  </td>
-</tr>
+            <tr>
+              <td>
+                <%= Newraw.find(newdepot.newraw_id).name %>
+              </td>
+              <td>
+                <%= newdepot.number %>
+              </td>
+              <td>
+                <% if newdepot.price %>
+                    <%= newdepot.price.round(2) %>
+                <% end %>
+              </td>
+              <td>
+                <% if newdepot.price %>
+                <%= (newdepot.price.to_f * newdepot.number).round(2) %>
+                    <% end %>
+              </td>
+              <td>
+                <% innewdepotdetail = Innewdepotdetail.where('newraw_id = ?',newdepot.newraw_id).last %>
+                <% if innewdepotdetail %>
+                    <%= innewdepotdetail.summary %>
+                <% end %>
+              </td>
+            </tr>
         <% end %>
         </tbody>
       </table>
 
-
-
+<br>
+      <div class="text-center">
+        <%= will_paginate @newdepots, renderer: BootstrapPagination::Rails %>
+      </div>
 
 
 

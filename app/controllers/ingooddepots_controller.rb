@@ -27,7 +27,7 @@ class IngooddepotsController < ApplicationController
   end
 
   def edit
-
+@users = User.all
   end
 
   def new
@@ -65,7 +65,7 @@ class IngooddepotsController < ApplicationController
             firstgooddepot.number += f.number
             firstgooddepot.save
           else
-            Gooddepot.create!(good_id:f.good_id,number:f.number)
+            Gooddepot.create!(good_id:f.good_id,number:f.number,borrownumber:0)
           end
         end
         format.html { redirect_to ingooddepotrecord_path(@ingooddepot), notice: 'User was successfully updated.' }
@@ -165,7 +165,7 @@ class IngooddepotsController < ApplicationController
         end
       end
       if hasdepot == 1
-        localgooddepotdetail = ingooddepotdetails.where('good_id = ?',params[:rawid]).first
+        localgooddepotdetail = ingooddepotdetails.where('id = ?',params[:goodid]).first
         localgooddepotdetail.number += params[:number].to_f
 
         localgooddepotdetail.save

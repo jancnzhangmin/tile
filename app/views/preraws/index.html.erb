@@ -30,6 +30,8 @@
         <thead>
         <tr>
           <th class="text-center">定单材料名称</th>
+          <th class="text-center">单位</th>
+          <th class="text-center">售价</th>
           <th class="text-center">操作</th>
         </tr>
         </thead>
@@ -38,6 +40,12 @@
             <tr>
               <td>
                 <%= preraw.name %>
+              </td>
+              <td>
+                <%= preraw.unit %>
+              </td>
+              <td>
+                <%= preraw.price %>
               </td>
 
               <td>
@@ -57,10 +65,6 @@
 
       <%= link_to "新增",new_preraw_path,class: "btn btn-w-m btn-primary pull-right" %>
           <br/>
-
-
-
-
           </div>
           </div>
           </div>

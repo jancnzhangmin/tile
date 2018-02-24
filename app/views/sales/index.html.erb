@@ -5,6 +5,14 @@
         $('#searchbtn').click(function(){
             window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
         });
+
+        $('#search').val(getUrlParam('search'));
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg); //匹配目标参数
+            if (r != null) return decodeURI (r[2]); return null; //返回参数值
+        }
     });
 </script>
 <div class="col-lg-12">
@@ -72,7 +80,10 @@
                 <%= sum - pay %>
               </td>
               <td>
-                <%= link_to '查看',preorder_path(preorder,type:'sale'),class:'fa fa-edit' %>&nbsp;
+                <% newwork = Newwork.find_by_preordernumber(preorder.id) %>
+                <% if newwork %>
+                <%= link_to '查看',sett_newwork_path(newwork),class:'fa fa-edit' %>&nbsp;
+                    <% end %>
               </td>
             </tr>
         <% end %>
@@ -80,6 +91,9 @@
       </table>
       <%= link_to "新增",new_preorder_path,class: "btn btn-w-m btn-primary pull-right" %>
       <br/>
+      <div class="text-center">
+        <%= will_paginate @preorders, renderer: BootstrapPagination::Rails %>
+      </div>
     </div>
   </div>
 </div>

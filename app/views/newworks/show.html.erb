@@ -2,13 +2,23 @@
 <div class="col-lg-12">
   <div class="ibox float-e-margins">
     <div class="ibox-title">
-      <h3>加工单</h3>
+      <h5>加工单</h5>
+      <div class="ibox-tools">
+        <button id="print" class="btn btn-primary btn-w-m" style="margin-top: -8px;">打印</button>
+      </div>
     </div>
 
 
     <script>
         var way='';
         $(document).ready(function(){
+
+            $('#print').click(function(){
+                //$("div#myPrintArea").printArea();
+                $("#myPrintArea").jqprint();
+
+            });
+
             $(".i-checks").iCheck({checkboxClass:"icheckbox_square-green",radioClass:"iradio_square-green"});
             getdata();
             function caltotal(){
@@ -566,7 +576,7 @@
             display:block;
         }
     </style>
-    <div class="col-md-12 ibox ibox-content">
+    <div id="myPrintArea" class="col-md-12 ibox ibox-content">
       <%= form_for(@newwork,:html => {:class=>'form-horizontal m-t',:multipart => true,:id=>'userform'}) do |f| %>
           <div class="ibox-content form-horizontal m-t">
 

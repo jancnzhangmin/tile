@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180207064744) do
+ActiveRecord::Schema.define(version: 20180209160755) do
 
   create_table "add_cooperuser_to_coopers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "cooperuser"
@@ -23,6 +23,24 @@ ActiveRecord::Schema.define(version: 20180207064744) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "borrowgooddetails", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "borrowgood_id"
+    t.integer "good_id"
+    t.float "number", limit: 24
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "borrowgoods", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "ordernumber"
+    t.integer "borrowuser_id"
+    t.integer "user_id"
+    t.string "summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "isnew"
   end
 
   create_table "compans", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -98,6 +116,7 @@ ActiveRecord::Schema.define(version: 20180207064744) do
     t.float "number", limit: 24
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "borrownumber", limit: 24
   end
 
   create_table "goods", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -323,6 +342,8 @@ ActiveRecord::Schema.define(version: 20180207064744) do
     t.string "pinyin"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "price", limit: 24
+    t.string "unit"
   end
 
   create_table "rawdepots", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -370,6 +391,24 @@ ActiveRecord::Schema.define(version: 20180207064744) do
     t.integer "status"
     t.string "user"
     t.float "pay", limit: 24
+  end
+
+  create_table "returngooddetails", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "returngood_id"
+    t.integer "good_id"
+    t.float "number", limit: 24
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "returngoods", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "ordernumber"
+    t.integer "returnuser_id"
+    t.integer "user_id"
+    t.integer "isnew"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "summary"
   end
 
   create_table "saledepots", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

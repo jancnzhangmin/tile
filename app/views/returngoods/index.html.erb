@@ -1,0 +1,57 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h5>工具归还</h5>
+    </div>
+    <div class="ibox-content">
+      <table class="table table-hover table-bordered text-center">
+        <thead>
+        <tr>
+          <th class="text-center">归还单号</th>
+          <th class="text-center">归还人</th>
+          <th class="text-center">归还时间</th>
+          <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @returngoods.each do |returngood| %>
+            <tr>
+              <td>
+<%= returngood.ordernumber %>
+              </td>
+              <td>
+                <% returnuser = nil %>
+                <% if returngood.returnuser_id && returngood.returnuser_id != 0 %>
+                <% returnuser = User.find(returngood.returnuser_id).name %>
+                    <% end %>
+                <%= returnuser %>
+              </td>
+              <td>
+<%= returngood.updated_at.strftime('%Y-%m-%d %H:%M:%S') %>
+              </td>
+              <td>
+
+                <%= link_to '编辑',edit_returngood_path(returngood),class:'fa fa-edit' %>&nbsp;
+
+                <%= link_to ' 删除', returngood, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>
+
+
+              </td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+      <%= link_to "新增",new_returngood_path,class: "btn btn-w-m btn-primary pull-right" %>
+      <br/>
+      <br/>
+    </div>
+  </div>
+</div>
+
+<%=render 'layerend' %>

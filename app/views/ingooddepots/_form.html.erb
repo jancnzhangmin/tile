@@ -1,5 +1,5 @@
 <script>
-  var way='';
+    var way='';
     $(document).ready(function(){
 
         getdata();
@@ -16,8 +16,8 @@
                             "value": data
                         }
                     }).on('onSetSelectValue', function (e, keyword) {
-              $('#supplier').val(keyword.id);
-            });
+                        $('#supplier').val(keyword.id);
+                    });
         }
 
         var goodlist;
@@ -68,11 +68,11 @@
                     number:$('#modelnumber').val(),
                 },
                 success : function(json) {
-                  getdata();
-                  $('#good_data').val('');
-                  $('#modelspec').val('');
-                  $('#modelunit').val('');
-                  $('#modelnumber').val('');
+                    getdata();
+                    $('#good_data').val('');
+                    $('#modelspec').val('');
+                    $('#modelunit').val('');
+                    $('#modelnumber').val('');
                 }
             });
 
@@ -80,77 +80,77 @@
 
 
 
-      $('#edits').click(function(){
-        way='edit';
-        //alert($('#table').bootstrapTable('getSelections')[0].id);
-        $('#modelid').val($('#table').bootstrapTable('getSelections')[0].id);
-        $('#good_data').val($('#table').bootstrapTable('getSelections')[0].raw);
-        $('#modelspec').val($('#table').bootstrapTable('getSelections')[0].spec);
-        $('#modelunit').val($('#table').bootstrapTable('getSelections')[0].unit);
-        $('#modelnumber').val($('#table').bootstrapTable('getSelections')[0].number);
-        $("#addModal").modal();
+        $('#edits').click(function(){
+            way='edit';
+            //alert($('#table').bootstrapTable('getSelections')[0].id);
+            $('#modelid').val($('#table').bootstrapTable('getSelections')[0].id);
+            $('#good_data').val($('#table').bootstrapTable('getSelections')[0].good);
+            $('#modelspec').val($('#table').bootstrapTable('getSelections')[0].spec);
+            $('#modelunit').val($('#table').bootstrapTable('getSelections')[0].unit);
+            $('#modelnumber').val($('#table').bootstrapTable('getSelections')[0].number);
+            $("#addModal").modal();
 
-      });
-
-      $('#deletes').click(function(){
-        way='delete';
-        var ids = new Array();
-        $.each($('#table').bootstrapTable('getSelections'),function(i,item){
-          ids.push(item.id);
         });
 
-        $.ajax({
-          type : 'get',
-          async : false,
-          url :'../changeingooddetail',
-          data:{
-            way:way,
-            goodid:ids
-          },
-          success : function(json) {
-            getdata();
-          }
+        $('#deletes').click(function(){
+            way='delete';
+            var ids = new Array();
+            $.each($('#table').bootstrapTable('getSelections'),function(i,item){
+                ids.push(item.id);
+            });
+
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../changeingooddetail',
+                data:{
+                    way:way,
+                    goodid:ids
+                },
+                success : function(json) {
+                    getdata();
+                }
+            });
         });
-      });
 
-      $('#adds').click(function(){
-        way='add';
-      });
+        $('#adds').click(function(){
+            way='add';
+        });
 
-      $('#smt').click(function(){
-        $('#summary').val($('#summaryinput').val());
-        $('#user').val($('#userinput').val());
-      });
+        $('#smt').click(function(){
+            $('#summary').val($('#summaryinput').val());
+            $('#user').val($('#userinput').val());
+        });
 
     });
 
     window.operateEvents = {
 
         'click .edit': function (e, value, row, index) {
-          way='edit';
-          //alert($('#table').bootstrapTable('getSelections')[0].id);
+            way='edit';
+            //alert($('#table').bootstrapTable('getSelections')[0].id);
 
-          $('#modelid').val(row.id);
-          $('#raw_data').val(row.raw);
-          $('#modelspec').val(row.spec);
-          $('#modelunit').val(row.unit);
-          $('#modelnumber').val(row.number);
-          $("#addModal").modal();
+            $('#modelid').val(row.id);
+            $('#good_data').val(row.good);
+            $('#modelspec').val(row.spec);
+            $('#modelunit').val(row.unit);
+            $('#modelnumber').val(row.number);
+            $("#addModal").modal();
         },
         'click .remove': function (e, value, row, index) {
-          way='delete';
-          $.ajax({
-            type : 'get',
-            async : false,
-            url :'../changeingooddetail',
-            data:{
-              way:way,
-              goodid:row.id
-            },
-            success : function(json) {
-              getdata();
-            }
-          });
+            way='delete';
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../changeingooddetail',
+                data:{
+                    way:way,
+                    goodid:row.id
+                },
+                success : function(json) {
+                    getdata();
+                }
+            });
 
         }
     };
@@ -166,115 +166,99 @@
         ].join('');
     }
 
-  function getdata(){
-    var tablejson;
-    $.ajax({
-      async : false,
-      url : "../getdata",
-      type : "GET",
-      dataType : 'json',
-      timeout : 5000,
-      data:{
-        ingooddepotid:$('#ingooddepotid').val()
-      },
-      success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
-        //alert(jsonstr.price);
-        tablejson=jsonstr;
-        $('#table').bootstrapTable({
-          columns: [{
-            checkbox: true
-          },{
-            field: 'id',
-            title: 'id',
-            visible:false
-          },{
-            field: 'raw',
-            title: '货品'
-          },
-            {
-              field: 'spec',
-              title: '规格'
+    function getdata(){
+        var tablejson;
+        $.ajax({
+            async : false,
+            url : "../getdata",
+            type : "GET",
+            dataType : 'json',
+            timeout : 5000,
+            data:{
+                ingooddepotid:$('#ingooddepotid').val()
             },
-            {
-              field: 'unit',
-              title: '单位'
+            success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
+                //alert(jsonstr.price);
+                tablejson=jsonstr;
+                $('#table').bootstrapTable({
+                    columns: [{
+                        checkbox: true
+                    },{
+                        field: 'id',
+                        title: 'id',
+                        visible:false
+                    },{
+                        field: 'good',
+                        title: '货品'
+                    },
+                        {
+                            field: 'spec',
+                            title: '规格'
+                        },
+                        {
+                            field: 'unit',
+                            title: '单位'
+                        },
+                        {
+                            field: 'number',
+                            align: 'right',
+                            title: '数量'
+                        },{
+                            field: 'operate',
+                            title: '操作',
+                            align: 'center',
+                            events: operateEvents,
+                            formatter: operateFormatter
+                        }],
+                    formatLoadingMessage: function(){
+                        return "";
+                    },
+                    data: tablejson
+                });
+
+                $('#table').bootstrapTable('load',tablejson);
+                var sum=0;
+                $.each(jsonstr,function(i,item){
+                    sum+=parseFloat(item.sum);
+                });
+                //$('#sumspan').text(sum);
+                //$('#payablespan').text(sum);
+
             },
-             {
-              field: 'number',
-              align: 'right',
-              title: '数量'
-            },{
-              field: 'operate',
-              title: '操作',
-              align: 'center',
-              events: operateEvents,
-              formatter: operateFormatter
-            }],
-          formatLoadingMessage: function(){
-            return "";
-          },
-          data: tablejson
+            error : function(xhr) {
+            }
         });
-
-        $('#table').bootstrapTable('load',tablejson);
-        var sum=0;
-        $.each(jsonstr,function(i,item){
-          sum+=parseFloat(item.sum);
-        });
-        //$('#sumspan').text(sum);
-        //$('#payablespan').text(sum);
-
-      },
-      error : function(xhr) {
-      }
-    });
-  }
+    }
 
 
 </script>
+<%= form_for(@ingooddepot,:html => {:class=>'form-horizontal m-t',:multipart => true}) do |f| %>
 <div class="col-md-12 ibox ibox-content">
+
   <div class="ibox-content form-horizontal m-t">
 
 
     <div class="row">
 
 
-      <div class="col-sm-12">
+      <div class="col-sm-6">
         <h4>单据编号：<span class="text-navy"><%=@ingooddepot.ordernumber %></span></h4>
         <input type="hidden" id="ingooddepotid" value=<%= @ingooddepot.id %> >
       </div>
-      <div>
 
 
-        <div class="col-lg-6" style="display: none;">
-          <div class="form-group">
-            <label class="col-sm-3 control-label">供应商：</label>
-            <div class="col-sm-9">
-              <div class="input-group">
-                <input type="text" class="form-control" id="test_data">
-                <div class="input-group-btn">
-                  <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                  </ul>
-                </div>
-                <!-- /btn-group -->
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="col-lg-12">
-          <div class="form-group">
-            <label class="col-sm-3 control-label">摘要：</label>
-            <div class="col-sm-9">
-              <textarea  class="form-control" id="summaryinput"></textarea>
+      <div class="col-lg-6">
+        <div class="form-group">
+          <label class="col-sm-3 control-label">摘要：</label>
+          <div class="col-sm-9">
+            <textarea  class="form-control" id="summaryinput"></textarea>
 
-            </div>
           </div>
         </div>
       </div>
+
+
     </div>
 
     <div class="hr-line-dashed"></div>
@@ -297,57 +281,67 @@
       </div>
     </div>
 
+    <div >
+      <div class="table-responsive">
+        <table>
+          <tbody>
+          <tr>
+            <td class="col-lg-3" style="display: none;">
+              <div class="form-group">
+                <label class="col-sm-4 control-label text-right" style="margin-top: 10px;">付款（元）：</label>
+                <div class="col-sm-8">
+                  <input class="form-control text-right" value="0">
+                </div>
+              </div>
+            </td>
+            <td class="col-lg-3">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">经手人：</label>
+
+                <div class="col-sm-6">
+                  <%= f.hidden_field :user,class: "form-control",id:'user' %>
+                  <select class="form-control m-b" id="userselect">
+                    <option value="0">请选择经手人</option>
+                    <% @users.each do |user| %>
+                        <option value=<%=user.id %>><%=user.name %></option>
+                    <% end %>
+                  </select>
+                </div>
+              </div>
+            </td>
+            <td class="col-lg-3" style="display: none;">
+              <div class="form-group">
+                <label class="col-sm-3 control-label" style="margin-top: 10px;">合计：</label>
+                <div class="col-sm-7">
+                  <span class="form-control" id="sumspan" ></span>
+                </div>
+              </div>
+            </td>
+            <td class="col-lg-3 text-right">
+
+              <%= f.hidden_field :summary,class: "form-control",id:'summary' %>
+              <%= f.hidden_field :user,class: "form-control",id:'user' %>
+              <%= f.submit '确定',class: "btn btn-w-m btn-primary",id:'smt' %>
+
+            </td>
+
+
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
 
   </div>
 
-  <div class="full-height-scroll">
-  <div class="table-responsive">
-  <table class="table table-striped table-hover">
-    <tbody>
-    <tr>
-      <td class="col-lg-3" style="display: none;">
-        <div class="form-group">
-          <label class="col-sm-4 control-label text-right" style="margin-top: 10px;">付款（元）：</label>
-          <div class="col-sm-8">
-            <input class="form-control text-right" value="0">
-          </div>
-        </div>
-      </td>
-      <td class="col-lg-3">
-        <div class="form-group">
-          <label class="col-sm-4 control-label text-right" style="margin-top: 10px;">经手人：</label>
-          <div class="col-sm-8">
-            <input class="form-control text-right" id="userinput">
-          </div>
-        </div>
-      </td>
-      <td class="col-lg-3" style="display: none;">
-        <div class="form-group">
-          <label class="col-sm-3 control-label" style="margin-top: 10px;">合计：</label>
-          <div class="col-sm-7">
-            <span class="form-control" id="sumspan" ></span>
-          </div>
-        </div>
-      </td>
-      <td class="col-lg-3 text-right">
-        <%= form_for(@ingooddepot,:html => {:class=>'form-horizontal m-t',:multipart => true}) do |f| %>
-            <%= f.hidden_field :summary,class: "form-control",id:'summary' %>
-            <%= f.hidden_field :user,class: "form-control",id:'user' %>
-            <%= f.submit '确定',class: "btn btn-w-m btn-primary",id:'smt',style:'margin-top:-15px;' %>
-            <% end %>
-      </td>
 
-
-    </tr>
-    </tbody>
-  </table>
-    </div>
-    </div>
 
 
 
 </div>
-
+  <% end %>
 <!-- 模态框（Modal） -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">

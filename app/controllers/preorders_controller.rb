@@ -2,7 +2,11 @@ class PreordersController < ApplicationController
 
   before_action :set_preorder, only: [:show, :edit, :update, :destroy]
   def index
-    @preorders = Preorder.where('isnew = 0')
+    @preorders = Preorder.where('isnew = 0').paginate(:page => params[:page], :per_page => 20)
+    if params[:search]
+      customer = Customer.where('name like ?',"%#{params[:search]}%")
+      @preorders = Preorder.where('(ordernumber like ? or customer_id in (?)) and isnew = 0',"%#{params[:search]}%",customer.ids).paginate(:page => params[:page], :per_page => 20)
+    end
   end
 
   def edit
@@ -55,7 +59,7 @@ class PreordersController < ApplicationController
       if @preorder.update(preorder_params)
         @preorder.isnew = 0
         @preorder.save
-        format.html { redirect_to preorders_path, notice: 'User was successfully updated.' }
+        format.html { redirect_to preorder_path(@preorder), notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @preorder }
       else
         format.html { render :edit }

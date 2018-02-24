@@ -1,0 +1,2 @@
+module GooddepotsHelper
+end

@@ -31,6 +31,7 @@
         <tr>
           <th class="text-center">材料名称</th>
           <th class="text-center">单位</th>
+          <th class="text-center">售价</th>
           <th class="text-center">操作</th>
         </tr>
         </thead>
@@ -41,6 +42,7 @@
                 <%= newraw.name %>
               </td>
               <td><%= newraw.unit %></td>
+              <td><%= newraw.price %></td>
               <td>
 
                 <%= link_to '编辑',edit_newraw_path(newraw),class:'fa fa-edit' %>&nbsp;

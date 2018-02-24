@@ -2,7 +2,10 @@ class CoopersController < ApplicationController
 
   before_action :set_cooper, only: [:show, :edit, :update, :destroy]
   def index
-    @coopers = Cooper.all
+    @coopers = Cooper.all.paginate(:page => params[:page], :per_page => 20)
+    if params[:search]
+      @coopers = Cooper.where('name like ? or tel like ? or contact like ? or contacttel like ?',"%#{params[:search]}%","%#{params[:search]}%","%#{params[:search]}%","%#{params[:search]}%").paginate(:page => params[:page], :per_page => 20)
+    end
   end
 
   def edit

@@ -6,7 +6,7 @@
         <button id="print" class="btn btn-primary btn-w-m" style="margin-top: -8px;">打印</button>
         </div>
       <% if params[:type].to_s =='' %>
-          <h3>预定单</h3>
+          <h3>预订单</h3>
       <% else %>
           <h3>结算单</h3>
       <% end %>
@@ -572,7 +572,7 @@
             <table>
               <tr>
                 <td>
-                  客户&nbsp;&nbsp;&nbsp;&nbsp;
+                  客户:&nbsp;&nbsp;&nbsp;&nbsp;
                 </td>
                 <td>
                   <% if @preorder.customer_id && @preorder.customer_id != 0 %>
@@ -584,10 +584,56 @@
                   &nbsp;&nbsp;&nbsp;&nbsp;
                 </td>
                 <td>
+                  电话：&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
+                  <% if customer %>
+                      <span ><%= customer.tel %></span>
+                  <% end %>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
                   地址：
                   <% if customer %>
                       <%= customer.region %>
                   <% end %>
+                </td>
+              </tr>
+              <tr>
+                <% if @preorder.cooper_id && @preorder.cooper_id != 0 %>
+                <% cooper = Cooper.find(@preorder.cooper_id) %>
+                <% end %>
+                <td>
+                  装修公司:&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
+                  <% if cooper %>
+                      <%= cooper.name %>
+                  <% end %>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <% if @preorder.designer_id && @preorder.designer_id != 0 %>
+                    <% designer = Designer.find(@preorder.designer_id) %>
+                <% end %>
+                <td>
+                  设计师:&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
+                  <% if designer %>
+                      <%= designer.name %>
+                  <% end %>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <% if @preorder.fiter_id && @preorder.fiter_id != 0 %>
+                    <% fiter = Fiter.find(@preorder.fiter_id) %>
+                <% end %>
+                <td>
+                  施工队长:&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
+                <% if fiter %>
+                    <%= fiter.name %>
+                <% end %>
                 </td>
               </tr>
             </table>

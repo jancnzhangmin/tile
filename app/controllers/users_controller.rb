@@ -2,7 +2,10 @@ class UsersController < ApplicationController
 
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   def index
-    @users = User.all
+    @users = User.all.paginate(:page => params[:page], :per_page => 20).order("id desc")
+    if params[:search]
+      @users = User.where('name like ? or tel like ?',"%#{params[:search]}%","%#{params[:search]}%").paginate(:page => params[:page], :per_page => 20).order("id desc")
+    end
   end
 
   def edit

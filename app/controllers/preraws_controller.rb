@@ -54,7 +54,7 @@ class PrerawsController < ApplicationController
 
 # Never trust parameters from the scary internet, only allow the white list through.
   def preraw_params
-    params.require(:preraw).permit(:name)
+    params.require(:preraw).permit(:name,:price, :unit)
   end
 
 end

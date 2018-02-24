@@ -1,0 +1,57 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h5>工具借出</h5>
+    </div>
+    <div class="ibox-content">
+      <table class="table table-hover table-bordered text-center">
+        <thead>
+        <tr>
+          <th class="text-center">借出单号</th>
+          <th class="text-center">借出人</th>
+          <th class="text-center">借出时间</th>
+          <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @borrowgoods.each do |borrowgood| %>
+            <tr>
+              <td>
+<%= borrowgood.ordernumber %>
+              </td>
+              <td>
+                <% borrowuser = nil %>
+                <% if borrowgood.borrowuser_id && borrowgood.borrowuser_id != 0 %>
+                <% borrowuser = User.find(borrowgood.borrowuser_id).name %>
+                    <% end %>
+                <%= borrowuser %>
+              </td>
+              <td>
+<%= borrowgood.updated_at.strftime('%Y-%m-%d %H:%M:%S') %>
+              </td>
+              <td>
+
+                <%= link_to '编辑',edit_borrowgood_path(borrowgood),class:'fa fa-edit' %>&nbsp;
+
+                <%= link_to ' 删除', borrowgood, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>
+
+
+              </td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+      <%= link_to "新增",new_borrowgood_path,class: "btn btn-w-m btn-primary pull-right" %>
+      <br/>
+      <br/>
+    </div>
+  </div>
+</div>
+
+<%=render 'layerend' %>
