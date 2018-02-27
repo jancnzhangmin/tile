@@ -1,0 +1,2 @@
+class Prefixorder < ApplicationRecord
+end

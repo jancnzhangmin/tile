@@ -44,7 +44,6 @@ class SalesController < ApplicationController
         format.json { render json: @sale.errors, status: :unprocessable_entity }
       end
     end
-
   end
 
 

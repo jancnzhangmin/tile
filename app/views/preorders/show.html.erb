@@ -4,7 +4,7 @@
     <div class="ibox-title">
       <div class="ibox-tools">
         <button id="print" class="btn btn-primary btn-w-m" style="margin-top: -8px;">打印</button>
-        </div>
+      </div>
       <% if params[:type].to_s =='' %>
           <h3>预订单</h3>
       <% else %>
@@ -23,7 +23,100 @@
 
             });
 
-            getdata();
+            $('#ar').text(Arabia_to_Chinese($('#sr').text()));
+
+
+
+            function Arabia_to_Chinese(Num) {
+                for (i = Num.length - 1; i >= 0; i--) {
+                    Num = Num.replace(",", "")//替换tomoney()中的“,”
+                    Num = Num.replace(" ", "")//替换tomoney()中的空格
+                }
+                Num = Num.replace("￥", "")//替换掉可能出现的￥字符
+                if (isNaN(Num)) { //验证输入的字符是否为数字
+                    alert("请检查小写金额是否正确");
+                    return;
+                }
+                //---字符处理完毕，开始转换，转换采用前后两部分分别转换---//
+                part = String(Num).split(".");
+                newchar = "";
+                //小数点前进行转化
+                for (i = part[0].length - 1; i >= 0; i--) {
+                    if (part[0].length > 10) { alert("位数过大，无法计算"); return ""; } //若数量超过拾亿单位，提示
+                    tmpnewchar = ""
+                    perchar = part[0].charAt(i);
+                    switch (perchar) {
+                        case "0": tmpnewchar = "零" + tmpnewchar; break;
+                        case "1": tmpnewchar = "壹" + tmpnewchar; break;
+                        case "2": tmpnewchar = "贰" + tmpnewchar; break;
+                        case "3": tmpnewchar = "叁" + tmpnewchar; break;
+                        case "4": tmpnewchar = "肆" + tmpnewchar; break;
+                        case "5": tmpnewchar = "伍" + tmpnewchar; break;
+                        case "6": tmpnewchar = "陆" + tmpnewchar; break;
+                        case "7": tmpnewchar = "柒" + tmpnewchar; break;
+                        case "8": tmpnewchar = "捌" + tmpnewchar; break;
+                        case "9": tmpnewchar = "玖" + tmpnewchar; break;
+                    }
+                    switch (part[0].length - i - 1) {
+                        case 0: tmpnewchar = tmpnewchar + "元"; break;
+                        case 1: if (perchar != 0) tmpnewchar = tmpnewchar + "拾"; break;
+                        case 2: if (perchar != 0) tmpnewchar = tmpnewchar + "佰"; break;
+                        case 3: if (perchar != 0) tmpnewchar = tmpnewchar + "仟"; break;
+                        case 4: tmpnewchar = tmpnewchar + "万"; break;
+                        case 5: if (perchar != 0) tmpnewchar = tmpnewchar + "拾"; break;
+                        case 6: if (perchar != 0) tmpnewchar = tmpnewchar + "佰"; break;
+                        case 7: if (perchar != 0) tmpnewchar = tmpnewchar + "仟"; break;
+                        case 8: tmpnewchar = tmpnewchar + "亿"; break;
+                        case 9: tmpnewchar = tmpnewchar + "拾"; break;
+                    }
+                    newchar = tmpnewchar + newchar;
+                }
+                //小数点之后进行转化
+                if (Num.indexOf(".") != -1) {
+                    if (part[1].length > 2) {
+                        alert("小数点之后只能保留两位,系统将自动截段");
+                        part[1] = part[1].substr(0, 2)
+                    }
+                    for (i = 0; i < part[1].length; i++) {
+                        tmpnewchar = ""
+                        perchar = part[1].charAt(i)
+                        switch (perchar) {
+                            case "0": tmpnewchar = "零" + tmpnewchar; break;
+                            case "1": tmpnewchar = "壹" + tmpnewchar; break;
+                            case "2": tmpnewchar = "贰" + tmpnewchar; break;
+                            case "3": tmpnewchar = "叁" + tmpnewchar; break;
+                            case "4": tmpnewchar = "肆" + tmpnewchar; break;
+                            case "5": tmpnewchar = "伍" + tmpnewchar; break;
+                            case "6": tmpnewchar = "陆" + tmpnewchar; break;
+                            case "7": tmpnewchar = "柒" + tmpnewchar; break;
+                            case "8": tmpnewchar = "捌" + tmpnewchar; break;
+                            case "9": tmpnewchar = "玖" + tmpnewchar; break;
+                        }
+                        if (i == 0) tmpnewchar = tmpnewchar + "角";
+                        if (i == 1) tmpnewchar = tmpnewchar + "分";
+                        newchar = newchar + tmpnewchar;
+                    }
+                }
+                //替换所有无用汉字
+                while (newchar.search("零零") != -1)
+                    newchar = newchar.replace("零零", "零");
+                newchar = newchar.replace("零亿", "亿");
+                newchar = newchar.replace("亿万", "亿");
+                newchar = newchar.replace("零万", "万");
+                newchar = newchar.replace("零元", "元");
+                newchar = newchar.replace("零角", "");
+                newchar = newchar.replace("零分", "");
+
+                if (newchar.charAt(newchar.length - 1) == "元" || newchar.charAt(newchar.length - 1) == "角")
+                    newchar = newchar + "整"
+                //  document.write(newchar);
+                return newchar;
+
+            }
+
+
+
+            //getdata();
 
             function getdata(){
                 var tablejson;
@@ -470,247 +563,179 @@
         .displayshow{
             display:block;
         }
+
+        td {
+            padding:5px;
+        }
+
     </style>
-    <div class="col-md-12 ibox ibox-content" id="myPrintArea">
-      <%= form_for(@preorder,:html => {:class=>'form-horizontal m-t',:multipart => true,:id=>'userform'}) do |f| %>
-          <div class="ibox-content form-horizontal m-t">
+
+    <div class="col-md-12 " style="background-color: white;margin-top: 1px;" id="myPrintArea">
+      <style>
+          td {
+              padding:5px;
+          }
+      </style>
 
 
-            <div class="row">
-
-
-              <div class="col-sm-6">
-
-                <input type="hidden" id="preorderid" value=<%= @preorder.id %> >
-                <input type="hidden" id="preorderdetailid">
-              </div>
-              <div>
-
-                <div class="col-sm-6  pull-right">
-
-                      <!--<div class="input-group" >-->
-                        <!--<input id="installdate" class="form-control" value=<%= @preorder.installdate %>> <span class="input-group-btn"> <button type="button" class="btn btn-primary">日期-->
-                      <!--</button> </span>-->
-                      <!--</div>-->
-                      <span>
-
-                      </span>
-                      <%= f.hidden_field :installdate,class: "form-control",id:'installdatevalue' %>
-
-                </div>
-
-                <!--这里是供应商-->
-
-
-              </div>
-            </div>
+      <table width="100%" border="1">
+        <tr>
+          <td>单号</td>
+          <td  colspan="5"><%= @preorder.ordernumber %></td>
+        </tr>
+        <tr>
+          <td>客户</td>
+          <td>
+            <% if @preorder.customer_id && @preorder.customer_id != 0 %>
+                <%= Customer.find(@preorder.customer_id).name %>
+            <% end %>
+          </td>
+          <td>
+            电话
+          </td>
+          <td>
+            <% if @preorder.customer_id && @preorder.customer_id != 0 %>
+                <%= Customer.find(@preorder.customer_id).tel %>
+            <% end %>
+          </td>
+          <td>
+            地址
+          </td>
+          <td>
+            <% if @preorder.customer_id && @preorder.customer_id != 0 %>
+                <%= Customer.find(@preorder.customer_id).region %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            装修公司
+          </td>
+          <td>
+            <% if @preorder.cooper_id && @preorder.cooper_id != 0 %>
+                <%= Cooper.find(@preorder.cooper_id).name %>
+            <% end %>
+          </td>
+          <td>
+            设计师
+          </td>
+          <td>
+            <% if @preorder.designer_id && @preorder.designer_id != 0 %>
+                <%= Designer.find(@preorder.designer_id).name %>
+            <% end %>
+          </td>
+          <td>
+            施工队长
+          </td>
+          <td>
+            <% if @preorder.fiter_id && @preorder.fiter_id != 0 %>
+                <%= Fiter.find(@preorder.fiter_id).name %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6" style="padding: 0px; vertical-align: top;">
             <table width="100%">
               <tr>
-                <td width="50%">
-                  <h4>单据编号：<span class="text-navy"><%=@preorder.ordernumber %></span></h4>
+                <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">使用位置</td>
+                <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">型号</td>
+                <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">单位</td>
+                <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">单价</td>
+                <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">数量</td>
+                <td style="border-bottom: 1px solid #999;">备注</td>
+              </tr>
+<% sumcount = 0 %>
+              <% step = 0 %>
+              <% @preorderdetailarr.each do |preorderdetail| %>
+
+                  <tr>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      <%= preorderdetail.area %>
+                    </td>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      <%= preorderdetail.name %>
+                    </td>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      <%= preorderdetail.unit %>
+                    </td>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      <%= preorderdetail.price %>
+                    </td>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      <%= preorderdetail.number %>
+                    </td>
+                    <td style="border-bottom: 1px solid #999">
+                      <%= preorderdetail.summary %>
+                    </td>
+                  </tr>
+                  <% sumcount += preorderdetail.price * preorderdetail.number %>
+                  <% step += 1 %>
+              <% end %>
+              <% (27-step).times do %>
+              <tr>
+                  <tr>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      &nbsp;
+                    </td>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      &nbsp;
+                    </td>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      &nbsp;
+                    </td>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      &nbsp;
+                    </td>
+                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
+                      &nbsp;
+                    </td>
+                    <td style="border-bottom: 1px solid #999">
+                      &nbsp;
+                    </td>
+                  </tr>
+              </tr>
+              <% end %>
+
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6" style="padding: 0px;">
+            <table width="100%">
+              <tr>
+                <td style="border-right: 1px solid #999;">
+                  合计
+                </td>
+                <td style="border-right: 1px solid #999;">
+                  大写：<span id="ar"><%= sumcount %></span>
                 </td>
                 <td align="right">
-                  <h4>交付时间：
-                    <% if @preorder.installdate %>
-                    <%= @preorder.installdate.strftime('%Y-%m-%d') %>
-                        <% end %>
-                  </h4>
+                  ￥<span id="sr"><%= sumcount %></span>
                 </td>
               </tr>
             </table>
+          </td>
+        </tr>
+        <td colspan="6" style="padding: 0px;">
+          <table width="100%">
+            <tr>
+              <td style="border-right: 1px solid #999;" width="20%">
+                经手人
+              </td>
+              <td  style="border-right: 1px solid #999;" width="30%">
+                <%= @preorder.user %>
+              </td>
+              <td style="border-right: 1px solid #999;" width="20%">
+                预付款（元）
+              </td>
+              <td width="30%">
+                <%= @preorder.pay %>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </table>
 
-            <!--<div class="row">-->
-              <!--<table class="col-md-12">-->
-                <!--<tr>-->
-                  <!--<td class="col-md-3">-->
-
-                    <!--<div class="form-group">-->
-                      <!--<label class="col-sm-4 control-label">合作商</label>-->
-                      <!--<div class="col-sm-8">-->
-                        <!--<select class="form-control m-b" id="cooper">-->
-                          <!--<option value="0">请选择合作商</option>-->
-                          <!--<% @coopers.each do |f| %>-->
-                              <!--<option value=<%=f.id %>><%=f.name %></option>-->
-                          <!--<% end %>-->
-                        <!--</select>-->
-                        <!--<%= f.hidden_field :cooper_id,class: "form-control",id:'cooperid' %>-->
-                      <!--</div>-->
-                    <!--</div>-->
-                  <!--</td>-->
-                  <!--<td class="col-md-3">-->
-                    <!--<div class="form-group displaynone" id="cooperuserdiv">-->
-                      <!--<label class="col-sm-4 control-label">联系人</label>-->
-                      <!--<div class="col-sm-8">-->
-                        <!--<select class="form-control m-b" id="cooperuser">-->
-                          <!--<option value="0">请选择联系人</option>-->
-                          <!--<% @coopers.each do |f| %>-->
-                              <!--<option value=<%=f.id %>><%=f.name %></option>-->
-                          <!--<% end %>-->
-                        <!--</select>-->
-                        <!--<%= f.hidden_field :cooperuser_id,class: "form-control",id:'cooperuserid' %>-->
-                      <!--</div>-->
-                    <!--</div>-->
-                  <!--</td>-->
-                  <!--<td class="col-md-6">-->
-                    <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
-                    <!--&lt;!&ndash;<label class="col-sm-4 control-label">地址</label>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<div class="col-sm-8">&ndash;&gt;-->
-                    <!--&lt;!&ndash;<%= f.text_field :address,class: "form-control" %>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                  <!--</td>-->
-
-
-                <!--</tr>-->
-              <!--</table>-->
-
-
-
-
-            <!--</div>-->
-
-            <table>
-              <tr>
-                <td>
-                  客户:&nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <td>
-                  <% if @preorder.customer_id && @preorder.customer_id != 0 %>
-                      <% customer = Customer.find(@preorder.customer_id) %>
-                  <% end %>
-                  <% if customer %>
-                      <span ><%= customer.name %></span>
-                  <% end %>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <td>
-                  电话：&nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <td>
-                  <% if customer %>
-                      <span ><%= customer.tel %></span>
-                  <% end %>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <td>
-                  地址：
-                  <% if customer %>
-                      <%= customer.region %>
-                  <% end %>
-                </td>
-              </tr>
-              <tr>
-                <% if @preorder.cooper_id && @preorder.cooper_id != 0 %>
-                <% cooper = Cooper.find(@preorder.cooper_id) %>
-                <% end %>
-                <td>
-                  装修公司:&nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <td>
-                  <% if cooper %>
-                      <%= cooper.name %>
-                  <% end %>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <% if @preorder.designer_id && @preorder.designer_id != 0 %>
-                    <% designer = Designer.find(@preorder.designer_id) %>
-                <% end %>
-                <td>
-                  设计师:&nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <td>
-                  <% if designer %>
-                      <%= designer.name %>
-                  <% end %>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <% if @preorder.fiter_id && @preorder.fiter_id != 0 %>
-                    <% fiter = Fiter.find(@preorder.fiter_id) %>
-                <% end %>
-                <td>
-                  施工队长:&nbsp;&nbsp;&nbsp;&nbsp;
-                </td>
-                <td>
-                <% if fiter %>
-                    <%= fiter.name %>
-                <% end %>
-                </td>
-              </tr>
-            </table>
-
-            <div class="row">
-              <table class="col-md-12">
-                <tr>
-                  <td class="col-md-3">
-
-                  </td>
-                  <td class="col-md-9">
-                    <div class="form-group">
-
-                        </div>
-                  </td>
-
-
-                </tr>
-              </table>
-            </div>
-
-            <div class="hr-line-dashed"></div>
-            <div class="example-wrap">
-
-              <div class="example">
-                <!--<% if params[:type].to_s =='' %>-->
-                    <!--<div class="btn-group hidden-xs" id="exampleToolbar" role="group">-->
-                      <!--<button type="button" class="btn btn-outline btn-default" data-toggle="modal" data-target="#addModal" id="adds">-->
-                        <!--<i class="fa fa-plus" aria-hidden="true"></i>-->
-                      <!--</button>-->
-                      <!--<button type="button" class="btn btn-outline btn-default" id="edits">-->
-                        <!--<i class="fa fa-edit" aria-hidden="true"></i>-->
-                      <!--</button>-->
-                      <!--<button type="button" class="btn btn-outline btn-default" id="deletes">-->
-                        <!--<i class="fa fa-trash" aria-hidden="true"></i>-->
-                      <!--</button>-->
-                    <!--</div>-->
-                <!--<% end %>-->
-                <table id="table">
-
-                </table>
-
-
-                <table border="0" width="100%">
-                  <tr>
-
-                    <td width="50%">
-                      付款（元）：<%= @preorder.pay %>&nbsp;&nbsp;&nbsp;&nbsp;
-                    </td>
-                    <td width="50%">
-                            经手人：<%= @preorder.user %>
-                    </td>
-
-                    <td>
-                      <!--<% newwork = Newwork.find_by_preordernumber(@preorder.id) %>-->
-                      <!--<% if !newwork && @preorder.isnew == 0 %>-->
-                          <!--<button type="button" class="btn btn-primary btn-w-m" id="work">生成加工</button>-->
-                      <!--<% end %>-->
-
-
-
-                      <!--<% if params[:type].to_s =='' %>-->
-                          <!--<%= f.submit '确定',class: "btn btn-w-m btn-primary ",id:'smt' %>-->
-                      <!--<% end %>-->
-
-                    </td>
-
-                  </tr>
-                </table>
-
-
-              </div>
-            </div>
-
-
-          </div>
-      <% end %>
     </div>
 
     <!-- 模态框（Modal） -->

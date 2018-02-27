@@ -91,6 +91,24 @@ class NewworksController < ApplicationController
 
   def sett
     @coopers = Cooper.all
+    @newworkdetails = Newwork.find(params[:id]).newworkdetails.order("width desc, height desc")
+    @newworkdetailarr = Array.new
+    @newworkdetails.each do |f|
+      newworkdetailcla = Newworkdetailclass.new
+      newworkdetailcla.id = f.id
+      newworkdetailcla.name = f.newraw.name
+      newworkdetailcla.price = f.newraw.price
+      newworkdetailcla.width = f.width
+      newworkdetailcla.height = f.height
+      newworkdetailcla.userheight = f.userheight
+      newworkdetailcla.number = f.number
+      newworkdetailcla.sum = (f.newraw.price).to_f * f.number
+      newworkdetailcla.widthtype = f.widthtype
+      newworkdetailcla.heighttype = f.heighttype
+      newworkdetailcla.lossarea = f.lossarea
+      @newworkdetailarr.push newworkdetailcla
+    end
+
   end
 
 

@@ -2,15 +2,12 @@ class InnewrawsController < ApplicationController
 
   before_action :set_innewraw, only: [:show, :edit, :update, :destroy]
   def index
-    ordernumber = Time.now.strftime('%Y%m%d')
-    smnumber = Inrawdepot.last
+    ordernumber = Prefixorder.first.raw + Time.now.strftime('%Y%m%d')
+    smnumber = Innewraw.last
     mystep ='001'
     if smnumber
-      if smnumber.ordernumber[0..7] == ordernumber
-        mystep=smnumber.ordernumber
-        mystep.reverse!
-        mystep = mystep[0..2]
-        mystep.reverse!
+      if smnumber.ordernumber[-14..-4] == ordernumber[-11..-1]
+        mystep=smnumber.ordernumber[-3..-1]
         mystep = (mystep.to_i+1).to_s
         (3-mystep.length).times do
           mystep = '0' + mystep

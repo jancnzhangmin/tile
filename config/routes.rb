@@ -179,5 +179,6 @@ Rails.application.routes.draw do
       get 'changeingooddetail'
     end
   end
+  resources :prefixorders
 
 end

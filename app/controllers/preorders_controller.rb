@@ -18,15 +18,12 @@ class PreordersController < ApplicationController
   end
 
   def new
-    ordernumber = Time.now.strftime('%Y%m%d')
+    ordernumber = Prefixorder.first.preorder + Time.now.strftime('%Y%m%d')
     smnumber = Preorder.last
     mystep ='001'
     if smnumber
-      if smnumber.ordernumber[0..7] == ordernumber
-        mystep=smnumber.ordernumber
-        mystep.reverse!
-        mystep = mystep[0..2]
-        mystep.reverse!
+      if smnumber.ordernumber[-14..-4] == ordernumber[-11..-1]
+        mystep=smnumber.ordernumber[-3..-1]
         mystep = (mystep.to_i+1).to_s
         (3-mystep.length).times do
           mystep = '0' + mystep
@@ -38,8 +35,8 @@ class PreordersController < ApplicationController
     else
       ordernumber += mystep
     end
-    @preorder = Preorder.create(ordernumber:ordernumber,isnew:1)
-    redirect_to edit_preorder_path(@preorder)
+    @inrawdepot = Preorder.create(ordernumber:ordernumber,isnew:1)
+    redirect_to edit_preorder_path(@inrawdepot)
   end
 
   def create
@@ -59,7 +56,7 @@ class PreordersController < ApplicationController
       if @preorder.update(preorder_params)
         @preorder.isnew = 0
         @preorder.save
-        format.html { redirect_to preorder_path(@preorder), notice: 'User was successfully updated.' }
+        format.html { redirect_to preorders_path, notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @preorder }
       else
         format.html { render :edit }
@@ -72,6 +69,30 @@ class PreordersController < ApplicationController
   def show
     @coopers = Cooper.all
     @customers = Customer.all
+
+    @preorderdetails = Preorder.find(params[:id]).preorderdetails
+    @preorderdetailarr = Array.new
+    @preorderdetails.each do |f|
+      preorderdetailcla = Preorderdetailclass.new
+      preorderdetailcla.id = f.id
+      if f.rawtype == 'r'
+        preorderdetailcla.name = Newraw.find(f.newraw_id).name
+      else
+        preorderdetailcla.name = Preraw.find(f.preraw_id).name
+      end
+      preorderdetailcla.area = f.area
+      preorderdetailcla.unit = f.unit
+      preorderdetailcla.price = f.price
+      preorderdetailcla.number = f.number
+      preorderdetailcla.sum = f.sum
+      preorderdetailcla.summary = f.summary
+      preorderdetailcla.height = f.height
+      preorderdetailcla.userheight = f.userheight
+      preorderdetailcla.width = f.width
+      preorderdetailcla.rawsum = f.width.to_f / 1000 * f.height.to_f / 1000 * f.number.to_f
+      @preorderdetailarr.push preorderdetailcla
+    end
+
   end
 
 
@@ -248,15 +269,14 @@ class PreordersController < ApplicationController
     if workorder
       redirect_to edit_newwork_path(workorder)
     else
-      ordernumber = Time.now.strftime('%Y%m%d')
+
+
+      ordernumber = Prefixorder.first.work + Time.now.strftime('%Y%m%d')
       smnumber = Newwork.last
       mystep ='001'
       if smnumber
-        if smnumber.ordernumber[0..7] == ordernumber
-          mystep=smnumber.ordernumber
-          mystep.reverse!
-          mystep = mystep[0..2]
-          mystep.reverse!
+        if smnumber.ordernumber[-14..-4] == ordernumber[-11..-1]
+          mystep=smnumber.ordernumber[-3..-1]
           mystep = (mystep.to_i+1).to_s
           (3-mystep.length).times do
             mystep = '0' + mystep
@@ -268,7 +288,6 @@ class PreordersController < ApplicationController
       else
         ordernumber += mystep
       end
-
       @newwork = Newwork.create(ordernumber:ordernumber,isnew:1,preordernumber:params[:id])
       preorderdetails = Preorder.find(params[:id]).preorderdetails
       preorderdetails.each do |f|

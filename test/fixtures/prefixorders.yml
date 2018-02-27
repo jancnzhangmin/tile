@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  raw: MyString
+  preorder: MyString
+  work: MyString
+
+two:
+  raw: MyString
+  preorder: MyString
+  work: MyString
