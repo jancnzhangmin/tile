@@ -668,7 +668,7 @@
                       <%= preorderdetail.summary %>
                     </td>
                   </tr>
-                  <% sumcount += preorderdetail.price * preorderdetail.number %>
+                  <% sumcount += preorderdetail.price.to_f * preorderdetail.number.to_f %>
                   <% step += 1 %>
               <% end %>
               <% (27-step).times do %>
