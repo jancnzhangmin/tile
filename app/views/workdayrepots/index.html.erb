@@ -1,0 +1,172 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+
+        $('#searchbtn').click(function(){
+            window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
+        });
+
+        $('#search').val(getUrlParam('search'));
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg); //匹配目标参数
+            if (r != null) return decodeURI (r[2]); return null; //返回参数值
+        }
+
+
+
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h5>加工单报表</h5>
+      <div class="ibox-tools col-sm-3" style="margin-top: -5px;">
+        <div class="input-group">
+          <input type="text" id="search" placeholder="" class="input-sm form-control"> <span class="input-group-btn">
+                                        <button type="button" id="searchbtn" class="btn btn-sm btn-primary"> 搜索</button> </span>
+        </div>
+      </div>
+    </div>
+    <div class="ibox-content">
+    <div class="tabs-container">
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> 加工单报表</a>
+        </li>
+        <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">统计图表</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+
+        <div id="tab-1" class="tab-pane active">
+
+
+            <table class="table table-hover table-bordered text-center">
+              <thead>
+              <tr>
+                <th class="text-center">日期</th>
+                <th class="text-center">客户</th>
+                <th class="text-center">电话</th>
+                <th class="text-center">装饰公司</th>
+                <th class="text-center">项目经理</th>
+                <th class="text-center">地址</th>
+                <th class="text-center">单据号</th>
+                <th class="text-center">品名</th>
+                <th class="text-center">单位</th>
+                <th class="text-center">数量</th>
+                <th class="text-center">公司单价</th>
+                <th class="text-center">客户单价</th>
+                <th class="text-center">备注</th>
+              </tr>
+              </thead>
+              <tbody>
+              <% @newworkarr.each do |newwork| %>
+                  <tr>
+                    <td style="vertical-align: middle;">
+                      <%= newwork.created_at %>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <%= newwork.customer %>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <%= newwork.tel %>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <%= newwork.cooper %>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <%= newwork.designer %>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <%= newwork.address %>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <%= newwork.ordernumber %>
+                    </td>
+                    <td style="padding: 0px;">
+                      <table width="100%" class="table table-hover  text-center" style="margin-bottom: 0px;" border="0px">
+                        <% newwork.products.each do |product| %>
+                            <tr>
+                              <td>
+                                <%= product.name %>
+                              </td>
+                            </tr>
+                        <% end %>
+                      </table>
+                    </td>
+                    <td style="padding: 0px;">
+                      <table width="100%" class="table table-hover  text-center" style="margin-bottom: 0px;" border="0px">
+                        <% newwork.products.each do |product| %>
+                            <tr>
+                              <td>
+                                <%= product.unit %>
+                              </td>
+                            </tr>
+                        <% end %>
+                      </table>
+                    </td>
+                    <td style="padding: 0px;">
+                      <table width="100%" class="table table-hover  text-center" style="margin-bottom: 0px;" border="0px">
+                        <% newwork.products.each do |product| %>
+                            <tr>
+                              <td>
+                                <%= product.number %>
+                              </td>
+                            </tr>
+                        <% end %>
+                      </table>
+                    </td>
+                    <td style="padding: 0px;">
+                      <table width="100%" class="table table-hover  text-center" style="margin-bottom: 0px;" border="0px">
+                        <% newwork.products.each do |product| %>
+                            <tr>
+                              <td>
+                                <%= product.cost %>
+                              </td>
+                            </tr>
+                        <% end %>
+                      </table>
+                    </td>
+                    <td style="padding: 0px;">
+                      <table width="100%" class="table table-hover  text-center" style="margin-bottom: 0px;" border="0px">
+                        <% newwork.products.each do |product| %>
+                            <tr>
+                              <td>
+                                <%= product.price %>
+                              </td>
+                            </tr>
+                        <% end %>
+                      </table>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <%= newwork.content %>
+                    </td>
+                  </tr>
+
+              <% end %>
+              </tbody>
+            </table>
+            <br/>
+            <div class="text-center">
+              <%= will_paginate @newworks, renderer: BootstrapPagination::Rails %>
+            </div>
+
+
+        </div>
+
+        <div id="tab-2" class="tab-pane">
+          <div class="panel-body">
+            <strong>移动设备优先</strong>
+            <p>在 Bootstrap 2 中，我们对框架中的某些关键部分增加了对移动设备友好的样式。而在 Bootstrap 3 中，我们重写了整个框架，使其一开始就是对移动设备友好的。这次不是简单的增加一些可选的针对移动设备的样式，而是直接融合进了框架的内核中。也就是说，Bootstrap 是移动设备优先的。针对移动设备的样式融合进了框架的每个角落，而不是增加一个额外的文件。</p>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<%=render 'layerend' %>

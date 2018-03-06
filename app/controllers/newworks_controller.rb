@@ -12,19 +12,21 @@ class NewworksController < ApplicationController
 
   def edit
     @coopers = Cooper.all
+    @customers = Customer.all
+    @users = User.all
+    @designers = Designer.all
+    @fiters = Fiter.all
+    @preraws = Preraw.all
 @users = User.all
   end
 
   def new
-    ordernumber = Time.now.strftime('%Y%m%d')
+    ordernumber = Prefixorder.first.work + Time.now.strftime('%Y%m%d')
     smnumber = Newwork.last
     mystep ='001'
     if smnumber
-      if smnumber.ordernumber[0..7] == ordernumber
-        mystep=smnumber.ordernumber
-        mystep.reverse!
-        mystep = mystep[0..2]
-        mystep.reverse!
+      if smnumber.ordernumber[-14..-4] == ordernumber[-11..-1]
+        mystep=smnumber.ordernumber[-3..-1]
         mystep = (mystep.to_i+1).to_s
         (3-mystep.length).times do
           mystep = '0' + mystep
@@ -36,8 +38,8 @@ class NewworksController < ApplicationController
     else
       ordernumber += mystep
     end
-    @newwork = Newwork.create(ordernumber:ordernumber,isnew:1)
-    redirect_to edit_preorder_path(@preorder)
+    @inrawdepot = Newwork.create(ordernumber:ordernumber,isnew:1)
+    redirect_to edit_newwork_path(@inrawdepot)
   end
 
   def create
@@ -133,6 +135,7 @@ class NewworksController < ApplicationController
     attr :lossarea,true
     attr :price,true
     attr :sum,true
+    attr :area,true
 
   end
 
@@ -152,6 +155,7 @@ class NewworksController < ApplicationController
       newworkdetailcla.widthtype = f.widthtype
       newworkdetailcla.heighttype = f.heighttype
       newworkdetailcla.lossarea = f.lossarea
+      newworkdetailcla.area = f.area
       newworkdetailarr.push newworkdetailcla
     end
     render json:newworkdetailarr
@@ -166,6 +170,7 @@ class NewworksController < ApplicationController
 
   def gettotal
     rawarr = Array.new
+    @newwork = Newwork.find(params[:newworkid])
     @newworkdetails = Newwork.find(params[:newworkid]).newworkdetails
     @newworkdetails.each do |f|
       rawarr.push f.newraw.id
@@ -214,15 +219,27 @@ class NewworksController < ApplicationController
     xiaoyuancla = Totalclass.new
     userlomacla = Totalclass.new
     userxiaoyuancla = Totalclass.new
-    lomacla.name = '罗马边'
-    xiaoyuancla.name = '小圆边'
+    lomacla.name = ''
+    if @newwork.line && @newwork.line != 0
+      lomacla.name = Preraw.find(@newwork.line).name
+    end
+    xiaoyuancla.name = ''
+    if @newwork.wave && @newwork.wave != 0
+      xiaoyuancla.name = Preraw.find(@newwork.wave).name
+    end
     lomacla.number = 0
     xiaoyuancla.number = 0
     lomacla.unit = 'm'
     xiaoyuancla.unit = 'm'
 
-    userlomacla.name = '罗马边'
-    userxiaoyuancla.name = '小圆边'
+    userlomacla.name = ''
+    if @newwork.line && @newwork.line != 0
+      userlomacla.name = Preraw.find(@newwork.line).name
+    end
+    userxiaoyuancla.name = ''
+    if @newwork.wave && @newwork.wave != 0
+      userxiaoyuancla.name = Preraw.find(@newwork.wave).name
+    end
     userlomacla.number = 0
     userxiaoyuancla.number = 0
     userlomacla.unit = 'm'
@@ -337,11 +354,21 @@ class NewworksController < ApplicationController
   end
 
   def changenewworkdetail
+newwork=Newwork.find(params[:newworkid])
+    if params[:line].to_s != ''
+      newwork.line = params[:line]
+    end
+    if params[:wave].to_s != ''
+      newwork.wave = params[:wave]
+    end
+    newwork.save
+
     if params[:way] =='add'
       newworkdetails = Newwork.find(params[:newworkid]).newworkdetails
       #newrawid = Newdepotdetail.find(params[:newrawid]).newdepot.newraw_id
       newrawid = Newraw.find(Newdepot.find(params[:newrawid]).newraw_id).id
-      newworkdetails.create!(newraw_id:newrawid,width:params[:width],height:params[:height],userheight:params[:userheight],widthtype:params[:widthtype],heighttype:params[:heighttype],number:params[:number],lossarea:params[:lossarea])
+      newrawprice = Newraw.find(Newdepot.find(params[:newrawid]).newraw_id).id
+      newworkdetails.create!(newraw_id:newrawid,width:params[:width],height:params[:height],userheight:params[:userheight],widthtype:params[:widthtype],heighttype:params[:heighttype],number:params[:number],lossarea:params[:lossarea],area:params[:area],cost:Newdepot.find(newrawid).price, price:newrawprice)
     elsif params[:way]=='edit'
       #inrawdepotdetails = Inrawdepot.find(params[:inrawdepotid]).inrawdepotdetails.where('id =?',params[:rawid]).first
       newworkdetails = Newwork.find(params[:newworkid]).newworkdetails.where('id =?',params[:rawdata]).first
@@ -358,6 +385,7 @@ class NewworksController < ApplicationController
       newworkdetails.widthtype = params[:widthtype]
       newworkdetails.heighttype = params[:heighttype]
       newworkdetails.lossarea = params[:lossarea]
+      newworkdetails.area = params[:area]
       newworkdetails.save!
     end
     render json: '{"status":"200"}'
@@ -416,7 +444,7 @@ class NewworksController < ApplicationController
 
 # Never trust parameters from the scary internet, only allow the white list through.
   def newwork_params
-    params.require(:newwork).permit(:ordernumber, :user, :summary, :isnew, :preordernumber, :number)
+    params.require(:newwork).permit(:ordernumber, :user, :summary, :isnew, :preordernumber, :number, :cooper_id, :customer_id, :designer_id, :fiter_id, :line, :wave)
   end
 
 end

@@ -1,6 +1,6 @@
 class PreordersController < ApplicationController
 
-  before_action :set_preorder, only: [:show, :edit, :update, :destroy]
+  before_action :set_preorder, only: [:show, :edit, :update, :destroy, :work]
   def index
     @preorders = Preorder.where('isnew = 0').paginate(:page => params[:page], :per_page => 20)
     if params[:search]
@@ -10,11 +10,12 @@ class PreordersController < ApplicationController
   end
 
   def edit
-@coopers = Cooper.all
-@customers = Customer.all
+    @coopers = Cooper.all
+    @customers = Customer.all
     @users = User.all
     @designers = Designer.all
     @fiters = Fiter.all
+    @paymenttypes = Paymenttype.all
   end
 
   def new
@@ -56,6 +57,20 @@ class PreordersController < ApplicationController
       if @preorder.update(preorder_params)
         @preorder.isnew = 0
         @preorder.save
+        if @preorder.customer_id && @preorder.customer_id != 0
+          customer = Customer.find(@preorder.customer_id)
+          payment = Payment.find_by_payordernumber(@preorder.ordernumber)
+          if payment
+            payment.paymenttype_id = @preorder.paymenttype_id
+            payment.customer_id = @preorder.customer_id
+            payment.pay = @preorder.pay
+            payment.save
+          else
+            if customer && @preorder.pay.to_f > 0
+              customer.payments.create(paymenttype_id:@preorder.paymenttype_id, paytype:'pre', payordernumber:@preorder.ordernumber, pay:@preorder.pay)
+            end
+          end
+        end
         format.html { redirect_to preorders_path, notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @preorder }
       else
@@ -63,7 +78,6 @@ class PreordersController < ApplicationController
         format.json { render json: @preorder.errors, status: :unprocessable_entity }
       end
     end
-
   end
 
   def show
@@ -97,6 +111,10 @@ class PreordersController < ApplicationController
 
 
   def destroy
+    payment = Payment.where('payordernumber = ? and paytype = pre',@preorder.ordernumber).first
+    if payment
+      payment.destroy
+    end
     @preorder.destroy
     respond_to do |format|
       format.html { redirect_to preorders_path, notice: '删除成功' }
@@ -206,11 +224,11 @@ class PreordersController < ApplicationController
       sum = params[:price].to_f * params[:number].to_f
       if params[:prerawid][0] == 'r'
         temprerawid = (params[:prerawid].delete 'r').to_i
-      preorderdetails.create!(newraw_id:temprerawid,width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'r')
+        preorderdetails.create!(newraw_id:temprerawid,width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'r')
       else
         temprerawid = params[:prerawid].delete 'w'
         preorderdetails.create(preraw_id:temprerawid,width:params[:width],height:params[:height],userheight:params[:userheight],area:params[:area],number:params[:number],price:params[:price],summary:params[:summary],sum:sum,unit:params[:unit],rawtype:'w')
-        end
+      end
     elsif params[:way]=='edit'
       inrawdepotdetails = Inrawdepot.find(params[:inrawdepotid]).inrawdepotdetails.where('id =?',params[:rawid]).first
       if params[:prerawid][0] == 'r'
@@ -239,15 +257,19 @@ class PreordersController < ApplicationController
   end
 
   def work
-    ordernumber = Time.now.strftime('%Y%m%d')
+    preorder = Preorder.find(params[:id])
+    @newworks = Newwork.where('preordernumber = ? and isnew = 0',preorder.id)
+  end
+
+  def dowork
+    preorder = Preorder.find(params[:id])
+    workorder = Newwork.find_by_preordernumber(params[:id])
+    ordernumber = Prefixorder.first.work + Time.now.strftime('%Y%m%d')
     smnumber = Newwork.last
     mystep ='001'
     if smnumber
-      if smnumber.ordernumber[0..7] == ordernumber
-        mystep=smnumber.ordernumber
-        mystep.reverse!
-        mystep = mystep[0..2]
-        mystep.reverse!
+      if smnumber.ordernumber[-14..-4] == ordernumber[-11..-1]
+        mystep=smnumber.ordernumber[-3..-1]
         mystep = (mystep.to_i+1).to_s
         (3-mystep.length).times do
           mystep = '0' + mystep
@@ -259,44 +281,15 @@ class PreordersController < ApplicationController
     else
       ordernumber += mystep
     end
-
-    @newwork = Newwork.create(ordernumber:ordernumber,isnew:1,preordernumber:params[:preorderid])
-    render json: @newwork.id.to_s
-  end
-
-  def dowork
-    workorder = Newwork.find_by_preordernumber(params[:id])
-    if workorder
-      redirect_to edit_newwork_path(workorder)
-    else
-
-
-      ordernumber = Prefixorder.first.work + Time.now.strftime('%Y%m%d')
-      smnumber = Newwork.last
-      mystep ='001'
-      if smnumber
-        if smnumber.ordernumber[-14..-4] == ordernumber[-11..-1]
-          mystep=smnumber.ordernumber[-3..-1]
-          mystep = (mystep.to_i+1).to_s
-          (3-mystep.length).times do
-            mystep = '0' + mystep
-          end
-          ordernumber += mystep
-        else
-          ordernumber += mystep
-        end
-      else
-        ordernumber += mystep
+    @newwork = Newwork.create(ordernumber:ordernumber,isnew:1,preordernumber:params[:id], cooper_id:preorder.cooper_id, customer_id:preorder.customer_id, designer_id:preorder.designer_id, fiter_id:preorder.fiter_id)
+    preorderdetails = Preorder.find(params[:id]).preorderdetails
+    preorderdetails.each do |f|
+      if f.newraw_id
+        @newwork.newworkdetails.create(newraw_id:f.newraw_id,width:0,height:0,userheight:0,widthtype:'01',heighttype:'01',number:0,lossarea:0)
       end
-      @newwork = Newwork.create(ordernumber:ordernumber,isnew:1,preordernumber:params[:id])
-      preorderdetails = Preorder.find(params[:id]).preorderdetails
-      preorderdetails.each do |f|
-        if f.newraw_id
-          @newwork.newworkdetails.create(newraw_id:f.newraw_id,width:0,height:0,userheight:0,widthtype:'01',heighttype:'01',number:0,lossarea:0)
-        end
-      end
-      redirect_to edit_newwork_path(@newwork)
     end
+    redirect_to edit_newwork_path(@newwork)
+
   end
 
   def getcooperuser
@@ -318,7 +311,7 @@ class PreordersController < ApplicationController
 
 # Never trust parameters from the scary internet, only allow the white list through.
   def preorder_params
-    params.require(:preorder).permit(:newraw_id, :pay, :user, :isnew, :ordernumber, :installdate, :cooper_id, :cooperuser_id, :address, :customer_id, :designer_id, :fiter_id)
+    params.require(:preorder).permit(:newraw_id, :pay, :user, :isnew, :ordernumber, :installdate, :cooper_id, :cooperuser_id, :address, :customer_id, :designer_id, :fiter_id, :paymenttype_id)
   end
 
 end

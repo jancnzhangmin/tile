@@ -1,0 +1,2 @@
+class PreorderanalsesController < ApplicationController
+end

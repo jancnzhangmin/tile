@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180226093442) do
+ActiveRecord::Schema.define(version: 20180306081715) do
 
   create_table "add_cooperuser_to_coopers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "cooperuser"
@@ -288,6 +288,10 @@ ActiveRecord::Schema.define(version: 20180226093442) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "lossarea", limit: 24
+    t.string "area"
+    t.float "cost", limit: 24
+    t.float "prict", limit: 24
+    t.float "price", limit: 24
   end
 
   create_table "newworks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -296,6 +300,29 @@ ActiveRecord::Schema.define(version: 20180226093442) do
     t.string "summary"
     t.integer "isnew"
     t.string "preordernumber"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "cooper_id"
+    t.integer "customer_id"
+    t.integer "designer_id"
+    t.integer "fiter_id"
+    t.string "area"
+    t.integer "line"
+    t.integer "wave"
+  end
+
+  create_table "payments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "paymenttype_id"
+    t.integer "customer_id"
+    t.string "paytype"
+    t.string "payordernumber"
+    t.float "pay", limit: 24
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "paymenttypes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "paymenttype"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -343,6 +370,7 @@ ActiveRecord::Schema.define(version: 20180226093442) do
     t.integer "customer_id"
     t.integer "designer_id"
     t.integer "fiter_id"
+    t.integer "paymenttype_id"
   end
 
   create_table "preraws", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -352,6 +380,7 @@ ActiveRecord::Schema.define(version: 20180226093442) do
     t.datetime "updated_at", null: false
     t.float "price", limit: 24
     t.string "unit"
+    t.float "cost", limit: 24
   end
 
   create_table "rawdepots", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

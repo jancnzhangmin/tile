@@ -7,6 +7,12 @@
             //$('#user').val(this.text());
             $('#user').val($('#userselect').find("option:selected").text());
         });
+
+        if($('#user').val()!=''){
+            var user = $('#user').val();
+            $('#userselect').find("option:contains('"+user+"')").attr("selected",true);
+        }
+
         function getdata(){
             var tablejson;
 
@@ -427,6 +433,14 @@
             });
         }
 
+        $('#paymenttypeselect').change(function(){
+           $('#paymenttypeid').val(this.value);
+        });
+
+        if($('#paymenttypeid').val()!=''){
+            $('#paymenttypeselect').val($('#paymenttypeid').val());
+        }
+
 
 
     });
@@ -766,6 +780,19 @@
             <table border="0" class="col-md-12">
               <tr>
                 <td>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">支付方式：</label>
+                    <div class="col-sm-6">
+                      <%= f.hidden_field :paymenttype_id,class: "form-control",id:'paymenttypeid' %>
+                      <select class="form-control m-b" id="paymenttypeselect">
+                        <% @paymenttypes.each do |f| %>
+                            <option value=<%=f.id %>><%=f.paymenttype %></option>
+                        <% end %>
+                      </select>
+                    </div>
+                  </div>
+                </td>
+                <td>
 
                   <div class="form-group">
                     <label class="col-sm-4 control-label">订金（元）：</label>
@@ -773,7 +800,6 @@
                       <%= f.text_field :pay,class: "form-control" %>
                     </div>
                   </div>
-
                 </td>
 
                 <td>

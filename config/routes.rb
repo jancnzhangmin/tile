@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     end
     member do
       get 'dowork'
+      get 'work'
     end
   end
 
@@ -180,5 +181,8 @@ Rails.application.routes.draw do
     end
   end
   resources :prefixorders
+  resources :workdayrepots
+  resources :paymenttypes
+  resources :preorderanalyses
 
 end

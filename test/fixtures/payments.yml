@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  paymenttype_id: 1
+  customer_id: 1
+  paytype: MyString
+  payordernumber: MyString
+  pay: 1.5
+
+two:
+  paymenttype_id: 1
+  customer_id: 1
+  paytype: MyString
+  payordernumber: MyString
+  pay: 1.5

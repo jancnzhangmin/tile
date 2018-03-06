@@ -34,7 +34,6 @@ class PrerawsController < ApplicationController
         format.json { render json: @preraw.errors, status: :unprocessable_entity }
       end
     end
-
   end
 
 
@@ -54,7 +53,7 @@ class PrerawsController < ApplicationController
 
 # Never trust parameters from the scary internet, only allow the white list through.
   def preraw_params
-    params.require(:preraw).permit(:name,:price, :unit)
+    params.require(:preraw).permit(:name,:price, :unit, :cost)
   end
 
 end

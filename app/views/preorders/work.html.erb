@@ -58,20 +58,17 @@
                 <%= newwork.ordernumber %>
               </td>
               <td>
-                <% if newwork.preordernumber %>
-                    <%= Preorder.find(newwork.preordernumber).ordernumber %>
-                <% end %>
-
+                <%= Preorder.find(newwork.preordernumber).ordernumber %>
               </td>
               <td>
-                    <% customer =nil %>
-                    <% if newwork.customer_id && newwork.customer_id != 0 %>
-                        <% customer = Customer.find(newwork.customer_id) %>
-                    <% end %>
-                    <% if customer %>
-                        <%= customer.name %>
-                    <% end %>
-
+                <% preorder = Preorder.find(newwork.preordernumber) %>
+                <% customer =nil %>
+                <% if preorder.customer_id && preorder.customer_id != 0 %>
+                    <% customer = Customer.find(preorder.customer_id) %>
+                <% end %>
+                <% if customer %>
+                    <%= customer.name %>
+                <% end %>
               </td>
 
 
@@ -86,11 +83,9 @@
                 <% end %>
               </td>
               <td>
-                <% if newwork.preordernumber %>
                 <% if Preorder.find(newwork.preordernumber).installdate %>
                     <%= Preorder.find(newwork.preordernumber).installdate.strftime('%Y-%m-%d') %>
                 <% end %>
-                    <% end %>
               </td>
               <td>
                 <%= link_to '用户联',newwork_path(newwork),class:'fa fa-edit' %>&nbsp;
@@ -107,14 +102,8 @@
         </tbody>
       </table>
 
-      <%= link_to "新增",new_newwork_path,class: "btn btn-w-m btn-primary pull-right" %>
-
-
-      <br>
-      <div class="text-center">
-        <%= will_paginate @newworks, renderer: BootstrapPagination::Rails %>
-      </div>
-
+      <%= link_to "新增",dowork_preorder_path(@preorder),class: "btn btn-w-m btn-primary pull-right" %>
+      <br/>
 
 
 
