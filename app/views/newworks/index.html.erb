@@ -6,10 +6,30 @@
 
 
         $('#searchbtn').click(function(){
-            window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
+            window.location.href=window.location.href.split('?')[0]+'?searchordernumber='+$('#searchordernumber').val()+'&searchstartdate='+$('#searchstartdate').val()+'&searchenddate='+$('#searchenddate').val()+'&searchcustomer='+$('#searchcustomer').val()+'&searchtel='+$('#searchtel').val()+'&searchcooper='+$('#searchcooper').val()+'&searchdesigner='+$('#searchdesigner').val()+'&searchfiter='+$('#searchfiter').val();
         });
 
-        $('#search').val(getUrlParam('search'));
+        if(getUrlParam('searchordernumber') || getUrlParam('searchstartdate') || getUrlParam('searchenddate') || getUrlParam('searchcustomer') || getUrlParam('searchtel') || getUrlParam('searchcooper') || getUrlParam('searchdesigner') || getUrlParam('searchfiter')){
+            $('#collapseExample').removeClass('collapse');
+            $('#collapseExample').addClass('collapse.in');
+        }
+
+        $('#searchordernumber').val(getUrlParam('searchordernumber'));
+        $('#searchstartdate').val(getUrlParam('searchstartdate'));
+        $('#searchenddate').val(getUrlParam('searchenddate'));
+        $('#searchcustomer').val(getUrlParam('searchcustomer'));
+        $('#searchtel').val(getUrlParam('searchtel'));
+        $('#searchcooper').val(getUrlParam('searchcooper'));
+        $('#searchdesigner').val(getUrlParam('searchdesigner'));
+        $('#searchfiter').val(getUrlParam('searchfiter'));
+
+
+        laydate.render({
+            elem: '#searchstartdate'
+        });
+        laydate.render({
+            elem: '#searchenddate'
+        });
 
         function getUrlParam(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
@@ -25,16 +45,100 @@
   <div class="ibox float-e-margins">
     <div class="ibox-title">
       <h5>加工单</h5>
-      <div class="ibox-tools col-sm-3" style="margin-top: -5px;">
-        <div class="input-group">
-          <input type="text" id="search"  class="input-sm form-control"> <span class="input-group-btn">
-             <button type="button" id="searchbtn" class="btn btn-sm btn-primary"> 搜索</button> </span>
-        </div>
+      <div class="ibox-tools col-sm-3" style="margin-top: -8px;">
+        <button class="btn btn-primary pull-right" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><i class="fa fa-list"></i></button>
       </div>
     </div>
 
 
     <div class="ibox-content">
+
+      <div class="collapse" id="collapseExample">
+        <div class="well" style="padding: 0px;">
+          <table width="100%" class="form-horizontal m-t">
+            <tr>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">加工单号</label>
+                  <div class="col-sm-6">
+                    <input class="form-control" id="searchordernumber">
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">开始时间</label>
+                  <div class="col-sm-6">
+                    <input  class="form-control" id="searchstartdate">
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">截止时间</label>
+                  <div class="col-sm-6">
+                    <input  class="form-control" id="searchenddate">
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">客户名称</label>
+                  <div class="col-sm-6">
+                    <input class="form-control" id="searchcustomer">
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">联系电话</label>
+                  <div class="col-sm-6">
+                    <input class="form-control" id="searchtel">
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">装修公司</label>
+                  <div class="col-sm-6">
+                    <input class="form-control" id="searchcooper">
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">设计师</label>
+                  <div class="col-sm-6">
+                    <input class="form-control" id="searchdesigner">
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label">施工队长</label>
+                  <div class="col-sm-6">
+                    <input class="form-control" id="searchfiter">
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  <label class="col-sm-4 control-label"></label>
+                  <div class="col-sm-6">
+                    <button class="btn btn-w-m btn-primary pull-right" id="searchbtn"><i class="fa fa-search"></i>&nbsp;搜索</button>
+                  </div>
+                </div>
+
+              </td>
+            </tr>
+          </table>
+
+        </div>
+      </div>
 
 
       <table class="table table-hover table-bordered text-center">

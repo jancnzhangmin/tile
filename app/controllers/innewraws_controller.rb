@@ -57,8 +57,9 @@ class InnewrawsController < ApplicationController
         innewdepotdetails.each do |f|
           newdepot = Newdepot.where('newraw_id = ?',f.newraw_id).first
           if newdepot
-            newdepot.price = (newdepot.price * newdepot.number + f.price * f.number) / (newdepot.number + f.number)
-            newdepot.number += f.number
+            newdepot.price = (newdepot.price.to_f * newdepot.number.to_f + f.price.to_f * f.number.to_f) / (newdepot.number.to_f + f.number.to_f)
+            newdepot.number = newdepot.number.to_f + f.number.to_f
+            #newdepot.number += f.number.to_f
             newdepot.save
             else
               Newdepot.create(newraw_id:f.newraw_id,price:f.price,number:f.number)

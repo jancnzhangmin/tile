@@ -80,7 +80,7 @@
                     },
                     success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
                         //alert(jsonstr.price);
-                        tablejson=jsonstr;
+                        tablejson=jsonstr.newworkdetail;
                         $('#table').bootstrapTable({
                             showFooter:false,
 
@@ -600,10 +600,10 @@
             </div>
 
             <table class="col-md-12">
-              <% preorder = Preorder.find(@newwork.preordernumber) %>
+              <% preorder = Preorder.find_by(@newwork.preordernumber) %>
               <% customer =nil %>
               <% if preorder.customer_id && preorder.customer_id != 0 %>
-              <% customer = Customer.find(preorder.customer_id) %>
+              <% customer = Customer.find(@newowrk.customer_id) %>
                   <% end %>
               <tr>
                 <td>

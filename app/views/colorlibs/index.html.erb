@@ -1,0 +1,44 @@
+<%= render 'layerbegin' %>
+<script>
+
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h5>色标库</h5>
+
+    </div>
+    <div class="ibox-content">
+      <table class="table table-hover table-bordered text-center">
+        <thead>
+        <tr>
+          <th class="text-center">色标</th>
+          <th class="text-center">颜色</th>
+          <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @colorlibs.each do |colorlib| %>
+            <tr>
+              <td>
+                <%= colorlib.serial %>
+              </td>
+              <td bgcolor=<%= colorlib.color %>>
+                <%= colorlib.color %>
+              </td>
+              <td>
+                <%= link_to '编辑',edit_colorlib_path(colorlib),class:'fa fa-edit' %>&nbsp;
+                <%= link_to ' 删除', colorlib, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>
+              </td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+      <%= link_to "新增",new_colorlib_path,class: "btn btn-w-m btn-primary pull-right" %>
+      <br/>
+
+    </div>
+  </div>
+</div>
+
+<%=render 'layerend' %>

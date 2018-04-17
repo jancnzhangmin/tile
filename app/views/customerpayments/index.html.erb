@@ -1,0 +1,85 @@
+<%= render 'layerbegin' %>
+<script>
+    $(document).ready(function(){
+        $('#searchbtn').click(function(){
+            window.location.href=window.location.href.split('?')[0]+'?search='+$('#search').val();
+        });
+
+        $('#search').val(getUrlParam('search'));
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg); //匹配目标参数
+            if (r != null) return decodeURI (r[2]); return null; //返回参数值
+        }
+    });
+</script>
+<div class="col-lg-12">
+  <div class="ibox float-e-margins">
+    <div class="ibox-title">
+      <h5>客户管理</h5>
+      <div class="ibox-tools col-sm-3" style="margin-top: -5px;">
+        <div class="input-group">
+          <input type="text" id="search" placeholder="姓名或电话" class="input-sm form-control"> <span class="input-group-btn">
+          <button type="button" id="searchbtn" class="btn btn-sm btn-primary"> 搜索</button> </span>
+        </div>
+      </div>
+    </div>
+    <div class="ibox-content">
+      <table class="table table-hover table-bordered text-center">
+        <thead>
+        <tr>
+          <th class="text-center">姓名</th>
+          <th class="text-center">性别</th>
+          <th class="text-center">电话</th>
+          <th class="text-center">地址</th>
+          <th class="text-center">已支付金额</th>
+          <th class="text-center">未支付金额</th>
+          <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @customers.each do |customer| %>
+            <tr>
+              <td>
+                <%= customer.name %>
+              </td>
+              <td>
+                <% if customer.sex == 1 %>
+                男
+                    <% else %>
+                女
+                    <% end %>
+              </td>
+              <td>
+                <%= customer.tel %>
+              </td>
+
+              <td>
+                <%= customer.region %>
+              </td>
+              <td>
+                <%= customer.payments.sum('pay') %>
+              </td>
+              <td>
+                <% nopay = 0 %>
+                <% preorders = Preorder.where('customer = ?',customer.id) %>
+              </td>
+              <td>
+                <%= link_to '编辑',edit_customer_path(customer),class:'fa fa-edit' %>&nbsp;
+                <%= link_to ' 删除', customer, method: :delete, data: { confirm: '确认删除?' },class:'fa fa-trash' %>
+              </td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+      <%= link_to "新增",new_customer_path,class: "btn btn-w-m btn-primary pull-right" %>
+      <br/>
+      <div class="text-center">
+        <%= will_paginate @customers, renderer: BootstrapPagination::Rails %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%=render 'layerend' %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180306081715) do
+ActiveRecord::Schema.define(version: 20180411062624) do
 
   create_table "add_cooperuser_to_coopers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "cooperuser"
@@ -41,6 +41,13 @@ ActiveRecord::Schema.define(version: 20180306081715) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "isnew"
+  end
+
+  create_table "colorlibs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "serial"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "compans", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -245,6 +252,7 @@ ActiveRecord::Schema.define(version: 20180306081715) do
     t.float "number", limit: 24
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "content"
   end
 
   create_table "newdepots", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -292,6 +300,7 @@ ActiveRecord::Schema.define(version: 20180306081715) do
     t.float "cost", limit: 24
     t.float "prict", limit: 24
     t.float "price", limit: 24
+    t.string "group"
   end
 
   create_table "newworks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -309,6 +318,7 @@ ActiveRecord::Schema.define(version: 20180306081715) do
     t.string "area"
     t.integer "line"
     t.integer "wave"
+    t.float "payable", limit: 24
   end
 
   create_table "payments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -495,6 +505,32 @@ ActiveRecord::Schema.define(version: 20180306081715) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "isnew"
+  end
+
+  create_table "shapes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "name"
+    t.float "x1", limit: 24
+    t.float "x2", limit: 24
+    t.float "y1", limit: 24
+    t.float "y2", limit: 24
+    t.float "cpx", limit: 24
+    t.float "cpy", limit: 24
+    t.float "width", limit: 24
+    t.float "height", limit: 24
+    t.float "x", limit: 24
+    t.float "y", limit: 24
+    t.float "cx", limit: 24
+    t.float "cy", limit: 24
+    t.float "rx", limit: 24
+    t.float "ry", limit: 24
+    t.float "cpx1", limit: 24
+    t.float "cpy1", limit: 24
+    t.string "text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "newworkdetail_id"
+    t.integer "cwidth"
+    t.integer "cheight"
   end
 
   create_table "supplierpayments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

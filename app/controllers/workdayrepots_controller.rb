@@ -125,6 +125,254 @@ class WorkdayrepotsController < ApplicationController
     @coopers = Cooper.all
   end
 
+  def getmonth
+    date = params[:date].to_s
+    if date == ''
+      date = Time.now.strftime('%Y-%m')
+    end
+    month = Array.new
+    companyprice = Array.new
+    customerprice = Array.new
+    companyraw = Array.new
+    customerraw = Array.new
+    companywork = Array.new
+    customerwork = Array.new
+    Time.parse(date+'-01').end_of_month.day.times do |tice|
+      month.push tice + 1
+      temday = (tice+1).to_s
+      if temday.length == 1
+        temday = '0'+temday
+      end
+      datestr = "%#{date+'-'+temday}%"
+      #deposit.push Deposit.where('created_at like ?',datestr).sum('amount')
+      temcompanyraw = 0
+      temcustomerraw = 0
+      temcompanywork = 0
+      temcustomerwork = 0
+      newworks = Newwork.where('created_at like ? and isnew = 0',datestr)
+      newworks.each do |newwork|
+        linecost = 0
+        if newwork.line && newwork.line != 0
+          prerawline = Preraw.find(newwork.line)
+          if prerawline
+            linecost = prerawline.cost.to_f
+          end
+        end
+        lineprice = 0
+        if newwork.line && newwork.line != 0
+          prerawline = Preraw.find(newwork.line)
+          if prerawline
+            lineprice = prerawline.price.to_f
+          end
+        end
+        wavecost = 0
+        if newwork.wave && newwork.wave != 0
+          prerawwave = Preraw.find(newwork.wave)
+          if prerawwave
+            wavecost = prerawline.cost.to_f
+          end
+        end
+        waveprice = 0
+        if newwork.wave && newwork.wave != 0
+          prerawwave = Preraw.find(newwork.wave)
+          if prerawwave
+            waveprice = prerawline.price.to_f
+          end
+        end
+        newworkdetails = newwork.newworkdetails
+        newworkdetails.each do |newworkdetail|
+          newdepot = Newdepot.find_by(id:newworkdetail.newraw_id)
+          rawcost = 0
+          if newdepot
+            rawcost = Newdepot.find(newworkdetail.newraw_id).price
+          end
+          newraw = Newraw.find_by(id:newworkdetail.newraw_id)
+          rawprice = 0
+          if newraw
+            rawprice = Newraw.find(newworkdetail.newraw_id).price
+          end
+          temcompanyraw += newworkdetail.width.to_f / 1000 * newworkdetail.height.to_f / 1000 * newworkdetail.number * rawcost.to_f
+          temcustomerraw += (newworkdetail.width.to_f / 1000 * newworkdetail.height.to_f / 1000 + newworkdetail.lossarea.to_f) * newworkdetail.number * rawprice.to_f
+          if newworkdetail.widthtype == '02'
+            temcompanywork += newworkdetail.width.to_f / 1000 * linecost
+            temcustomerwork += newworkdetail.width.to_f / 1000 * lineprice
+          end
+          if newworkdetail.widthtype == '03'
+            temcompanywork += newworkdetail.width.to_f / 1000 * linecost * 2
+            temcustomerwork += newworkdetail.width.to_f / 1000 * lineprice * 2
+          end
+          if newworkdetail.widthtype == '04'
+            temcompanywork += newworkdetail.width.to_f / 1000 * wavecost
+            temcustomerwork += newworkdetail.width.to_f / 1000 * waveprice
+          end
+          if newworkdetail.widthtype == '05'
+            temcompanywork += newworkdetail.width.to_f / 1000 * wavecost * 2
+            temcustomerwork += newworkdetail.width.to_f / 1000 * waveprice * 2
+          end
+          if newworkdetail.widthtype == '06'
+            temcompanywork += newworkdetail.width.to_f / 1000 * linecost
+            temcustomerwork += newworkdetail.width.to_f / 1000 * lineprice
+            temcompanywork += newworkdetail.width.to_f / 1000 * wavecost
+            temcustomerwork += newworkdetail.width.to_f / 1000 * waveprice
+          end
+          if newworkdetail.heighttype == '02'
+            temcompanywork += newworkdetail.height.to_f / 1000 * linecost
+            temcustomerwork += newworkdetail.height.to_f / 1000 * lineprice
+          end
+          if newworkdetail.heighttype == '03'
+            temcompanywork += newworkdetail.height.to_f / 1000 * linecost * 2
+            temcustomerwork += newworkdetail.height.to_f / 1000 * lineprice * 2
+          end
+          if newworkdetail.heighttype == '04'
+            temcompanywork += newworkdetail.height.to_f / 1000 * wavecost
+            temcustomerwork += newworkdetail.height.to_f / 1000 * waveprice
+          end
+          if newworkdetail.heighttype == '05'
+            temcompanywork += newworkdetail.height.to_f / 1000 * wavecost * 2
+            temcustomerwork += newworkdetail.height.to_f / 1000 * waveprice * 2
+          end
+          if newworkdetail.heighttype == '06'
+            temcompanywork += newworkdetail.height.to_f / 1000 * linecost
+            temcustomerwork += newworkdetail.height.to_f / 1000 * lineprice
+            temcompanywork += newworkdetail.height.to_f / 1000 * wavecost
+            temcustomerwork += newworkdetail.height.to_f / 1000 * waveprice
+          end
+        end
+      end
+      companyprice.push (temcompanyraw + temcompanywork).round(2)
+      customerprice.push (temcustomerraw + temcustomerwork).round(2)
+      companyraw.push temcompanyraw.round(2)
+      customerraw.push temcustomerraw.round(2)
+      companywork.push temcompanywork.round(2)
+      customerwork.push temcustomerwork.round(2)
+    end
+    render json: '{"date":'+date.to_json+',"month":'+month.to_json+',"companyprice":'+companyprice.to_json+',"customerprice":'+customerprice.to_json+',"companyraw":'+companyraw.to_json+',"customerraw":'+customerraw.to_json+',"companywork":'+companywork.to_json+',"customerwork":'+customerwork.to_json+'}'
+  end
+
+  def getyear
+    date = params[:date].to_s
+    if date == ''
+      date = Time.now.strftime('%Y')
+    end
+    month = Array.new
+    companyprice = Array.new
+    customerprice = Array.new
+    companyraw = Array.new
+    customerraw = Array.new
+    companywork = Array.new
+    customerwork = Array.new
+    12.times do |tice|
+      month.push (tice + 1).to_s+'月'
+      temday = (tice+1).to_s
+      if temday.length == 1
+        temday = '0'+temday
+      end
+      datestr = "%#{date+'-'+temday}%"
+      #deposit.push Deposit.where('created_at like ?',datestr).sum('amount')
+      temcompanyraw = 0
+      temcustomerraw = 0
+      temcompanywork = 0
+      temcustomerwork = 0
+      newworks = Newwork.where('created_at like ? and isnew = 0',datestr)
+      newworks.each do |newwork|
+        linecost = 0
+        if newwork.line && newwork.line != 0
+          prerawline = Preraw.find(newwork.line)
+          if prerawline
+            linecost = prerawline.cost.to_f
+          end
+        end
+        lineprice = 0
+        if newwork.line && newwork.line != 0
+          prerawline = Preraw.find(newwork.line)
+          if prerawline
+            lineprice = prerawline.price.to_f
+          end
+        end
+        wavecost = 0
+        if newwork.wave && newwork.wave != 0
+          prerawwave = Preraw.find(newwork.wave)
+          if prerawwave
+            wavecost = prerawline.cost.to_f
+          end
+        end
+        waveprice = 0
+        if newwork.wave && newwork.wave != 0
+          prerawwave = Preraw.find(newwork.wave)
+          if prerawwave
+            waveprice = prerawline.price.to_f
+          end
+        end
+        newworkdetails = newwork.newworkdetails
+        newworkdetails.each do |newworkdetail|
+          newdepot = Newdepot.find_by(id:newworkdetail.newraw_id)
+          rawcost = 0
+          if newdepot
+            rawcost = Newdepot.find(newworkdetail.newraw_id).price
+          end
+          newraw = Newraw.find_by(id:newworkdetail.newraw_id)
+          rawprice = 0
+          if newraw
+            rawprice = Newraw.find(newworkdetail.newraw_id).price
+          end
+          temcompanyraw += newworkdetail.width.to_f / 1000 * newworkdetail.height.to_f / 1000 * newworkdetail.number * rawcost.to_f
+          temcustomerraw += (newworkdetail.width.to_f / 1000 * newworkdetail.height.to_f / 1000 + newworkdetail.lossarea.to_f) * newworkdetail.number * rawprice.to_f
+          if newworkdetail.widthtype == '02'
+            temcompanywork += newworkdetail.width.to_f / 1000 * linecost
+            temcustomerwork += newworkdetail.width.to_f / 1000 * lineprice
+          end
+          if newworkdetail.widthtype == '03'
+            temcompanywork += newworkdetail.width.to_f / 1000 * linecost * 2
+            temcustomerwork += newworkdetail.width.to_f / 1000 * lineprice * 2
+          end
+          if newworkdetail.widthtype == '04'
+            temcompanywork += newworkdetail.width.to_f / 1000 * wavecost
+            temcustomerwork += newworkdetail.width.to_f / 1000 * waveprice
+          end
+          if newworkdetail.widthtype == '05'
+            temcompanywork += newworkdetail.width.to_f / 1000 * wavecost * 2
+            temcustomerwork += newworkdetail.width.to_f / 1000 * waveprice * 2
+          end
+          if newworkdetail.widthtype == '06'
+            temcompanywork += newworkdetail.width.to_f / 1000 * linecost
+            temcustomerwork += newworkdetail.width.to_f / 1000 * lineprice
+            temcompanywork += newworkdetail.width.to_f / 1000 * wavecost
+            temcustomerwork += newworkdetail.width.to_f / 1000 * waveprice
+          end
+          if newworkdetail.heighttype == '02'
+            temcompanywork += newworkdetail.height.to_f / 1000 * linecost
+            temcustomerwork += newworkdetail.height.to_f / 1000 * lineprice
+          end
+          if newworkdetail.heighttype == '03'
+            temcompanywork += newworkdetail.height.to_f / 1000 * linecost * 2
+            temcustomerwork += newworkdetail.height.to_f / 1000 * lineprice * 2
+          end
+          if newworkdetail.heighttype == '04'
+            temcompanywork += newworkdetail.height.to_f / 1000 * wavecost
+            temcustomerwork += newworkdetail.height.to_f / 1000 * waveprice
+          end
+          if newworkdetail.heighttype == '05'
+            temcompanywork += newworkdetail.height.to_f / 1000 * wavecost * 2
+            temcustomerwork += newworkdetail.height.to_f / 1000 * waveprice * 2
+          end
+          if newworkdetail.heighttype == '06'
+            temcompanywork += newworkdetail.height.to_f / 1000 * linecost
+            temcustomerwork += newworkdetail.height.to_f / 1000 * lineprice
+            temcompanywork += newworkdetail.height.to_f / 1000 * wavecost
+            temcustomerwork += newworkdetail.height.to_f / 1000 * waveprice
+          end
+        end
+      end
+      companyprice.push (temcompanyraw + temcompanywork).round(2)
+      customerprice.push (temcustomerraw + temcustomerwork).round(2)
+      companyraw.push temcompanyraw.round(2)
+      customerraw.push temcustomerraw.round(2)
+      companywork.push temcompanywork.round(2)
+      customerwork.push temcustomerwork.round(2)
+    end
+    render json: '{"date":'+date.to_json+',"month":'+month.to_json+',"companyprice":'+companyprice.to_json+',"customerprice":'+customerprice.to_json+',"companyraw":'+companyraw.to_json+',"customerraw":'+customerraw.to_json+',"companywork":'+companywork.to_json+',"customerwork":'+customerwork.to_json+'}'
+  end
+
   class Newworkclass
     attr :created_at,true
     attr :customer,true

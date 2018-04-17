@@ -1,0 +1,2 @@
+class Colorlib < ApplicationRecord
+end

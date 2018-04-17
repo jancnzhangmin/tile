@@ -90,7 +90,9 @@
           <li>
             <%= link_to '客户信息管理',customers_path,'data-no-turbolink'=>true%>
           </li>
-
+          <li>
+            <%= link_to '应收款',customerpayments_path,'data-no-turbolink'=>true%>
+          </li>
         </ul>
         </li>
         <% if url.include?('innewraws') || url.include?('newdepots') || url.include?('rawdepots') %>
@@ -183,7 +185,9 @@
             <li>
               <%= link_to '加工库记录',workrecords_path,'data-no-turbolink'=>true%>
             </li>
-
+            <li>
+              <%= link_to '加工单统计',workdayrepots_path,'data-no-turbolink'=>true%>
+            </li>
           </ul>
         </li>
 
@@ -237,36 +241,7 @@
           </ul>
         </li>
 
-        <% if url.include?('goods') || url.include?('ingooddepots') %>
-            <li data-turbolinks="false" class="active">
-        <% else %>
-            <li data-turbolinks="false">
-        <% end %>
-        <a href="">
-          <i class="fa fa-user"></i>
-          <span class="nav-label">分析</span>
-          <span class="fa arrow"></span>
-        </a>
-        <ul class="nav nav-second-level">
 
-          <li>
-            <%= link_to '预定单',preorderanalyses_path,'data-no-turbolink'=>true%>
-          </li>
-          <li>
-            <%= link_to '加工单',workdayrepots_path,'data-no-turbolink'=>true%>
-          </li>
-          <li>
-            <%= link_to '工具库',gooddepots_path,'data-no-turbolink'=>true%>
-          </li>
-          <li>
-            <%= link_to '工具借出',borrowgoods_path,'data-no-turbolink'=>true%>
-          </li>
-          <li>
-            <%= link_to '工具归还',returngoods_path,'data-no-turbolink'=>true%>
-          </li>
-
-        </ul>
-        </li>
 
 
 

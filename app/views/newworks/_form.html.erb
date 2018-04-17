@@ -1,11 +1,817 @@
 <script>
     var way='';
+    var current_newworkdetailid;
+    var sharearr = new Array();
+    var newworkshapearr = new Array();
     $(document).ready(function(){
         $(".i-checks").iCheck({checkboxClass:"icheckbox_square-green",radioClass:"iradio_square-green"});
         getdata();
         $('#userselect').change(function(){
             //$('#user').val(this.text());
             $('#user').val($('#userselect').find("option:selected").text());
+        });
+
+
+
+        var zr = zrender.init(document.getElementById('mycanvas'));
+
+
+        zr.borderColor='#f0f0f0';
+        initz();
+
+        function Shape(){
+            this.name ='';
+            this.x1 = 0.0;
+            this.x2 = 0.0;
+            this.y1 = 0.0;
+            this.y2 = 0.0;
+            this.cpx = 0.0;
+            this.cpy = 0.0;
+            this.width = 0.0;
+            this.height = 0.0;
+            this.x = 0.0;
+            this.y = 0.0;
+            this.cx = 0.0;
+            this.cy = 0.0;
+            this.rx = 0.0;
+            this.ry = 0.0;
+            this.cpx1 = 0.0;
+            this.cpy1 = 0.0;
+            this.text = '';
+            this.cwidth = 0.0;
+            this.cheight = 0.0;
+            this.newworkdetailid = 0;
+        }
+
+
+
+        var linex = new zrender.Line({
+            shape:{
+                x1:0,
+                y1:0,
+                x2:$('#mycanvas').attr('width'),
+                y2:0
+            },
+            style:{
+                file:'none',
+                stroke:'#f0f0f0'
+            }
+
+        });
+        zr.add(linex);
+        var liney = new zrender.Line({
+            shape:{
+                x1:0,
+                y1:0,
+                x2:0,
+                y2:$('#mycanvas').attr('height')
+            },
+            style:{
+                file:'none',
+                stroke:'#f0f0f0'
+            }
+
+        });
+        zr.add(liney);
+
+        var lineleft;
+        var linetop;
+        var lineright;
+        var linebottom;
+
+        function resizez(){
+            lineleft.setShape({
+                        x1:0,
+                        y1:0,
+                        x2:0,
+                        y2:$('#mycanvas').attr('height')
+                    }
+
+            );
+            linetop.setShape({
+                        x1:0,
+                        y1:0,
+                        x2:$('#mycanvas').attr('width'),
+                        y2:0
+                    }
+
+            );
+            lineright.setShape({
+                        x1:$('#mycanvas').attr('width'),
+                        y1:0,
+                        x2:$('#mycanvas').attr('width'),
+                        y2:$('#mycanvas').attr('height')
+                    }
+
+            );
+            linebottom.setShape({
+                        x1:0,
+                        y1:$('#mycanvas').attr('height'),
+                        x2:$('#mycanvas').attr('width'),
+                        y2:$('#mycanvas').attr('height')
+                    }
+
+            );
+        }
+
+
+
+        function initz(){
+            lineleft = new zrender.Line({
+                shape:{
+                    x1:0,
+                    y1:0,
+                    x2:0,
+                    y2:$('#mycanvas').attr('height')
+                },
+                style:{
+                    file:'none',
+                    stroke:'#a0a0a0'
+                }
+
+            });
+            zr.add(lineleft);
+
+            linetop = new zrender.Line({
+                shape:{
+                    x1:0,
+                    y1:0,
+                    x2:$('#mycanvas').attr('width'),
+                    y2:0
+                },
+                style:{
+                    file:'none',
+                    stroke:'#a0a0a0'
+                }
+
+            });
+            zr.add(linetop);
+
+            lineright = new zrender.Line({
+                shape:{
+                    x1:$('#mycanvas').attr('width'),
+                    y1:0,
+                    x2:$('#mycanvas').attr('width'),
+                    y2:$('#mycanvas').attr('height')
+                },
+                style:{
+                    file:'none',
+                    stroke:'#a0a0a0'
+                }
+
+            });
+            zr.add(lineright);
+
+            linebottom = new zrender.Line({
+                shape:{
+                    x1:0,
+                    y1:$('#mycanvas').attr('height'),
+                    x2:$('#mycanvas').attr('width'),
+                    y2:$('#mycanvas').attr('height')
+                },
+                style:{
+                    file:'none',
+                    stroke:'#a0a0a0'
+                }
+
+            });
+            zr.add(linebottom);
+
+
+
+        }
+
+        $('#whbtn').click(function(){
+            $('#mycanvas').attr('width',$('#wvalue').val());
+            $('#mycanvas').attr('height',$('#hvalue').val());
+            resizez();
+        });
+
+
+
+        var curX =0;
+        var curY =0;
+        var isMouseDown =false;
+        var line;
+        var sharetype;
+        var square;
+        var squarefill;
+        var circle;
+        var circlefill;
+        var vector;
+        var font;
+        var vectorstatus = false;
+        var group = new zrender.Group();
+        zr.add(group);
+
+        zr.on('mousedown',function(e){
+            curX = e.offsetX;
+            curY = e.offsetY;
+            isMouseDown = true;
+            if(vectorstatus){
+                vectorstatus=false;
+                {
+                    share = new Shape();
+                    share.name ='vector';
+                    share.x1 = group.children()[group.children().length -1].shape.x1;
+                    share.y1 = group.children()[group.children().length -1].shape.y1;
+                    share.x2 = group.children()[group.children().length -1].shape.x2;
+                    share.y2 = group.children()[group.children().length -1].shape.y2;
+                    share.cpx1 = group.children()[group.children().length -1].shape.cpx1;
+                    share.cpy1 = group.children()[group.children().length -1].shape.cpy1;
+                    sharearr.push(share);
+                }
+                return false;
+            }
+
+            if(sharetype == 'line'){
+                line = new zrender.Line({
+                    shape:{
+                        x1:curX,
+                        y1:curY,
+                        x2:curX,
+                        y2:curY
+                    },
+                    style:{
+                        fill:'none',
+                        stroke:'#333'
+                    }
+                });
+                group.add(line);
+            }else if(sharetype == 'square'){
+                square = new zrender.Rect({
+                    shape:{
+                        x:curX,
+                        y:curY,
+                        width:0,
+                        height:0
+                    },style:{
+                        fill:'none',
+                        stroke:'#333'
+                    }
+                });
+                group.add(square);
+            }
+            else if(sharetype == 'squarefill'){
+                squarefill = new zrender.Rect({
+                    shape:{
+                        x:curX,
+                        y:curY,
+                        width:0,
+                        height:0
+                    },style:{
+                        fill:'#333',
+                        stroke:'#333'
+                    }
+                });
+                group.add(squarefill);
+            }
+            else if(sharetype == 'circle'){
+                circle = new zrender.Ellipse({
+                    shape:{
+                        cx:curX,
+                        cy:curY,
+                        rx:0,
+                        ry:0
+                    },style:{
+                        fill:'none',
+                        stroke:'#333'
+                    }
+                });
+                group.add(circle);
+            }
+            else if(sharetype == 'circlefill'){
+                circlefill = new zrender.Ellipse({
+                    shape:{
+                        cx:curX,
+                        cy:curY,
+                        rx:0,
+                        ry:0
+                    },style:{
+                        fill:'#333',
+                        stroke:'#333'
+                    }
+                });
+                group.add(circlefill);
+            }
+            else if(sharetype == 'vector'){
+                vectorstatus = true;
+                vector = new zrender.BezierCurve({
+                    shape:{
+                        x1:curX,
+                        y1:curY,
+                        x2:curX,
+                        y2:curY,
+                        cpx1:curX,
+                        cpy1:curY
+                    },style:{
+                        fill:'none',
+                        stroke:'#333'
+                    }
+                });
+                group.add(vector);
+            }
+            else if(sharetype == 'font'){
+                if($('#canvastext')[0].style.display == ''){
+                    return false;
+                }
+                font = new zrender.Text({
+                    style:{
+                        text:'',
+                        textFill:'#333',
+                        textStroke:'#333'
+                    }
+                });
+                font.attr('position', [curX, curY]);
+                group.add(font);
+                $('#canvastext').css({"margin-left": curX - 300});
+                $('#canvastext').css({"margin-top": curY});
+                $('#canvastext').val('');
+                $('#canvastext').show();
+            }
+            else if(sharetype == 'move'){
+
+
+            }
+
+        });
+
+        $('#canvastext').blur(function(){
+
+            font.setStyle({
+
+                text: $('#canvastext').val(),
+                textFill: '#333',
+                textStroke: '#333'
+
+            });
+
+
+            share = new Shape();
+            share.name ='font';
+            share.text = group.children()[group.children().length -1].style.text;
+            share.x = group.children()[group.children().length -1].position[0];
+            share.y = group.children()[group.children().length -1].position[1];
+            sharearr.push(share);
+
+            $(this).hide();
+
+
+        });
+        $('#canvastext').on('mouseup',function(){
+            $(this).focus();
+        });
+
+
+
+
+        zr.on('mousemove', function (e) {
+
+            $('#coortext').text(e.offsetX+','+ e.offsetY);
+
+            linex.setShape({
+                        y1: e.offsetY,
+                        y2: e.offsetY
+                    }
+
+            );
+            liney.setShape({
+                        x1: e.offsetX,
+                        x2: e.offsetX
+                    }
+
+            );
+
+            if(isMouseDown){
+                if(sharetype == 'line') {
+                    line.setShape({
+                        x2: e.offsetX,
+                        y2: e.offsetY
+                    });
+                }else if(sharetype == 'square'){
+                    square.setShape({
+                        width:e.offsetX-curX,
+                        height:e.offsetY-curY
+                    });
+                }else if(sharetype == 'squarefill'){
+                    squarefill.setShape({
+                        width:e.offsetX-curX,
+                        height:e.offsetY-curY
+                    });
+                }else if(sharetype == 'circle'){
+                    circle.setShape({
+                        cx: e.offsetX -(e.offsetX-curX)/2,
+                        cy: e.offsetY-(e.offsetY-curY)/2,
+                        rx:(e.offsetX-curX)/2,
+                        ry:(e.offsetY-curY)/2
+                    });
+                }else if(sharetype == 'circlefill'){
+                    circlefill.setShape({
+                        cx: e.offsetX -(e.offsetX-curX)/2,
+                        cy: e.offsetY-(e.offsetY-curY)/2,
+                        rx:(e.offsetX-curX)/2,
+                        ry:(e.offsetY-curY)/2
+                    });
+                }else if(sharetype == 'vector'){
+                    vector.setShape({
+                        x1: curX,
+                        y1: curY,
+                        x2: e.offsetX,
+                        y2: e.offsetY,
+                        cpx1: e.offsetX,
+                        cpy1: e.offsetY
+                    });
+                }
+            }
+            if(vectorstatus && !isMouseDown){
+                vector.setShape({
+                    cpx1: e.offsetX,
+                    cpy1: e.offsetY
+                });
+
+            }
+
+        });
+
+        zr.on('mouseup',function(){
+            isMouseDown = false;
+            if(sharetype == 'line'){
+                share = new Shape();
+                share.name = 'line';
+                share.x1 = group.children()[group.children().length -1].shape.x1;
+                share.x2 = group.children()[group.children().length -1].shape.x2;
+                share.y1 = group.children()[group.children().length -1].shape.y1;
+                share.y2 = group.children()[group.children().length -1].shape.y2;
+                sharearr.push(share);
+            }else if(sharetype == 'square'){
+                share = new Shape();
+                share.name ='square';
+                share.x = group.children()[group.children().length -1].shape.x;
+                share.y = group.children()[group.children().length -1].shape.y;
+                share.width = group.children()[group.children().length -1].shape.width;
+                share.height = group.children()[group.children().length -1].shape.height;
+                sharearr.push(share);
+            }
+            else if(sharetype == 'squarefill'){
+                share = new Shape();
+                share.name ='squarefill';
+                share.x = group.children()[group.children().length -1].shape.x;
+                share.y = group.children()[group.children().length -1].shape.y;
+                share.width = group.children()[group.children().length -1].shape.width;
+                share.height = group.children()[group.children().length -1].shape.height;
+                sharearr.push(share);
+            }
+            else if(sharetype == 'circle'){
+                share = new Shape();
+                share.name ='circle';
+                share.cx = group.children()[group.children().length -1].shape.cx;
+                share.cy = group.children()[group.children().length -1].shape.cy;
+                share.rx = group.children()[group.children().length -1].shape.rx;
+                share.ry = group.children()[group.children().length -1].shape.ry;
+                sharearr.push(share);
+            }
+            else if(sharetype == 'circlefill'){
+                share = new Shape();
+                share.name ='circlefill';
+                share.cx = group.children()[group.children().length -1].shape.cx;
+                share.cy = group.children()[group.children().length -1].shape.cy;
+                share.rx = group.children()[group.children().length -1].shape.rx;
+                share.ry = group.children()[group.children().length -1].shape.ry;
+                sharearr.push(share);
+            }
+
+        });
+
+        function addmove(){
+            $.each(group.children(),function(i,item){
+                item.draggable = true;
+            });
+        }
+
+        function removemove(){
+            $.each(group.children(),function(i,item){
+                item.draggable = false;
+            });
+        }
+
+        $('.shapebtn').click(function(){
+            $('.shapebtn').removeClass("active");
+            $(this).addClass('active');
+            sharetype = $(this).attr('name');
+            if(sharetype=='move'){
+                addmove();
+            }else{
+                removemove();
+            }
+            if(sharetype == 'undo'){
+                sharearr.pop();
+                shaperedraw();
+            }
+        });
+
+        function shaperedraw(){
+            group.removeAll();
+            $.each(sharearr,function(i,item){
+
+                if(item.name == 'line'){
+                    line = new zrender.Line({
+                        shape:{
+                            x1:item.x1,
+                            y1:item.y1,
+                            x2:item.x2,
+                            y2:item.y2
+                        },
+                        style:{
+                            fill:'none',
+                            stroke:'#333'
+                        }
+                    });
+                    group.add(line);
+                }else if(item.name == 'square'){
+                    square = new zrender.Rect({
+                        shape:{
+                            x:item.x,
+                            y:item.y,
+                            width:item.width,
+                            height:item.height
+                        },style:{
+                            fill:'none',
+                            stroke:'#333'
+                        }
+                    });
+                    group.add(square);
+                }            else if(item.name == 'squarefill'){
+                    squarefill = new zrender.Rect({
+                        shape:{
+                            x:item.x,
+                            y:item.y,
+                            width:item.width,
+                            height:item.height
+                        },style:{
+                            fill:'#333',
+                            stroke:'#333'
+                        }
+                    });
+                    group.add(squarefill);
+                }
+                else if(item.name == 'circle'){
+                    circle = new zrender.Ellipse({
+                        shape:{
+                            cx:item.cx,
+                            cy:item.cy,
+                            rx:item.rx,
+                            ry:item.ry
+                        },style:{
+                            fill:'none',
+                            stroke:'#333'
+                        }
+                    });
+                    group.add(circle);
+                }
+                else if(item.name == 'circlefill'){
+                    circlefill = new zrender.Ellipse({
+                        shape:{
+                            cx:item.cx,
+                            cy:item.cy,
+                            rx:item.rx,
+                            ry:item.ry
+                        },style:{
+                            fill:'#333',
+                            stroke:'#333'
+                        }
+                    });
+                    group.add(circlefill);
+                }
+                else if(item.name == 'vector'){
+                    vector = new zrender.BezierCurve({
+                        shape:{
+                            x1:item.x1,
+                            y1:item.y1,
+                            x2:item.x2,
+                            y2:item.y2,
+                            cpx1:item.cpx1,
+                            cpy1:item.cpy1
+                        },style:{
+                            fill:'none',
+                            stroke:'#333'
+                        }
+                    });
+                    group.add(vector);
+                }
+                else if(item.name == 'font'){
+                    font = new zrender.Text({
+                        style:{
+                            text:item.text,
+                            textFill:'#333',
+                            textStroke:'#333'
+                        }
+                    });
+                    font.attr('position', [item.x, item.y]);
+                    group.add(font);
+                }
+            });
+            zr.refresh();
+        }
+
+
+        $('#drawbtn').click(function(){
+
+            $('#drawModal').modal('show');
+            sharearr=[];
+            return false;
+        });
+
+        function createcanvas(){
+            var temarr = [];
+            $.each(newworkshapearr,function(i,item){
+                temarr.push(item.newworkdetailid)
+            });
+            var data =  $('#table').bootstrapTable('getOptions').data;
+            var wrap = 0 ;
+            $.each(data,function(i,item){
+                wrap++;
+                var temdiv = '<div width=1 class="text-center  temcan">';
+                if($.inArray(item.id,temarr) > -1)  {
+                    temdiv = '<div width=200 class="text-center col-md-3 temcan">';
+                }
+                var can = temdiv +
+                        '<canvas id="mycan' + item.id + '" class=""></canvas><br><span>图' + item.id + '</span></div>';
+                $('#canvasdiv').append(can);
+                if (wrap%4 == 0){
+                    $('#canvasdiv').append("<p>&nbsp;</p>");
+                }
+
+            });
+
+        }
+
+        function redrawrowcanvas(){
+            //var zr = zrender.init(document.getElementById('mycanvas'));
+            var data =  $('#table').bootstrapTable('getOptions').data;
+            $.each(data,function(datai,dataitem){
+                var zr = zrender.init(document.getElementById('mycan'+dataitem.id));
+                $.each(newworkshapearr,function(shapei,shapeitem){
+                    if(dataitem.id == shapeitem.newworkdetailid){
+
+                        $('.temcan').each(function(){
+                            if($(this).val() != dataitem.id){
+                                //$(this).hide();
+                            }else{
+                                //$(this).show();
+                            }
+                        });
+
+                        if(shapeitem.cwidth){
+                            $('#mycan'+dataitem.id).attr('width',shapeitem.cwidth);
+                        }
+                        if(shapeitem.cheight){
+                            $('#mycan'+dataitem.id).attr('height',shapeitem.cheight);
+                        }
+////////////////////////////////
+                        if(shapeitem.name == 'line'){
+                            line = new zrender.Line({
+                                shape:{
+                                    x1:shapeitem.x1,
+                                    y1:shapeitem.y1,
+                                    x2:shapeitem.x2,
+                                    y2:shapeitem.y2
+                                },
+                                style:{
+                                    fill:'none',
+                                    stroke:'#333'
+                                }
+                            });
+                            zr.add(line);
+                        }else if(shapeitem.name == 'square'){
+                            square = new zrender.Rect({
+                                shape:{
+                                    x:shapeitem.x,
+                                    y:shapeitem.y,
+                                    width:shapeitem.width,
+                                    height:shapeitem.height
+                                },style:{
+                                    fill:'none',
+                                    stroke:'#333'
+                                }
+                            });
+                            zr.add(square);
+                        }else if(shapeitem.name == 'squarefill'){
+                            squarefill = new zrender.Rect({
+                                shape:{
+                                    x:shapeitem.x,
+                                    y:shapeitem.y,
+                                    width:shapeitem.width,
+                                    height:shapeitem.height
+                                },style:{
+                                    fill:'#333',
+                                    stroke:'#333'
+                                }
+                            });
+                            zr.add(squarefill);
+                        }
+                        else if(shapeitem.name == 'circle'){
+                            circle = new zrender.Ellipse({
+                                shape:{
+                                    cx:shapeitem.cx,
+                                    cy:shapeitem.cy,
+                                    rx:shapeitem.rx,
+                                    ry:shapeitem.ry
+                                },style:{
+                                    fill:'none',
+                                    stroke:'#333'
+                                }
+                            });
+                            zr.add(circle);
+                        }
+                        else if(shapeitem.name == 'circlefill'){
+                            circlefill = new zrender.Ellipse({
+                                shape:{
+                                    cx:shapeitem.cx,
+                                    cy:shapeitem.cy,
+                                    rx:shapeitem.rx,
+                                    ry:shapeitem.ry
+                                },style:{
+                                    fill:'#333',
+                                    stroke:'#333'
+                                }
+                            });
+                            zr.add(circlefill);
+                        }
+                        else if(shapeitem.name == 'vector'){
+                            vector = new zrender.BezierCurve({
+                                shape:{
+                                    x1:shapeitem.x1,
+                                    y1:shapeitem.y1,
+                                    x2:shapeitem.x2,
+                                    y2:shapeitem.y2,
+                                    cpx1:shapeitem.cpx1,
+                                    cpy1:shapeitem.cpy1
+                                },style:{
+                                    fill:'none',
+                                    stroke:'#333'
+                                }
+                            });
+                            zr.add(vector);
+                        }
+                        else if(shapeitem.name == 'font'){
+                            font = new zrender.Text({
+                                style:{
+                                    text:shapeitem.text,
+                                    textFill:'#333',
+                                    textStroke:'#333'
+                                }
+                            });
+                            font.attr('position', [shapeitem.x, shapeitem.y]);
+                            zr.add(font);
+                        }
+
+///////////////////////////////
+                    }
+                });
+            });
+
+
+
+
+
+        }
+
+        $('.rowcanvas').click(function(){
+            //alert($(this).attr('name'));
+            sharearr = [];
+            var thisname = $(this).attr('name');
+            $.each(newworkshapearr,function(i,item){
+
+                if(item.newworkdetailid == $(this).attr('name')){
+                    shape = new Shape();
+                    shape.name = item.name;
+                    shape.x1 = item.x1;
+                    shape.x2 = item.x2;
+                    shape.y1 = item.y1;
+                    shape.y2 = item.y2;
+                    shape.cpx = item.cpx;
+                    shape.cpy = item.cpy;
+                    shape.width = item.width;
+                    shape.height = item.height;
+                    shape.x = item.x;
+                    shape.y = item.y;
+                    shape.cx = item.cx;
+                    shape.cy = item.cy;
+                    shape.rx = item.rx;
+                    shape.ry = item.ry;
+                    shape.cpx1 = item.cpx1;
+                    shape.cpy1 = item.cpy1;
+                    shape.text = item.text;
+                    shape.cwidth = item.cwidth;
+                    shape.cheight = item.cheight;
+                    shape.newworkdetailid = item.newworkdetailid;
+                    sharearr.push(shape);
+
+                }
+
+            });
+            current_newworkdetailid = $(this).attr('name');
+            $('#drawModal').modal('show');
         });
 
 
@@ -30,7 +836,7 @@
                         }
                     });
                     $.each(data.work,function(i,item){
-                        tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number+item.unit+'</td></tr>');
+                        tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number.toFixed(2)+item.unit+'</td></tr>');
                     });
                     $('#worktable').append(tbody);
 
@@ -46,7 +852,7 @@
                         }
                     });
                     $.each(data.user,function(i,item){
-                        tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number+item.unit+'</td></tr>');
+                        tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number.toFixed(2)+item.unit+'</td></tr>');
                     });
                     $('#usertable').append(tbody);
 
@@ -54,7 +860,42 @@
             });
         }
 
+        $('.createdshape').click(function(){
+            current_newworkdetailid = $(this).val();
+            $('#drawModal').modal('show');
+            return false;
+        });
+
+        $('#saveshape').click(function(){
+            var cwidth = 300;
+            var cheight = 300;
+            if($('#wvalue').val() != ''){
+                cwidth = $('#wvalue').val();
+            }
+            if($('#hvalue').val() != ''){
+                cheight = $('#hvalue').val();
+            }
+            $.ajax({
+                async : false,
+                url : "../saveshape",
+                type : "GET",
+                dataType : 'json',
+                timeout : 5000,
+                data:{
+                    cwidth:cwidth,
+                    cheight:cheight,
+                    shape:sharearr,
+                    newworkdetailid:current_newworkdetailid
+                },
+                success : function(){
+                }
+            });
+            $('#drawModal').modal('hide');
+            getdata();
+        });
+
         function getdata(){
+
             caltotal();
             var tablejson;
 
@@ -69,8 +910,35 @@
 
                 },
                 success : function(jsonstr) {// 客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
+                    newworkshapearr = [];
+                    $.each(jsonstr.shape,function(i,item){
+                        shape = new Shape();
+                        shape.name = item.name;
+                        shape.x1 = item.x1;
+                        shape.x2 = item.x2;
+                        shape.y1 = item.y1;
+                        shape.y2 = item.y2;
+                        shape.cpx = item.cpx;
+                        shape.cpy = item.cpy;
+                        shape.x = item.x;
+                        shape.y = item.y;
+                        shape.cx = item.cx;
+                        shape.cy = item.cy;
+                        shape.rx = item.rx;
+                        shape.ry = item.ry;
+                        shape.cpx1 = item.cpx1;
+                        shape.cpy1 = item.cpy1;
+                        shape.text = item.text;
+                        shape.newworkdetailid = item.newworkdetailid;
+                        shape.cwidth = item.cwidth;
+                        shape.cheight = item.cheight;
+                        shape.width = item.width;
+                        shape.height = item.height;
+                        newworkshapearr.push(shape);
+                    });
+
                     //alert(jsonstr.price);
-                    tablejson=jsonstr;
+                    tablejson=jsonstr.newworkdetail;
                     $('#table').bootstrapTable({
                         showFooter:false,
 
@@ -84,6 +952,13 @@
 
 
                         },
+                            {
+                                field: 'groupcolor',
+                                title: 'groupcolor',
+                                visible:false
+
+
+                            },
                             {
                                 field: 'area',
                                 title: '使用位置'
@@ -107,21 +982,23 @@
                             {
                                 field: 'userheight',
                                 title: '用户宽'
-
-
-                            },
-                            {
-                                field: 'lossarea',
-                                title: '损耗面积'
-
-
                             },
                             {
                                 field: 'number',
                                 align: 'right',
                                 title: '数量'
-
-
+                            },
+                            {
+                                field: 'group',
+                                title: '组'
+                            },
+                            {
+                                field: 'imgUrl',
+                                title: '',
+                                align: 'center',
+                                formatter: function(value,row,index){
+                                    return '<button class="btn btn-outline btn-xs createdshape" value='+row.id+'>建图</button><canvas name='+row.id+' class="rowcanvas" id=can'+row.id +' width = 1 height = 1></canvas><span>图'+row.id+'</span>';
+                                }
                             },
                             {
                                 field: 'widthtype',
@@ -130,7 +1007,6 @@
                                 formatter: function(value,row,index){
                                     return '<img height=20px  src=../../line/l' + value + '.png>';
                                 }
-
                             },
                             {
                                 field: 'heighttype',
@@ -152,6 +1028,12 @@
                         formatLoadingMessage: function(){
                             return "";
                         },
+                        rowStyle: function (row, index) {
+                            var style = {};
+
+                            style={css:{'color':row["groupcolor"]}};
+                            return style;
+                        },
                         data: tablejson
                     });
 
@@ -164,11 +1046,17 @@
                     $('#payablespan').text(sum);
                     $('#payable').val(sum);
 
+
+
                 },
                 error : function(xhr) {
                 }
             });
+            createcanvas();
+            redrawrowcanvas();
         }
+
+
 
         var datalist;
 //        $.ajax({
@@ -291,6 +1179,46 @@
 
         $('#modelnumber').change(function(){
             $('#modelsum').val(parseFloat($('#modelprice').val()) * parseFloat($('#modelnumber').val()));
+        });
+
+        $("#table").on("check.bs.table",function(e,row,ele){
+
+
+            var rows = $('#table').bootstrapTable('getAllSelections');
+            var ids = new Array();
+            $.each(rows,function(i,item){
+                ids.push(item.id);
+
+            });
+            if(ids.length > 1){
+                $('#group').addClass('displayshow');
+                $('#group').removeClass('displaynone');
+            }else
+            {
+                $('#group').addClass('displaynone');
+                $('#group').removeClass('displayshow');
+            }
+        });
+
+        $('#group').click(function(){
+            var rows = $('#table').bootstrapTable('getAllSelections');
+            var ids = new Array();
+            $.each(rows,function(i,item){
+                ids.push(item.id);
+            });
+            $.ajax({
+                type : 'get',
+                async : false,
+                url :'../group',
+                data:{
+                    ids:ids,
+                    newworkid:$('#newworkid').val()
+                },
+                success : function(json) {
+                    getdata();
+                }
+            });
+            return false;
         });
 
         $('#edits').click(function(){
@@ -520,7 +1448,7 @@
         });
 
         $('#line').change(function(){
-           $('#lineid').val(this.value);
+            $('#lineid').val(this.value);
         });
 
         if($('#lineid').val() != 0){
@@ -734,20 +1662,13 @@
 
 
         <div class="row">
-
-
           <div class="col-sm-6">
             <h4>单据编号：<span class="text-navy"><%=@newwork.ordernumber %></span></h4>
             <input type="hidden" id="newworkid" value=<%= @newwork.id %> >
             <input type="hidden" id="newworkdetailid">
           </div>
           <div>
-
-
-
             <!--这里是供应商-->
-
-
           </div>
         </div>
 
@@ -797,8 +1718,6 @@
                   </div>
                 </div>
               </td>
-
-
             </tr>
           </table>
 
@@ -896,7 +1815,11 @@
               <button type="button" class="btn btn-outline btn-default" id="deletes">
                 <i class="fa fa-trash" aria-hidden="true"></i>
               </button>
+
+              <button id="group" class="btn btn-w-m btn-outline btn-default">成组</button>
             </div>
+
+
             <table id="table">
 
             </table>
@@ -906,6 +1829,12 @@
 
 
           </div>
+
+          <div id="canvasdiv" class="col-md-12">
+
+          </div>
+
+
 
           <div class="col-md-6">
             <table class="table" id="usertable">
@@ -1166,7 +2095,6 @@
               <input type="hidden" class="form-control" id="modelheighttype">
             </div>
           </div>
-
         </div>
       </div>
       <div class="modal-footer">
@@ -1177,3 +2105,51 @@
   </div><!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+<div class="modal fade" id="drawModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">建图</h4>
+      </div>
+      <div class="modal-body">
+        <div class="btn-group col-md-12" style="display: block;">
+          <button type="button" name="undo" class="btn btn-white active shapebtn"><i class="fa fa-undo"></i>
+          </button>
+          <button type="button" name="move" class="btn btn-white shapebtn"><i class="fa fa-arrows"></i>
+          </button>
+          <button type="button" name="font" class="btn btn-white shapebtn"><i class="fa fa-font"></i>
+          </button>
+          <button type="button" name="line" class="btn btn-white shapebtn"><img src="../../icon/line.png" width="15px"></img>
+          </button>
+          <button type="button" name="square" class="btn btn-white shapebtn"><img src="../../icon/square.png" width="15px"></img>
+          </button>
+          <button type="button" name="squarefill" class="btn btn-white shapebtn"><img src="../../icon/square2.png" width="15px"></img>
+          </button>
+          <button type="button" name="circle" class="btn btn-white shapebtn"><img src="../../icon/circle.png" width="15px"></img>
+          </button>
+          <button type="button" name="circlefill" class="btn btn-white shapebtn"><img src="../../icon/circle2.png" width="15px"></img>
+          </button>
+          <button type="button" name="vector" class="btn btn-white shapebtn"><img src="../../icon/vector.png" width="15px"></img>
+          </button>
+
+          <button id="coortext" type="button" class="btn btn-white" style="width: 80px;margin-left: 10px;">&nbsp;</button>
+        </div>
+        <div>
+          &nbsp;宽<input id="wvalue" style="width: 60px;">高<input id="hvalue" style="width: 60px;"><button type="button" class="btn btn-xs" id="whbtn">确定</button>
+        </div>
+        <p>&nbsp;</p>
+        <div class="text-center"  width="300" height="300">
+          <canvas id="mycanvas"  width="300" height="300">
+          </canvas>
+          <input id="canvastext" value="" style="position: absolute;margin-left: -300px;display:none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+
+        <button type="button" id="saveshape" class="btn btn-primary">保存</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal -->
+</div>

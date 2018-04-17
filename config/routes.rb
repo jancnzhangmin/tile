@@ -155,6 +155,8 @@ Rails.application.routes.draw do
       get 'getrawbyid'
       get 'gettotal'
       get 'getcumtomerbyid'
+      get 'group'
+      get 'saveshape'
     end
     member do
       get 'worklian'
@@ -181,8 +183,15 @@ Rails.application.routes.draw do
     end
   end
   resources :prefixorders
-  resources :workdayrepots
+  resources :workdayrepots do
+    collection do
+      get 'getmonth'
+      get 'getyear'
+    end
+  end
   resources :paymenttypes
   resources :preorderanalyses
+  resources :customerpayments
+  resources :colorlibs
 
 end

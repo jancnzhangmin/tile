@@ -2,12 +2,37 @@ class NewworksController < ApplicationController
 
   before_action :set_newwork, only: [:show, :edit, :update, :destroy, :worklian, :sett]
   def index
-    @newworks = Newwork.where('isnew = 0').paginate(:page => params[:page], :per_page => 20)
-    if params[:search]
-      customer = Customer.where('name like ?',"%#{params[:search]}%")
-      preorder = Preorder.where('customer_id in (?)',customer.ids)
-      @newworks = Newwork.where('(ordernumber like ? or preordernumber in (?)) and isnew = 0',"%#{params[:search]}%",preorder.ids).paginate(:page => params[:page], :per_page => 20)
+    @newworks = Newwork.where('isnew = 0')
+    if params[:searchordernumber].to_s != ''
+      @newworks = @newworks.where('ordernumber like ?',"%#{params[:searchordernumber]}%")
     end
+    if params[:searchstartdate].to_s != ''
+      @newworks = @newworks.where('created_at >= ?',"#{params[:searchstartdate]}")
+    end
+    if params[:searchenddate].to_s != ''
+      @newworks = @newworks.where('created_at <= ?',"#{params[:searchenddate]}")
+    end
+    if params[:searchcustomer].to_s != ''
+      customer = Customer.where('name like ?',"%#{params[:searchcustomer]}%")
+      @newworks = @newworks.where('customer_id in (?)',customer.ids)
+    end
+    if params[:searchtel].to_s != ''
+      customer = Customer.where('tel like ?',"%#{params[:searchtel]}%")
+      @newworks = @newworks.where('customer_id in (?)',customer.ids)
+    end
+    if params[:searchcooper].to_s != ''
+      cooper = Cooper.where('name like ?',"%#{params[:searchcooper]}%")
+      @newworks = @newworks.where('cooper_id in (?)',cooper.ids)
+    end
+    if params[:searchdesigner].to_s != ''
+      designer = Designer.where('name like ?',"%#{params[:searchdesigner]}%")
+      @newworks = @newworks.where('designer_id in (?)',designer.ids)
+    end
+    if params[:searchfiter].to_s != ''
+      fiter = Fiter.where('name like ?',"%#{params[:searchfiter]}%")
+      @newworks = @newworks.where('fiter_id in (?)',fiter.ids)
+    end
+    @newworks = @newworks.paginate(:page => params[:page], :per_page => 20)
   end
 
   def edit
@@ -17,7 +42,7 @@ class NewworksController < ApplicationController
     @designers = Designer.all
     @fiters = Fiter.all
     @preraws = Preraw.all
-@users = User.all
+    @users = User.all
   end
 
   def new
@@ -136,12 +161,57 @@ class NewworksController < ApplicationController
     attr :price,true
     attr :sum,true
     attr :area,true
+    attr :content,true
+    attr :group,true
+    attr :groupcolor,true
+  end
 
+  class Shapeclass
+    # this.name ='';
+    # this.x1 = 0.0;
+    # this.x2 = 0.0;
+    # this.y1 = 0.0;
+    # this.y2 = 0.0;
+    # this.cpx = 0.0;
+    # this.cpy = 0.0;
+    # this.width = 0.0;
+    # this.height = 0.0;
+    # this.x = 0.0;
+    # this.y = 0.0;
+    # this.cx = 0.0;
+    # this.cy = 0.0;
+    # this.rx = 0.0;
+    # this.ry = 0.0;
+    # this.cpx1 = 0.0;
+    # this.cpy1 = 0.0;
+    # this.text = '';
+    attr :name,true
+    attr :x1,true
+    attr :x2,true
+    attr :y1,true
+    attr :y2,true
+    attr :cpx,true
+    attr :cpy,true
+    attr :width,true
+    attr :height,true
+    attr :x,true
+    attr :y,true
+    attr :cx,true
+    attr :cy,true
+    attr :rx,true
+    attr :ry,true
+    attr :cpx1,true
+    attr :cpy1,true
+    attr :text,true
+    attr :newworkdetailid,true
+    attr :cwidth,true
+    attr :cheight,true
   end
 
   def getdata
     @newworkdetails = Newwork.find(params[:newworkid]).newworkdetails.order("width desc, height desc")
     newworkdetailarr = Array.new
+    shapearr = Array.new
     @newworkdetails.each do |f|
       newworkdetailcla = Newworkdetailclass.new
       newworkdetailcla.id = f.id
@@ -156,9 +226,77 @@ class NewworksController < ApplicationController
       newworkdetailcla.heighttype = f.heighttype
       newworkdetailcla.lossarea = f.lossarea
       newworkdetailcla.area = f.area
+      newworkdetailcla.group = f.group
+      if f.group.to_s.length > 0
+        #newworkdetailcla.groupcolor = Colorlib.find_by_serial(f.group[-1,1]).color
+      end
       newworkdetailarr.push newworkdetailcla
+
+      shapes = f.shapes
+
+      shapes.each do |shape|
+        shapecla = Shapeclass.new
+        shapecla.name = shape.name
+        shapecla.x1 = shape.x1
+        shapecla.x2 = shape.x2
+        shapecla.y1 = shape.y1
+        shapecla.y2 = shape.y2
+        shapecla.cpx = shape.cpx
+        shapecla.cpy = shape.cpy
+        shapecla.width = shape.width
+        shapecla.height = shape.height
+        shapecla.x = shape.x
+        shapecla.y = shape.y
+        shapecla.cx = shape.cx
+        shapecla.cy = shape.cy
+        shapecla.rx = shape.rx
+        shapecla.ry = shape.ry
+        shapecla.cpx1 = shape.cpx1
+        shapecla.cpy1 = shape.cpy1
+        shapecla.text = shape.text
+        shapecla.newworkdetailid = shape.newworkdetail_id
+        shapecla.cwidth = shape.cwidth
+        shapecla.cheight = shape.cheight
+        shapearr.push shapecla
+      end
+
+
     end
-    render json:newworkdetailarr
+
+    render json: '{"newworkdetail":' + newworkdetailarr.to_json + ',"shape":'+shapearr.to_json+'}'
+  end
+
+  def saveshape
+    shapes = Shape.where('newworkdetail_id = ?',params[:newworkdetailid])
+    shapes.each do |f|
+      f.destroy
+    end
+    step = 0
+    while params[:shape][step.to_s]
+      Shape.create(newworkdetail_id:params[:newworkdetailid],
+                   name:params[:shape][step.to_s]['name'],
+                   x1:params[:shape][step.to_s]['x1'],
+                   x2:params[:shape][step.to_s]['x2'],
+                   y1:params[:shape][step.to_s]['y1'],
+                   y2:params[:shape][step.to_s]['y2'],
+                   cpx:params[:shape][step.to_s]['cpx'],
+                   cpy:params[:shape][step.to_s]['cpy'],
+                   width:params[:shape][step.to_s]['width'],
+                   height:params[:shape][step.to_s]['height'],
+                   x:params[:shape][step.to_s]['x'],
+                   y:params[:shape][step.to_s]['y'],
+                   cx:params[:shape][step.to_s]['cx'],
+                   cy:params[:shape][step.to_s]['cy'],
+                   rx:params[:shape][step.to_s]['rx'],
+                   ry:params[:shape][step.to_s]['ry'],
+                   cpx1:params[:shape][step.to_s]['cpx1'],
+                   cpy1:params[:shape][step.to_s]['cpy1'],
+                   text:params[:shape][step.to_s]['text'],
+                   cwidth:params[:cwidth],
+                   cheight:params[:cheight],
+      )
+      step += 1
+    end
   end
 
   class Totalclass
@@ -334,12 +472,12 @@ class NewworksController < ApplicationController
 
       #newrawdetails = f.newdepotdetails
 
-        prerawcla = Prerawclass.new
-        prerawcla.id = f.id
-        #prerawcla.pinyin = Newraw.find(f.newraw_id).pinyin
+      prerawcla = Prerawclass.new
+      prerawcla.id = f.id
+      #prerawcla.pinyin = Newraw.find(f.newraw_id).pinyin
 
-        prerawcla.name = Newraw.find(f.newraw_id).name
-        prerawarr.push prerawcla
+      prerawcla.name = Newraw.find(f.newraw_id).name
+      prerawarr.push prerawcla
 
     end
     render json:prerawarr
@@ -348,13 +486,13 @@ class NewworksController < ApplicationController
 
 
   def getrawbyid
-    raw = Newdepotdetail.find(params[:id])
+    raw = Newraw.find(params[:id])
 
     render json:raw
   end
 
   def changenewworkdetail
-newwork=Newwork.find(params[:newworkid])
+    newwork=Newwork.find(params[:newworkid])
     if params[:line].to_s != ''
       newwork.line = params[:line]
     end
@@ -366,7 +504,7 @@ newwork=Newwork.find(params[:newworkid])
     if params[:way] =='add'
       newworkdetails = Newwork.find(params[:newworkid]).newworkdetails
       #newrawid = Newdepotdetail.find(params[:newrawid]).newdepot.newraw_id
-      newrawid = Newraw.find(Newdepot.find(params[:newrawid]).newraw_id).id
+      newrawid = Newraw.find(params[:newrawid]).id
       newrawprice = Newraw.find(Newdepot.find(params[:newrawid]).newraw_id).id
       newworkdetails.create!(newraw_id:newrawid,width:params[:width],height:params[:height],userheight:params[:userheight],widthtype:params[:widthtype],heighttype:params[:heighttype],number:params[:number],lossarea:params[:lossarea],area:params[:area],cost:Newdepot.find(newrawid).price, price:newrawprice)
     elsif params[:way]=='edit'
@@ -387,6 +525,15 @@ newwork=Newwork.find(params[:newworkid])
       newworkdetails.lossarea = params[:lossarea]
       newworkdetails.area = params[:area]
       newworkdetails.save!
+    end
+    newwork = Newwork.find(params[:newworkid])
+    newworkdetails = newwork.newworkdetails
+    newworkdetails.each do |f|
+      cost = Newdepot.find_by(newraw_id:f.newraw_id).price
+      f.cost = cost.to_f * f.width.to_f / 1000 * f.height.to_f / 1000
+      price = Newraw.find(f.newraw_id).price
+      f.price = price.to_f * f.width.to_f / 1000 * f.height.to_f / 1000 + price.to_f * f.lossarea.to_f / 1000
+      f.save
     end
     render json: '{"status":"200"}'
   end
@@ -433,6 +580,23 @@ newwork=Newwork.find(params[:newworkid])
   def getcumtomerbyid
     customer = Customer.find(params[:id])
     render json: customer.to_json
+  end
+
+  def group
+    ids = params[:ids]
+    newwork = Newwork.find(params[:newworkid])
+    newworkdetails = newwork.newworkdetails
+    maxindex = 1
+    newworkdetails.each do |f|
+      if f.group && f.group[-1,1].to_i >= maxindex
+        maxindex = f.group[-1,1].to_i + 1
+      end
+    end
+    ids.each do |f|
+      newworkdetail = Newworkdetail.find(f)
+      newworkdetail.group = '组'+maxindex.to_s
+      newworkdetail.save
+    end
   end
 
 

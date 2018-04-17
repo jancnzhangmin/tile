@@ -8,6 +8,103 @@
 
         $('#search').val(getUrlParam('search'));
 
+/////////////////月报/////////////////////////////////////
+        var monthdate = $('selectmonth').val();
+        laydate.render({
+            elem: '#selectmonth'
+            ,type: 'month',
+            done: function(value, date){
+                monthdate = value;
+                getmonth(value);
+            }
+        });
+
+        getmonth(monthdate);
+        $('#echartab').click(function(){
+            getmonth(monthdate);
+        });
+
+        function getmonth(date){
+            $.ajax( {
+                url:'workdayrepots/getmonth',
+                type:'get',
+                dataType:'json',
+                data:{
+                    date:date
+                },
+                success:function(data) {
+                    $('#selectmonth').val(data.date);
+                    setmonth(data.month,data.companyprice,data.customerprice,data.companyraw,data.customerraw,data.companywork,data.customerwork);
+                },
+                error : function() {
+                }
+            });
+        }
+
+        function setmonth(month,companyprice,customerprice,companyraw,customerraw,companywork,customerwork){
+            $(function(){var e=echarts.init(document.getElementById("echarts-line-chart")),
+                    a={title:{text:''},tooltip:{trigger:"axis"},legend:{data:["应收","成本","原材料应收","原材料成本","加工应收","加工成本"]},
+                        grid:{x:80,x2:80,y2:24},calculable:!0,xAxis:[{type:"category",boundaryGap:!1,
+                            data:month}],
+                        yAxis:[{type:"value",axisLabel:{formatter:"{value} 元"}}],series:[
+                            {name:"应收",type:"line",data:customerprice,markLine:{data:[{type:"average",name:"平均值"}]}},
+                            {name:"成本",type:"line",data:companyprice,markLine:{data:[{type:"average",name:"平均值"}]}},
+                            {name:"原材料应收",type:"line",data:customerraw,markLine:{data:[{type:"average",name:"平均值"}]}},
+                            {name:"原材料成本",type:"line",data:companyraw,markLine:{data:[{type:"average",name:"平均值"}]}},
+                            {name:"加工应收",type:"line",data:customerwork,markLine:{data:[{type:"average",name:"平均值"}]}},
+                            {name:"加工成本",type:"line",data:companywork,markLine:{data:[{type:"average",name:"平均值"}]}}
+                        ]};
+                e.setOption(a),$(window).resize(e.resize);});
+        }
+
+        /////////////////年报/////////////////////////////////////
+        var yeardate = $('selectyear').val();
+        laydate.render({
+            elem: '#selectyear'
+            ,type: 'year',
+            done: function(value, date){
+                yeardate = value;
+                getyear(value);
+            }
+        });
+
+        getyear(yeardate);
+        $('#echartab').click(function(){
+            getyear(yeardate);
+        });
+
+        function getyear(date){
+            $.ajax( {
+                url:'workdayrepots/getyear',
+                type:'get',
+                dataType:'json',
+                data:{
+                    date:date
+                },
+                success:function(data) {
+                    $('#selectyear').val(data.date);
+                    setyear(data.month,data.companyprice,data.customerprice,data.companyraw,data.customerraw,data.companywork,data.customerwork);
+                },
+                error : function() {
+                }
+            });
+        }
+
+        function setyear(month,companyprice,customerprice,companyraw,customerraw,companywork,customerwork){
+            $(function(){var t=echarts.init(document.getElementById("echarts-bar-chart")),n={title:{text:''},
+                tooltip:{trigger:"axis"},legend:{data:["应收","成本","原材料应收","原材料成本","加工应收","加工成本"]},
+                grid:{x:80,x2:80,y2:24},calculable:!0,xAxis:[{type:"category",data:month}],
+                yAxis:[{type:"value",axisLabel:{formatter:"{value} 元"}}],series:[
+                    {name:"应收",type:"bar",data:customerprice,markLine:{data:[{type:"average",name:"平均值"}]}},
+                    {name:"成本",type:"bar",data:companyprice,markLine:{data:[{type:"average",name:"平均值"}]}},
+                    {name:"原材料应收",type:"bar",data:customerraw,markLine:{data:[{type:"average",name:"平均值"}]}},
+                    {name:"原材料成本",type:"bar",data:companyraw,markLine:{data:[{type:"average",name:"平均值"}]}},
+                    {name:"加工应收",type:"bar",data:customerwork,markLine:{data:[{type:"average",name:"平均值"}]}},
+                    {name:"加工成本",type:"bar",data:companywork,markLine:{data:[{type:"average",name:"平均值"}]}}
+                ]};t.setOption(n),window.onresize=t.resize;});
+        }
+
+
         function getUrlParam(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
             var r = window.location.search.substr(1).match(reg); //匹配目标参数
@@ -30,18 +127,16 @@
       </div>
     </div>
     <div class="ibox-content">
-    <div class="tabs-container">
-      <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> 加工单报表</a>
-        </li>
-        <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">统计图表</a>
-        </li>
-      </ul>
-      <div class="tab-content">
+      <div class="tabs-container">
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> 加工单报表</a>
+          </li>
+          <li class=""><a id="echartab" data-toggle="tab" href="#tab-2" aria-expanded="false">统计图表</a>
+          </li>
+        </ul>
+        <div class="tab-content">
 
-        <div id="tab-1" class="tab-pane active">
-
-
+          <div id="tab-1" class="tab-pane active">
             <table class="table table-hover table-bordered text-center">
               <thead>
               <tr>
@@ -153,18 +248,49 @@
             </div>
 
 
-        </div>
-
-        <div id="tab-2" class="tab-pane">
-          <div class="panel-body">
-            <strong>移动设备优先</strong>
-            <p>在 Bootstrap 2 中，我们对框架中的某些关键部分增加了对移动设备友好的样式。而在 Bootstrap 3 中，我们重写了整个框架，使其一开始就是对移动设备友好的。这次不是简单的增加一些可选的针对移动设备的样式，而是直接融合进了框架的内核中。也就是说，Bootstrap 是移动设备优先的。针对移动设备的样式融合进了框架的每个角落，而不是增加一个额外的文件。</p>
           </div>
+
+          <div id="tab-2" class="tab-pane">
+            <div class="panel-body">
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                      <h5>加工单月报</h5>
+                      <div class="ibox-tools" style="margin-top: -9px;">
+                        <input  class="form-control" id="selectmonth">
+                      </div>
+                    </div>
+                    <div class="ibox-content col-md-12">
+                      <div class="echarts" id="echarts-line-chart"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                      <h5>加工单年报</h5>
+                      <div class="ibox-tools" style="margin-top: -9px;">
+                        <input  class="form-control" id="selectyear">
+                      </div>
+                    </div>
+                    <div class="ibox-content col-md-12">
+                      <div class="echarts" id="echarts-bar-chart"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
         </div>
-
-
       </div>
-    </div>
     </div>
   </div>
 </div>

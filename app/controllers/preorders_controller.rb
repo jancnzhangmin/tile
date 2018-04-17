@@ -2,11 +2,37 @@ class PreordersController < ApplicationController
 
   before_action :set_preorder, only: [:show, :edit, :update, :destroy, :work]
   def index
-    @preorders = Preorder.where('isnew = 0').paginate(:page => params[:page], :per_page => 20)
-    if params[:search]
-      customer = Customer.where('name like ?',"%#{params[:search]}%")
-      @preorders = Preorder.where('(ordernumber like ? or customer_id in (?)) and isnew = 0',"%#{params[:search]}%",customer.ids).paginate(:page => params[:page], :per_page => 20)
+    @preorders = Preorder.where('isnew = 0')
+    if params[:searchordernumber].to_s != ''
+      @preorders = @preorders.where('ordernumber like ?',"%#{params[:searchordernumber]}%")
     end
+    if params[:searchstartdate].to_s != ''
+      @preorders = @preorders.where('created_at >= ?',"#{params[:searchstartdate]}")
+    end
+    if params[:searchenddate].to_s != ''
+      @preorders = @preorders.where('created_at <= ?',"#{params[:searchenddate]}")
+    end
+    if params[:searchcustomer].to_s != ''
+      customer = Customer.where('name like ?',"%#{params[:searchcustomer]}%")
+      @preorders = @preorders.where('customer_id in (?)',customer.ids)
+    end
+    if params[:searchtel].to_s != ''
+      customer = Customer.where('tel like ?',"%#{params[:searchtel]}%")
+      @preorders = @preorders.where('customer_id in (?)',customer.ids)
+    end
+    if params[:searchcooper].to_s != ''
+      cooper = Cooper.where('name like ?',"%#{params[:searchcooper]}%")
+      @preorders = @preorders.where('cooper_id in (?)',cooper.ids)
+    end
+    if params[:searchdesigner].to_s != ''
+      designer = Designer.where('name like ?',"%#{params[:searchdesigner]}%")
+      @preorders = @preorders.where('designer_id in (?)',designer.ids)
+    end
+    if params[:searchfiter].to_s != ''
+      fiter = Fiter.where('name like ?',"%#{params[:searchfiter]}%")
+      @preorders = @preorders.where('fiter_id in (?)',fiter.ids)
+    end
+    @preorders = @preorders.paginate(:page => params[:page], :per_page => 20)
   end
 
   def edit

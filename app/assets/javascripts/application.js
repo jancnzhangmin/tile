@@ -42,6 +42,7 @@
 //= require plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js
 //= require laydate/laydate.js
 //= require plugins/suggest/bootstrap-suggest.min.js
+//= require zrender.min.js
 
 
 

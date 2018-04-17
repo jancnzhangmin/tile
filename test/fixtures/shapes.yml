@@ -1,0 +1,41 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  x1: 1.5
+  x2: 1.5
+  y1: 1.5
+  y2: 1.5
+  cpx: 1.5
+  cpy: 1.5
+  width: 1.5
+  height: 1.5
+  x: 1.5
+  'y': 1.5
+  cx: 1.5
+  cy: 1.5
+  rx: 1.5
+  ry: 1.5
+  cpx1: 1.5
+  cpy1: 1.5
+  text: MyString
+
+two:
+  name: MyString
+  x1: 1.5
+  x2: 1.5
+  y1: 1.5
+  y2: 1.5
+  cpx: 1.5
+  cpy: 1.5
+  width: 1.5
+  height: 1.5
+  x: 1.5
+  'y': 1.5
+  cx: 1.5
+  cy: 1.5
+  rx: 1.5
+  ry: 1.5
+  cpx1: 1.5
+  cpy1: 1.5
+  text: MyString
