@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       get 'work'
       get 'getcooperuser'
       get 'getcumtomerbyid'
+      get 'getrawbyid'
     end
     member do
       get 'dowork'

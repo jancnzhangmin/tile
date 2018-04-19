@@ -6,7 +6,7 @@
         <button id="print" class="btn btn-primary btn-w-m" style="margin-top: -8px;">打印</button>
       </div>
       <% if params[:type].to_s =='' %>
-          <h3>预订单</h3>
+          <h3>定货单</h3>
       <% else %>
           <h3>结算单</h3>
       <% end %>
@@ -625,7 +625,7 @@
             <% end %>
           </td>
           <td>
-            施工队长
+            项目经理
           </td>
           <td>
             <% if @preorder.fiter_id && @preorder.fiter_id != 0 %>
@@ -641,7 +641,7 @@
                 <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">型号</td>
                 <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">单位</td>
                 <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">单价</td>
-                <td style="border-right: 1px solid #999;border-bottom: 1px solid #999;">数量</td>
+
                 <td style="border-bottom: 1px solid #999;">备注</td>
               </tr>
 <% sumcount = 0 %>
@@ -661,9 +661,7 @@
                     <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
                       <%= preorderdetail.price %>
                     </td>
-                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
-                      <%= preorderdetail.number %>
-                    </td>
+
                     <td style="border-bottom: 1px solid #999">
                       <%= preorderdetail.summary %>
                     </td>
@@ -686,9 +684,7 @@
                     <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
                       &nbsp;
                     </td>
-                    <td style="border-right: 1px solid #999; border-bottom: 1px solid #999">
-                      &nbsp;
-                    </td>
+
                     <td style="border-bottom: 1px solid #999">
                       &nbsp;
                     </td>
@@ -727,7 +723,7 @@
                 <%= @preorder.user %>
               </td>
               <td style="border-right: 1px solid #999;" width="20%">
-                预付款（元）
+                定金（元）
               </td>
               <td width="30%">
                 <%= @preorder.pay %>

@@ -240,7 +240,11 @@ class PreordersController < ApplicationController
   end
 
   def getrawbyid
-    raw = Raw.find(params[:id])
+    if params[:id][0] == 'r'
+    raw = Newraw.find(params[:id][1..params[:id].length-1])
+    else
+      raw = Preraw.find(params[:id][1..params[:id].length-1])
+    end
     render json:raw
   end
 

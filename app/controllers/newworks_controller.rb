@@ -233,7 +233,7 @@ class NewworksController < ApplicationController
       newworkdetailarr.push newworkdetailcla
 
       shapes = f.shapes
-
+if shapes.count >1
       shapes.each do |shape|
         shapecla = Shapeclass.new
         shapecla.name = shape.name
@@ -259,7 +259,7 @@ class NewworksController < ApplicationController
         shapecla.cheight = shape.cheight
         shapearr.push shapecla
       end
-
+end
 
     end
 

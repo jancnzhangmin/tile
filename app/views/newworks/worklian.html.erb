@@ -3,9 +3,6 @@
   <div class="ibox float-e-margins">
     <div class="ibox-title">
       <h5>加工单</h5>
-      <div class="ibox-tools" data-turbolinks="false">
-        <button id="print" class="btn btn-primary btn-w-m" style="margin-top: -8px;">打印</button>
-        </div>
     </div>
 
 
@@ -65,7 +62,7 @@
                               }
                           });
                           $.each(data.work,function(i,item){
-                              tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number+item.unit+'</td></tr>');
+                              tbody.append('<tr><td><strong>'+item.name+'</strong></td><td>'+item.number.toFixed(2)+item.unit+'</td></tr>');
                           });
                           $('#worktable').append(tbody);
 
@@ -136,9 +133,6 @@
                               showFooter:false,
 
                               columns: [{
-                                  checkbox: true,
-                                  footerFormatter: '合计'
-                              },{
                                   field: 'id',
                                   title: 'id',
                                   visible:false
@@ -181,7 +175,7 @@
                                       title: '',
                                       align: 'center',
                                       formatter: function(value,row,index){
-                                          return '<canvas id=can'+row.id +' width = 1 height = 1>';
+                                          return '<canvas id=can'+row.id +' width = 1 height = 1></canvas><span>图'+row.id+'</span>';
                                       }
                                   },
                                   {
@@ -231,17 +225,26 @@
                       temarr.push(item.newworkdetailid)
                   });
                   var data =  $('#table').bootstrapTable('getOptions').data;
-                  var tab =  '<table>';
 
-                  $.each(data,function(i,item){
-
-                      var can = '<div class="col-md-3 temcan">' +
-                              '<canvas id="mycan' + item.id + '" class=""></canvas><br><span>图' + item.id + '</span></div>';
+                  var tab ='<table>';
+                  var wrap =0;
+                  $('#canvasdiv').append(tab);
+                  $.each(data,function(i,item) {
+                      if (wrap % 4 == 0) {
+                      var can = '<tr><td><div class="col-md-3 temcan">' +
+                              '<canvas id="mycan' + item.id + '" class=""></canvas><br><span>图' + item.id + '</span></div><td>';
                       $('#canvasdiv').append(can);
-
+                  }else{
+                          var can = '<td><div class="col-md-3 temcan">' +
+                                  '<canvas id="mycan' + item.id + '" class=""></canvas><br><span>图' + item.id + '</span></div><td>';
+                          $('#canvasdiv').append(can);
+                      }
+                      if(wrap % 4 ==0){
+                          $('#canvasdiv').append('</tr>');
+                      }
+                      wrap++;
                   });
-
-
+                  $('#canvasdiv').append('</table>');
               }
 
               function redrawrowcanvas(){
@@ -808,8 +811,8 @@
             <table class="col-md-12">
               <% preorder = Preorder.find_by(@newwork.preordernumber) %>
               <% customer =nil %>
-              <% if preorder.customer_id && preorder.customer_id != 0 %>
-                  <% customer = Customer.find(preorder.customer_id) %>
+              <% if @newwork.customer_id && @newwork.customer_id != 0 %>
+                  <% customer = Customer.find(@newwork.customer_id) %>
               <% end %>
               <tr>
                 <td>
@@ -828,12 +831,6 @@
                   联系方式：
                   <% if customer %>
                       <%= customer.tel %>
-                  <% end %>
-                </td>
-                <td class="text-right">
-                  交付时间：
-                  <% if preorder.installdate %>
-                      <%= preorder.installdate.strftime('%Y-%m-%d') %>
                   <% end %>
                 </td>
               </tr>

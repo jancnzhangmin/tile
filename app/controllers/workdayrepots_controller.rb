@@ -1,7 +1,37 @@
 class WorkdayrepotsController < ApplicationController
 
   def index
-    @newworks = Newwork.where('isnew = 0').order('created_at desc').paginate(:page => params[:page], :per_page => 10)
+    @newworks = Newwork.where('isnew = 0')
+    if params[:searchordernumber].to_s != ''
+      @newworks = @newworks.where('ordernumber like ?',"%#{params[:searchordernumber]}%")
+    end
+    if params[:searchstartdate].to_s != ''
+      @newworks = @newworks.where('created_at >= ?',"#{params[:searchstartdate]}")
+    end
+    if params[:searchenddate].to_s != ''
+      @newworks = @newworks.where('created_at <= ?',"#{params[:searchenddate]}")
+    end
+    if params[:searchcustomer].to_s != ''
+      customer = Customer.where('name like ?',"%#{params[:searchcustomer]}%")
+      @newworks = @newworks.where('customer_id in (?)',customer.ids)
+    end
+    if params[:searchtel].to_s != ''
+      customer = Customer.where('tel like ?',"%#{params[:searchtel]}%")
+      @newworks = @newworks.where('customer_id in (?)',customer.ids)
+    end
+    if params[:searchcooper].to_s != ''
+      cooper = Cooper.where('name like ?',"%#{params[:searchcooper]}%")
+      @newworks = @newworks.where('cooper_id in (?)',cooper.ids)
+    end
+    if params[:searchdesigner].to_s != ''
+      designer = Designer.where('name like ?',"%#{params[:searchdesigner]}%")
+      @newworks = @newworks.where('designer_id in (?)',designer.ids)
+    end
+    if params[:searchfiter].to_s != ''
+      fiter = Fiter.where('name like ?',"%#{params[:searchfiter]}%")
+      @newworks = @newworks.where('fiter_id in (?)',fiter.ids)
+    end
+    @newworks = @newworks.order('created_at desc').paginate(:page => params[:page], :per_page => 10)
     @newworkarr = Array.new
     @newworks.each do |newwork|
       newworkcla = Newworkclass.new
